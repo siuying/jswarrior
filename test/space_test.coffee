@@ -121,6 +121,21 @@ vows.describe('Space').addBatch(
     'should be ticking if captive has time bomb': (space) ->
       space.unit().addAbilities('explode')
       assert.equal(space.isTicking(), true)
+  
+  'with golem': ->
+    'topic': ->
+      floor = new JsWarrior.Floor()
+      floor.width = 2
+      floor.height = 3
+      golem = new JsWarrior.Units.Golem()
+      floor.add(golem, 0, 0)
+      floor.space(0, 0)
+    'should be a golem': (space) ->
+      asset.equal(space.isGolem(), true)
+    'should not be enemy': (space) ->
+      asset.equal(space.isEnemy(), false)
+    'should be a player': (space) ->
+      asset.equal(space.isPlayer(), true)
       
   'at stairs': 
     'topic': ->
