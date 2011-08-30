@@ -5,7 +5,7 @@ class Golem extends Base
     @turn = null
     @maxHealth = 0
 
-  play_turn: (turn) ->
+  playTurn: (turn) ->
     # TO DO: Implement Me
 
   attackPower: ->

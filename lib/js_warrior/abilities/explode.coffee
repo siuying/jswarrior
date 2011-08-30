@@ -1,6 +1,8 @@
 {Base} = require('./base')
+{Action} = require('./action')
+_ = require('underscore')
 
-class Explode extends Base
+class Explode extends Action
   description: ->
     "Kills you and all surrounding units. You probably don't want to do this intentionally."
   

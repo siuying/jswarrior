@@ -1,5 +1,6 @@
 {EventEmitter} = require 'events'
 {Abilities} = require('../abilities')
+_ = require('underscore')
 
 class Base
   constructor: (@health, @position) ->
@@ -58,20 +59,20 @@ class Base
   nextTurn: ->
     new Turn(abilities)
   
-  prepare_turn: ->
+  prepareTurn: ->
     @currentTurn = @nextTurn()
-    @play_turn(@currentTurn)
+    @playTurn(@currentTurn)
   
-  perform_turn: ->
+  performTurn: ->
     if @position
-      for ability of @abilities().keys()
-        ability.pass_turn
+      for ability in _.values(@abilities())
+        ability.passTurn()
 
       if @currentTurn.action && !@isBound()
         [name, args...] = @action()
         @abilities()[name].perform(args)
   
-  play_turn: (turn) ->
+  playTurn: (turn) ->
     
   abilities: ->
     @__abilities ||= {}

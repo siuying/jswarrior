@@ -6,8 +6,8 @@ class Warrior extends Base
     @score = 0
     @golem_abilities = []
   
-  play_turn: (turn) ->
-    @player().play_turn(turn)
+  playTurn: (turn) ->
+    @player().playTurn(turn)
     
   player: ->
     @__player ||= Player.new
@@ -37,7 +37,7 @@ class Warrior extends Base
   character: ->
     "@"
     
-  perform_turn: ->
+  performTurn: ->
     @say "does nothing" if @currentTurn.action == null
     super
   

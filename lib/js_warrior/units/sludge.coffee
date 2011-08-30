@@ -4,8 +4,8 @@ class Sludge extends Base
   constructor: ->
     @addAbilities('attack', 'feel')
 
-  play_turn: (turn) ->
-    @player().play_turn(turn)
+  playTurn: (turn) ->
+    @player().playTurn(turn)
 
   attackPower: ->
     3

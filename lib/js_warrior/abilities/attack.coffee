@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{Action} = require('./action')
 
-class Attack extends Base
+class Attack extends Action
   description: ->
     "Attacks a unit in given direction (forward by default)."
 
