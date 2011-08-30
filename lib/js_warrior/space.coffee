@@ -26,7 +26,7 @@ class Space
     @floor.stairs_location == @location
 
   isTicking: ->
-    @unit() != null && @unit().abilities.indexOf('explode') > -1
+    @unit() != null && @unit().abilities()['explode'] != null
 
   unit: ->
     @floor.get(@x, @y) || null

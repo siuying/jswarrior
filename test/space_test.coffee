@@ -2,7 +2,7 @@ vows = require('vows')
 assert = require('assert')
 
 {JsWarrior} = require('../lib/js_warrior')
-require('../vendor/underscore')
+{_} = require('../vendor/underscore')
 
 vows.describe('Space').addBatch(
   'with empty space': 
@@ -88,5 +88,42 @@ vows.describe('Space').addBatch(
     
     'should have name of unit': (space) ->
       assert.equal(space.to_s(), 'Sludge')
+      
+    'bounded enemy':
+      'topic': ->
+        floor = new JsWarrior.Floor()
+        floor.width = 2
+        floor.height = 3
+        sludge = new JsWarrior.Units.Sludge()
+        floor.add(sludge, 0, 0)
+        sludge.bind()
+        floor.space(0, 0)
+      
+      'should be captive': (space) ->
+        assert.equal(space.isCaptive(), true)
+      
+      'should not look like enemy': (space) ->
+        assert.equal(space.isEnemy(), false)
+
+  'with captive':
+    'topic': ->
+      floor = new JsWarrior.Floor()
+      floor.width = 2
+      floor.height = 3
+      cap = new JsWarrior.Units.Captive()
+      floor.add(cap, 0, 0)
+      floor.space(0, 0)
+      
+    'should be captive': (space) ->
+      assert.equal(space.isCaptive(), true)
+      
+    'should not be enemy': (space) ->
+      assert.equal(space.isEnemy(), false)
+    
+    'should be ticking if captive has time bomb': (space) ->
+      space.unit().addAbilities('explode')
+      assert.equal(space.isTicking(), true)
+      
+    
 
 ).export(module);

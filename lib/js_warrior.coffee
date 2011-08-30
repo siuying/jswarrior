@@ -6,8 +6,4 @@ exports.JsWarrior =
   Position: require('./js_warrior/position').Position
   Space: require('./js_warrior/space').Space
   Abilities: require('./js_warrior/abilities').Abilities
-  Units: 
-    Base: require('./js_warrior/units/base').Base
-    Golem: require('./js_warrior/units/golem').Golem
-    Warrior: require('./js_warrior/units/warrior').Warrior
-    Sludge: require('./js_warrior/units/sludge').Sludge
+  Units: require('./js_warrior/units').Units

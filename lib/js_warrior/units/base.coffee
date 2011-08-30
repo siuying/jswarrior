@@ -50,9 +50,10 @@ class Base
   addAbilities: (new_abilities...) ->
     for ability in new_abilities
       camelAbility = ability.replace(/([a-z])/, ($1) -> $1.toUpperCase())
-
-      console.log("new Abilities.#{camelAbility}")
-      @abilities[ability] = eval("new Abilities.#{camelAbility}()")
+      try
+        @abilities[ability] = eval("new Abilities.#{camelAbility}()")
+      catch e
+        throw "unexpected ability: #{ability}"
       
   nextTurn: ->
     new Turn(abilities)
@@ -63,16 +64,17 @@ class Base
   
   perform_turn: ->
     if @position
-      for ability in @abilities
+      for ability of @abilities().keys()
         ability.pass_turn
-      if @currentTurn.action && !@isBound
-        [name, args...] = @Ïaction()
-        !@abilities[name].perform(args)
+
+      if @currentTurn.action && !@isBound()
+        [name, args...] = @action()
+        @abilities()[name].perform(args)
   
   play_turn: (turn) ->
     
   abilities: ->
-    @abilities ||= {}
+    @__abilities ||= {}
   
   character: ->
     "?"
