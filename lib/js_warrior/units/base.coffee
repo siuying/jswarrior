@@ -2,20 +2,20 @@
 	
 class Base
   constructor: (@health, @position) ->
-    @health ||= @max_health()
+    @health ||= @maxHealth()
     @event = new EventEmitter
     @bound = false
     
-  attack_power: ->
+  attackPower: ->
     0
   
-  max_health: ->
+  maxHealth: ->
     0
     
-  earn_points: (point) ->
+  earnPoints: (point) ->
     undefined
 
-  take_damage: (amount) ->
+  takeDamage: (amount) ->
     @unbind() if @isBound()
     if @health
       @health -= amount
@@ -29,7 +29,7 @@ class Base
   
   isBound: ->
     @bound
-  
+
   unbind: ->
     @say "release from bonds"
     @bound = false
@@ -46,23 +46,23 @@ class Base
   to_s: ->
     @name()
   
-  add_abilities: (new_abilities...) ->
+  addAbilities: (new_abilities...) ->
     for ability in new_abilities
       @abilities[ability] = eval("new #{ability}")
       
-  next_turn: ->
+  nextTurn: ->
     new Turn(abilities)
   
   prepare_turn: ->
-    @current_turn = @next_turn
-    @play_turn(@current_turn)
+    @currentTurn = @nextTurn()
+    @play_turn(@currentTurn)
   
   perform_turn: ->
     if @position
       for ability in @abilities
         ability.pass_turn
-      if @current_turn.action && !@isBound
-        [name, args...] = @current_turn.action()
+      if @currentTurn.action && !@isBound
+        [name, args...] = @Ïaction()
         !@abilities[name].perform(args)
   
   play_turn: (turn) ->
