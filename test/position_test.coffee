@@ -1,10 +1,11 @@
 vows = require('vows')
 assert = require('assert')
-{Position} = require('../lib/js_warrior/position')
+
+{JsWarrior} = require('../lib/js_warrior')
 
 vows.describe('Position').addBatch(
   'Initialize': 
-    'topic': new Position([], 1, 2)
+    'topic': new JsWarrior.Position([], 1, 2)
 
     'faced north': (position) ->
       assert.equal(position.direction(), 'north')
@@ -14,7 +15,7 @@ vows.describe('Position').addBatch(
       assert.equal(position.y, 2)
 
   'Check if at a position':
-    'topic': new Position([], 1, 2)
+    'topic': new JsWarrior.Position([], 1, 2)
 
     'at() return properly properly': (position) ->
       assert.equal(position.at(1,2), true)
