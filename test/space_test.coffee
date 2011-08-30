@@ -1,8 +1,6 @@
 vows = require('vows')
 assert = require('assert')
-
 {JsWarrior} = require('../lib/js_warrior')
-{_} = require('../vendor/underscore')
 
 vows.describe('Space').addBatch(
   'with empty space': 
@@ -124,6 +122,19 @@ vows.describe('Space').addBatch(
       space.unit().addAbilities('explode')
       assert.equal(space.isTicking(), true)
       
+  'at stairs': 
+    'topic': ->
+      floor = new JsWarrior.Floor()
+      floor.width = 2
+      floor.height = 3
+      floor.place_stairs(0, 0)
+      floor.space(0, 0)
     
+    'should be empty': (space) ->
+      assert.equal(space.isEmpty(), true)
 
+    'should be stairs': (space) ->
+      assert.equal(space.isStairs(), true)
+
+  
 ).export(module);
