@@ -15,7 +15,7 @@ vows.describe('Floor').addBatch(
       floor = new JsWarrior.Floor()
       floor.width = 2
       floor.height = 3
-      floor.place_stairs(3, 3)
+      floor.placeStairs(3, 3)
       floor
 
     'if add a unit, able to fetch it at that position': (floor) ->
@@ -32,7 +32,7 @@ vows.describe('Floor').addBatch(
     'should fetch other units not warrior': (floor) ->
       unit = new JsWarrior.Units.Base()
       floor.add(unit, 0, 1, 'north')
-      assert.notEqual(floor.other_units().indexOf(unit), -1)
+      assert.notEqual(floor.otherUnits().indexOf(unit), -1)
 
     'should not consider corners out of bounds': (floor) ->
       assert.equal(floor.isOutOfBounds(0, 0), false)
@@ -50,7 +50,7 @@ vows.describe('Floor').addBatch(
       assert.equal(floor.space(0, 0).constructor.name, "Space")
     
     'should place stairs and be able to fetch the location': (floor) ->
-      floor.place_stairs(1, 2)
+      floor.placeStairs(1, 2)
       assert.deepEqual(floor.stairs_location, [1, 2])
 
   'With floor 3x1': 
@@ -65,6 +65,6 @@ vows.describe('Floor').addBatch(
       unit2 = new JsWarrior.Units.Base()
       floor.add(unit, 0, 0)
       floor.add(unit2, 1, 0)      
-      assert.equal(floor.unique_units().length, 1)
+      assert.equal(floor.uniqueUnits().length, 1)
 
 ).export(module);

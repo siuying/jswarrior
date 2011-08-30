@@ -12,10 +12,10 @@ class Floor
     @__units.push(unit)
     unit.position = new Position(this, x, y, direction)
     
-  place_stairs: (x, y) ->
+  placeStairs: (x, y) ->
     @stairs_location = [x, y]
     
-  stairs_space: ->
+  stairsSpace: ->
     
   units: ->
     units = []
@@ -23,7 +23,7 @@ class Floor
       units.push(unit)
     units
   
-  other_units: ->
+  otherUnits: ->
     units = []
     for unit in @__units when unit.constructor.name != 'Warrior'
       units.push unit
@@ -43,7 +43,7 @@ class Floor
   character: ->
     rows = []
     
-  unique_units: ->
+  uniqueUnits: ->
     unique_units = []
     for unit in @__units
       unique_unit_names = (unit.constructor.name for unit in unique_units)

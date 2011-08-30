@@ -142,7 +142,7 @@ vows.describe('Space').addBatch(
       floor = new JsWarrior.Floor()
       floor.width = 2
       floor.height = 3
-      floor.place_stairs(0, 0)
+      floor.placeStairs(0, 0)
       floor.space(0, 0)
     
     'should be empty': (space) ->
