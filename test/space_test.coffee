@@ -2,6 +2,7 @@ vows = require('vows')
 assert = require('assert')
 
 {JsWarrior} = require('../lib/js_warrior')
+require('../vendor/underscore')
 
 vows.describe('Space').addBatch(
   'with empty space': 

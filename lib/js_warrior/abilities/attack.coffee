@@ -1,3 +1,5 @@
+{Base} = require('./base')
+
 class Attack extends Base
   description: ->
     "Attacks a unit in given direction (forward by default)."
@@ -13,4 +15,4 @@ class Attack extends Base
         power = @unit.attackPower
   
 root = exports ? window
-root.Base = Base
+root.Attack = Attack

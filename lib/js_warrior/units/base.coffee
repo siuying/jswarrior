@@ -1,5 +1,6 @@
 {EventEmitter} = require 'events'
-	
+{Abilities} = require('../abilities')
+
 class Base
   constructor: (@health, @position) ->
     @health ||= @maxHealth()
@@ -48,7 +49,10 @@ class Base
   
   addAbilities: (new_abilities...) ->
     for ability in new_abilities
-      @abilities[ability] = eval("new #{ability}")
+      camelAbility = ability.replace(/([a-z])/, ($1) -> $1.toUpperCase())
+
+      console.log("new Abilities.#{camelAbility}")
+      @abilities[ability] = eval("new Abilities.#{camelAbility}()")
       
   nextTurn: ->
     new Turn(abilities)

@@ -43,7 +43,7 @@ class Space
 
   to_s: ->
     if @unit()
-      @unit().to_s
+      @unit().to_s()
     else if @isWall()
       "wall"
     else 
