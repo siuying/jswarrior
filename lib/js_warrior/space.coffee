@@ -43,9 +43,9 @@ class Space
       ">"
     else 
 
-  to_s: ->
+  toString: ->
     if @unit()
-      @unit().to_s()
+      @unit().toString()
     else if @isWall()
       "wall"
     else 

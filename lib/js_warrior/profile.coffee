@@ -9,7 +9,7 @@ class Profile
     @levelNumber = 0
     @lastLevelNumber = undefined
 
-  to_s: ->
+  toString: ->
     [@warriorName, "level #{@levelNumber}", "score #{@score}"].join('-')
   
   tower: ->

@@ -9,7 +9,8 @@ class Level
     @ace_score = 0
   
   load_level: ->
-    # load level
+    # level = new LevelLoader(this)
+    # eval("with(level) {#{body}}")
   
   load_player: ->
     # load player

@@ -11,6 +11,6 @@ vows.describe('Tower').addBatch(
       assert.equal(tower.name(), 'tower')
       
     'should use name when converting to string': (tower) ->
-      assert.equal(tower.to_s(), tower.name())
+      assert.equal(tower.toString(), tower.name())
 
 ).export(module);

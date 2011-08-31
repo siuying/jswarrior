@@ -29,7 +29,7 @@ vows.describe('Space').addBatch(
       assert.equal(space.isCaptive(), false)
       
     "should have name 'nothing'": (space) ->
-      assert.equal(space.to_s(), "nothing")
+      assert.equal(space.toString(), "nothing")
       
     "should not be ticking": (space) ->
       assert.equal(space.isTicking(), false)
@@ -46,7 +46,7 @@ vows.describe('Space').addBatch(
       assert.equal(space.isEmpty(), false)
 
     'should have name of "wall"': (space) ->
-      assert.equal(space.to_s(), 'wall')
+      assert.equal(space.toString(), 'wall')
       
   'with warrior':
     'topic': ->
@@ -85,7 +85,7 @@ vows.describe('Space').addBatch(
       assert.equal(space.isEmpty(), false)
     
     'should have name of unit': (space) ->
-      assert.equal(space.to_s(), 'Sludge')
+      assert.equal(space.toString(), 'Sludge')
       
     'bounded enemy':
       'topic': ->

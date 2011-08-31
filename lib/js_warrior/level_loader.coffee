@@ -8,29 +8,29 @@ class LevelLoader
     @level = level
     @level.floor = @floor if level
 
-  setDescription: (desc) ->
+  description: (desc) ->
     @level.description = desc
   
-  setTip: (tip) ->
+  tip: (tip) ->
     @level.tip = tip
     
-  setClue: (clue) ->
+  clue: (clue) ->
     @level.clue = clue
     
-  setTimeBonus: (bonus) ->
+  timeBonus: (bonus) ->
     @level.timeBonus = bonus
     
-  aceScore: (score) ->
+  score: (score) ->
     @level.score = score
   
-  setSize: (width, height) ->
+  size: (width, height) ->
     @floor.width = width
     @floor.height = height
   
-  setStairs: (x, y) ->
+  stairs: (x, y) ->
     @floor.placeStairs(x, y)
   
-  setUnit: (unit, x, y, facing = 'north', callback = null) ->
+  unit: (unit, x, y, facing = 'north', callback = null) ->
     camelName = "new Units.#{Utils.toCamelCase(unit)}()"
     unit = eval(camelName)
 
@@ -40,8 +40,8 @@ class LevelLoader
 
     unit
   
-  setWarrior: (x, y, facing = 'north', callback) ->
-    @level.setupWarrior(@setUnit('warrior', x, y, facing, callback))
+  warrior: (x, y, facing = 'north', callback) ->
+    @level.setupWarrior(@unit('warrior', x, y, facing, callback))
 
 root = exports ? window
 root.LevelLoader = LevelLoader

@@ -6,7 +6,7 @@ class Tower
   name: ->
     Utils.basename @path
   
-  to_s: ->
+  toString: ->
     @name()
 
 root = exports ? window

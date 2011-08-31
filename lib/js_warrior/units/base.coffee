@@ -46,7 +46,7 @@ class Base
   name: ->
     @constructor.name
   
-  to_s: ->
+  toString: ->
     @name()
   
   addAbilities: (new_abilities...) ->

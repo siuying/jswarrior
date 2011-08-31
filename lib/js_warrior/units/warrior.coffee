@@ -31,7 +31,7 @@ class Warrior extends Base
     else
       "Warrior"
   
-  to_s: ->
+  toString: ->
     @name()
   
   character: ->
