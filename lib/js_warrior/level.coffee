@@ -45,8 +45,7 @@ class Level
       return if @isPassed() || @isFailed()
 
       @currentTurn += 1
-      @emitter?.emit 'level.turn', @currentTurn
-      @emitter?.emit 'level.floor', @floor.character()
+      @emitter?.emit 'level.changed', this
       @time_bonus = @time_bonus - 1 if @time_bonus > 0
   
   isPassed: ->
