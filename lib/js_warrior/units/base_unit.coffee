@@ -24,7 +24,7 @@ class BaseUnit
     @unbind() if @isBound()
     if @health
       @health -= amount
-      @say "take #{@amount} damage, #{@health} health power left"
+      @say "take #{amount} damage, #{@health} health power left"
 
       if @health <= 0
         @position = null
