@@ -1,3 +1,5 @@
+{_} = require('underscore')
+
 class Space
   constructor: (@floor, @x, @y) ->
     
@@ -26,7 +28,7 @@ class Space
     _.isEqual(@floor.stairs_location, @location())    
 
   isTicking: ->
-    @unit() != null && @unit().abilities()['explode'] != null
+    @unit() != null && @unit().getAbilities()['explode'] != null
 
   unit: ->
     @floor.get(@x, @y) || null

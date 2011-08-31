@@ -1,6 +1,6 @@
 {EventEmitter} = require 'events'
 {Abilities} = require('../abilities')
-_ = require('underscore')
+{_} = require('underscore')
 
 class BaseUnit
   constructor: (@health, @position) ->
@@ -49,12 +49,13 @@ class BaseUnit
     @name()
   
   addAbilities: (new_abilities...) ->
+    abilities = @getAbilities()
     for ability in new_abilities
       camelAbility = ability.replace(/([a-z])/, ($1) -> $1.toUpperCase())
       try
-        @abilities[ability] = eval("new Abilities.#{camelAbility}()")
+        abilities[ability] = eval("new Abilities.#{camelAbility}()")
       catch e
-        throw "unexpected ability: #{ability}"
+        throw "BaseUnit.addAbilities: Unexpected ability: #{ability}"
       
   nextTurn: ->
     new Turn(abilities)
@@ -65,17 +66,17 @@ class BaseUnit
   
   performTurn: ->
     if @position
-      for ability in _.values(@abilities())
+      for ability in _.values(@getAbilities())
         ability.passTurn()
 
       if @currentTurn.action && !@isBound()
         [name, args...] = @action()
-        @abilities()[name].perform(args)
+        @abilities[name].perform(args)
   
   playTurn: (turn) ->
     
-  abilities: ->
-    @__abilities ||= {}
+  getAbilities: ->
+    @abilities ||= {}
   
   character: ->
     "?"

@@ -731,8 +731,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (block == null) {
         block = null;
       }
-      camelName = "new Units." + (Utils.toCamelCase(unit)) + "()";
-      unit = eval(camelName);
+      try {
+        camelName = "new Units." + (Utils.toCamelCase(unit)) + "()";
+        unit = eval(camelName);
+      } catch (e) {
+        throw "failed initialized unit: " + unit;
+      }
       this.floor.add(unit, x, y, facing);
       if (block) {
         block.call(unit, unit);
@@ -1070,20 +1074,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     BaseUnit.prototype.performTurn = function() {
       var ability, args, name, _i, _len, _ref, _ref2;
       if (this.position) {
-        _ref = _.values(this.abilities());
+        _ref = _.values(this.getAbilities());
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           ability = _ref[_i];
           ability.passTurn();
         }
         if (this.currentTurn.action && !this.isBound()) {
           _ref2 = this.action(), name = _ref2[0], args = 2 <= _ref2.length ? __slice.call(_ref2, 1) : [];
-          return this.abilities()[name].perform(args);
+          return this.abilities[name].perform(args);
         }
       }
     };
     BaseUnit.prototype.playTurn = function(turn) {};
-    BaseUnit.prototype.abilities = function() {
-      return this.__abilities || (this.__abilities = {});
+    BaseUnit.prototype.getAbilities = function() {
+      return this.abilities || (this.abilities = {});
     };
     BaseUnit.prototype.character = function() {
       return "?";
@@ -1330,7 +1334,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(8, 1);
     this.stairs(7, 0);
     return this.warrior(0, 0, 'east', function() {
-      console.log(this);
       return this.addAbilities('walk');
     });
   };
