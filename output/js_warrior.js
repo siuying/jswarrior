@@ -241,7 +241,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Tower: require('./js_warrior/tower').Tower,
     Abilities: require('./js_warrior/abilities').Abilities,
     Units: require('./js_warrior/units').Units,
-    Utils: require('./js_warrior/utils').Utils
+    Utils: require('./js_warrior/utils').Utils,
+    View: require('./js_warrior/view').View
   };
 }).call(this);
 }, "js_warrior/abilities": function(exports, require, module) {(function() {
@@ -619,19 +620,68 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Floor = Floor;
 }).call(this);
 }, "js_warrior/game": function(exports, require, module) {(function() {
-  var Game;
+  var Game, Profile, root;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Profile = require('./profile').Profile;
   Game = (function() {
-    function Game() {}
+    function Game(emitter) {
+      this.emitter = emitter;
+      this.currentLevel = null;
+    }
     Game.prototype.start = function() {
-      UI.message("Welcome to JS Warrior");
-      return play_normal_mode;
+      this.emitter.emit('game.start');
+      this.profile = new Profile(this.emitter);
+      return this.playNormalMode();
     };
-    Game.prototype.play_normal_mode = function() {
-      return play_current_level;
+    Game.prototype.playNormalMode = function() {
+      return this.playCurrentLevel();
     };
-    Game.prototype.play_current_level = function() {};
+    Game.prototype.playCurrentLevel = function() {
+      var haveFurtherStep;
+      haveFurtherStep = true;
+      this.getCurrentLevel().loadLevel();
+      this.getCurrentLevel().loadPlayer();
+      this.emitter.emit('game.level.start', this.currentLevel);
+      return this.playGame();
+    };
+    Game.prototype.playGame = function(step) {
+      var haveFurtherStep;
+      if (step == null) {
+        step = 1;
+      }
+      this.currentLevel.play(step);
+      if (this.currentLevel.isPassed()) {
+        if (this.getNextLevel().isExists()) {
+          this.emitter.emit("game.level.complete", this.currentLevel);
+        } else {
+          this.emitter.emit("game.end");
+          haveFurtherStep = false;
+        }
+        if (this.profile.isEpic()) {
+          if (!this["continue"]) {
+            this.emitter.emit("game.report", this);
+          }
+        } else {
+          this.requestNextLevel();
+        }
+      } else {
+        haveFurtherStep = false;
+        this.emitter.emit("game.level.failed", this.getCurrentLevel());
+      }
+      return setTimeout((__bind(function() {
+        return this.playGame();
+      }, this)), 600);
+    };
+    Game.prototype.getCurrentLevel = function() {
+      return this.currentLevel || (this.currentLevel = this.profile.currentLevel());
+    };
+    Game.prototype.getNextLevel = function() {
+      return this.nextLevel || (this.nextLevel = this.profile.nextLevel());
+    };
     return Game;
   })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Game = Game;
 }).call(this);
 }, "js_warrior/level": function(exports, require, module) {(function() {
   var EventEmitter, Level, LevelLoader, Utils, root;
@@ -639,10 +689,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Utils = require('./utils').Utils;
   LevelLoader = require('./level_loader').LevelLoader;
   Level = (function() {
-    function Level(profile, number) {
+    function Level(profile, number, emitter) {
       this.profile = profile;
       this.number = number;
-      this.event = new EventEmitter;
+      this.emitter = emitter != null ? emitter : null;
       this.timeBonus = 0;
       this.description = "";
       this.tip = "";
@@ -651,11 +701,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.floor = null;
       this.player = null;
       this.aceScore = 0;
+      this.currentTurn = 0;
     }
     Level.prototype.loadPath = function() {
       var level_path, project_root;
       if (typeof __dirname !== "undefined") {
-        project_root = __dirname + "/../";
+        project_root = __dirname + "/../../";
       } else {
         project_root = "";
       }
@@ -670,22 +721,37 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this;
     };
     Level.prototype.loadPlayer = function(jsString) {
-      eval(jsString);
+      var Player;
+      if (jsString == null) {
+        jsString = null;
+      }
+      Player = Player = (function() {
+        function Player() {}
+        Player.prototype.playTurn = function(turn) {};
+        return Player;
+      })();
+      if (jsString) {
+        Player = eval(jsString);
+      }
       return this.player = new Player();
     };
     Level.prototype.play = function(turns) {
-      var turn, _results;
+      var turn, _ref, _ref2, _results;
       if (turns == null) {
         turns = 1000;
       }
-      this.loadLevel();
       _results = [];
       for (turn = 1; 1 <= turns ? turn <= turns : turn >= turns; 1 <= turns ? turn++ : turn--) {
         if (this.isPassed() || this.isFailed()) {
           return;
         }
-        this.event.emit('level.turn', turn);
-        this.event.emit('level.floor', this.floor.character());
+        this.currentTurn += 1;
+        if ((_ref = this.emitter) != null) {
+          _ref.emit('level.turn', this.currentTurn);
+        }
+        if ((_ref2 = this.emitter) != null) {
+          _ref2.emit('level.floor', this.floor.character());
+        }
         _results.push(this.time_bonus > 0 ? this.time_bonus = this.time_bonus - 1 : void 0);
       }
       return _results;
@@ -699,7 +765,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return ((_ref = this.floor) != null ? _ref.units().indexOf(this.warrior) : void 0) === -1;
     };
     Level.prototype.isExists = function() {
-      return false;
+      var level;
+      try {
+        level = require(this.loadPath()).level;
+        return true;
+      } catch (e) {
+        return false;
+      }
     };
     Level.prototype.setupWarrior = function(warrior) {
       var _ref;
@@ -882,15 +954,19 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Position = Position;
 }).call(this);
 }, "js_warrior/profile": function(exports, require, module) {(function() {
-  var Profile, root;
+  var Level, Profile, Tower, root;
   var __slice = Array.prototype.slice;
+  Tower = require('./tower').Tower;
+  Level = require('./level').Level;
   Profile = (function() {
-    function Profile() {
-      this.towerPath = "tower/beginner";
+    function Profile(emitter) {
+      this.emitter = emitter != null ? emitter : null;
+      this.towerPath = "towers/beginner";
       this.warriorName = null;
       this.score = 0;
       this.abilities = [];
-      this.levelNumber = 0;
+      this.levelNumber = 1;
+      this.epic = false;
       this.lastLevelNumber = void 0;
     }
     Profile.prototype.toString = function() {
@@ -900,10 +976,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return new Tower(this.towerPath);
     };
     Profile.prototype.currentLevel = function() {
-      return new Level(this, this.levelNumber);
+      return new Level(this, this.levelNumber, this.emitter);
     };
     Profile.prototype.nextLevel = function() {
-      return new Level(this, this.levelNumber + 1);
+      return new Level(this, this.levelNumber + 1, this.emitter);
+    };
+    Profile.prototype.isEpic = function() {
+      return this.epic;
     };
     Profile.prototype.addAbilities = function() {
       var ability, newAbilities, _i, _len;
@@ -958,7 +1037,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.unit() !== null && this.unit().getAbilities()['explode'] !== null;
     };
     Space.prototype.unit = function() {
-      return this.floor.get(this.x, this.y);
+      return this.floor.get(this.x, this.y) || null;
     };
     Space.prototype.location = function() {
       return [this.x, this.y];
@@ -1025,7 +1104,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.health = health;
       this.position = position;
       this.health || (this.health = this.maxHealth());
-      this.event = new EventEmitter;
       this.bound = false;
     }
     BaseUnit.prototype.attackPower = function() {
@@ -1064,7 +1142,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.bound = true;
     };
     BaseUnit.prototype.say = function(msg) {
-      return this.event.emit('unit.say', [this.name, this.message]);
+      var _ref;
+      return (_ref = this.emitter) != null ? _ref.emit('unit.say', [this.name, this.message]) : void 0;
     };
     BaseUnit.prototype.name = function() {
       return this.constructor.name;
@@ -1086,7 +1165,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
           try {
             return abilities[ability] = eval("new Abilities." + camelAbility + "()");
           } catch (e) {
-            throw "BaseUnit.addAbilities: Unexpected ability: " + ability;
+            console.trace(e);
+            throw "BaseUnit.addAbilities: Unexpected ability: " + ability + " " + e;
           }
         })());
       }
@@ -1350,6 +1430,41 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Utils = Utils;
+}).call(this);
+}, "js_warrior/view": function(exports, require, module) {(function() {
+  var View, root;
+  View = (function() {
+    function View(emitter) {
+      this.emitter = emitter;
+    }
+    View.prototype.listen = function() {
+      this.emitter.on('game.start', function() {
+        return console.log("Welcome to Ruby Warrior");
+      });
+      this.emitter.on('game.level.start', function(level) {
+        return console.log("Starting Level " + level.number);
+      });
+      this.emitter.on('level.floor', function(character) {
+        return console.log(character);
+      });
+      return this.emitter.on('level.turn', function(turn) {
+        return console.log("turn " + turn);
+      });
+    };
+    View.prototype.close = function() {
+      var l, listeners, _i, _len, _results;
+      listeners = ['game.start', 'game.level.start', 'level.floor'];
+      _results = [];
+      for (_i = 0, _len = listeners.length; _i < _len; _i++) {
+        l = listeners[_i];
+        _results.push(this.emitter.removeAllListeners(l));
+      }
+      return _results;
+    };
+    return View;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.View = View;
 }).call(this);
 }, "beginner/level_001": function(exports, require, module) {(function() {
   exports.level = function() {

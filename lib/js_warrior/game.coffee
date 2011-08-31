@@ -1,18 +1,55 @@
+{Profile} = require './profile'
+
 class Game
+  constructor: (@emitter)->
+    @currentLevel = null
+
   start: -> 
-    UI.message "Welcome to JS Warrior"
+    @emitter.emit 'game.start'
     
     # create profile if needed
-    
-    # start a game
-    play_normal_mode
+    @profile = new Profile(@emitter)
 
-  play_normal_mode: ->
-    play_current_level
+    # start a game
+    @playNormalMode()
+
+  playNormalMode: ->
+    @playCurrentLevel()
+
+  playCurrentLevel: ->
+    haveFurtherStep = true
+    @getCurrentLevel().loadLevel()
+    @getCurrentLevel().loadPlayer()
+
+    @emitter.emit 'game.level.start', @currentLevel
+    @playGame()
+  
+  playGame: (step=1) ->
+    @currentLevel.play(step)
     
-  play_current_level: ->
-    # load player
-    # UI.message "Start Level #{current_level.number}"     
-    # play level
+    if @currentLevel.isPassed()
+      if @getNextLevel().isExists()
+        @emitter.emit "game.level.complete", @currentLevel
+      else
+        @emitter.emit "game.end"
+        haveFurtherStep = false
+
+      if @profile.isEpic()
+        @emitter.emit("game.report", this) if !@continue
+      else
+        @requestNextLevel()
+    else
+      haveFurtherStep = false
+      @emitter.emit "game.level.failed", @getCurrentLevel()
     
+    setTimeout (=> @playGame()), 600
+      
+  getCurrentLevel: ->
+    @currentLevel ||= @profile.currentLevel()
+
+  getNextLevel: ->
+    @nextLevel ||= @profile.nextLevel()
     
+
+root = exports ? window
+root.Game = Game

@@ -11,3 +11,4 @@ exports.JsWarrior =
   Abilities: require('./js_warrior/abilities').Abilities
   Units: require('./js_warrior/units').Units
   Utils: require('./js_warrior/utils').Utils
+  View: require('./js_warrior/view').View

@@ -5,7 +5,6 @@
 class BaseUnit
   constructor: (@health, @position) ->
     @health ||= @maxHealth()
-    @event = new EventEmitter
     @bound = false
     
   attackPower: ->
@@ -40,7 +39,7 @@ class BaseUnit
     @bound = true
     
   say: (msg) ->
-    @event.emit 'unit.say', [@name, @message]
+    @emitter?.emit 'unit.say', [@name, @message]
 
   name: ->
     @constructor.name
@@ -55,7 +54,8 @@ class BaseUnit
       try
         abilities[ability] = eval("new Abilities.#{camelAbility}()")
       catch e
-        throw "BaseUnit.addAbilities: Unexpected ability: #{ability}"
+        console.trace(e)      
+        throw "BaseUnit.addAbilities: Unexpected ability: #{ability} #{e}"
       
   nextTurn: ->
     new Turn(abilities)

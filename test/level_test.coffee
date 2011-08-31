@@ -35,5 +35,18 @@ vows.describe('Floor').addBatch(
       level.warrior = new JsWarrior.Units.Warrior()
       level.setupWarrior(level.warrior)
       assert.equal(level.warrior.name, "Joe")
+
+  'Attempt loading non existing level': 
+    'topic': ->
+      profile = new JsWarrior.Profile()
+      floor = new JsWarrior.Floor(11)
+      level = new JsWarrior.Level(profile, 11)
+      level.floor = floor
+      profile: profile
+      floor: floor
+      level: level
+
+    "should return false on isExists()": ({level}) ->
+      assert.equal(level.isExists(), false)
       
 ).export(module);

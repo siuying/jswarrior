@@ -1,10 +1,14 @@
+{Tower} = require('./tower')
+{Level} = require('./level')
+
 class Profile
-  constructor: ->
-    @towerPath = "tower/beginner"
+  constructor: (@emitter = null) ->
+    @towerPath = "towers/beginner"
     @warriorName = null
     @score = 0
     @abilities = []
-    @levelNumber = 0
+    @levelNumber = 1
+    @epic = false
     @lastLevelNumber = undefined
 
   toString: ->
@@ -14,10 +18,13 @@ class Profile
     new Tower(@towerPath)
   
   currentLevel: ->
-    new Level(this, @levelNumber)
+    new Level(this, @levelNumber, @emitter)
     
   nextLevel: ->
-    new Level(this, @levelNumber + 1)
+    new Level(this, @levelNumber + 1, @emitter)
+  
+  isEpic: ->
+    @epic
   
   addAbilities: (newAbilities...) ->
     for ability in newAbilities

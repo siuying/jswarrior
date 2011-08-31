@@ -31,7 +31,7 @@ class Space
     @unit() != null && @unit().getAbilities()['explode'] != null
 
   unit: ->
-    @floor.get(@x, @y)
+    @floor.get(@x, @y) || null
   
   location: ->
     [@x, @y]

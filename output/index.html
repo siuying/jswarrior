@@ -10,14 +10,15 @@
   <script type="text/javascript" charset="utf-8">
     jQuery(function(){
       var JsWarrior = require("js_warrior").JsWarrior;
+	  var EventEmitter = require('events').EventEmitter;
 
-	  var profile = new JsWarrior.Profile()
-      profile.towerPath = "beginner"
-
-      var level = new JsWarrior.Level(profile, 1)
-      var loader = new JsWarrior.LevelLoader(level)
-	  level.loadPlayer('var Player = (function() { function Player() { } Player.prototype.playTurn = function(turn) { console.log("turn", turn) }; return Player; })();')
-	  level.loadLevel()
+      var emitter = new EventEmitter()
+      var view = new JsWarrior.View(emitter);
+	  view.listen();
+      
+	  var game = new JsWarrior.Game(emitter);
+	  game.start();
+		
 	  console.log(level.floor.character())
     });
   </script>

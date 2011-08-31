@@ -3,8 +3,7 @@
 {LevelLoader} = require('./level_loader')
 
 class Level
-  constructor: (@profile, @number) ->
-    @event = new EventEmitter
+  constructor: (@profile, @number, @emitter = null) ->
     @timeBonus = 0
     @description = ""
     @tip = ""
@@ -13,34 +12,41 @@ class Level
     @floor = null
     @player = null
     @aceScore = 0
-    
+    @currentTurn = 0
+
   loadPath: ->
     if typeof __dirname != "undefined"
-      project_root = __dirname + "/../"
+      # local run
+      project_root = __dirname + "/../../"
     else
+      # browser run
       project_root = ""
 
     level_path =  @profile.towerPath + "/level_" + Utils.lpad(@number.toString(), '0', 3)
     project_root + level_path
 
   loadLevel: ->
-    loader = new LevelLoader(this)
-    
+    loader = new LevelLoader(this)    
     level = require(@loadPath()).level
     level.apply(loader)
     this
 
-  loadPlayer: (jsString) ->
-    eval(jsString)
+  loadPlayer: (jsString=null) ->
+    Player = class Player
+      constructor: ->
+      playTurn: (turn) ->
+
+    Player = eval(jsString) if jsString
+
     @player = new Player()
 
-  play: (turns = 1000)->
-    @loadLevel()
-
+  play: (turns = 1000) ->
     for turn in [1..turns]
       return if @isPassed() || @isFailed()
-      @event.emit 'level.turn', turn
-      @event.emit 'level.floor', @floor.character()
+
+      @currentTurn += 1
+      @emitter?.emit 'level.turn', @currentTurn
+      @emitter?.emit 'level.floor', @floor.character()
       @time_bonus = @time_bonus - 1 if @time_bonus > 0
   
   isPassed: ->
@@ -50,8 +56,12 @@ class Level
     @floor?.units().indexOf(@warrior) == -1
     
   isExists: ->
-    false
-  
+    try
+      level = require(@loadPath()).level
+      return true
+    catch e
+      return false
+
   setupWarrior: (warrior) ->
     @warrior = warrior
     @warrior.addAbilities(@profile.abilities...)
