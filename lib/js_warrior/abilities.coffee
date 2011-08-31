@@ -8,3 +8,5 @@ exports.Abilities =
   Walk: require('./abilities/walk').Walk
   Health: require('./abilities/health').Health
   Rest: require('./abilities/rest').Rest
+  Shoot: require('./abilities/shoot').Shoot
+  Look: require('./abilities/look').Look

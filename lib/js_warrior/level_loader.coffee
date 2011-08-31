@@ -35,7 +35,8 @@ class LevelLoader
       camelName = "new Units.#{Utils.toCamelCase(unit)}()"
       unit = eval(camelName)
     catch e
-      throw "failed initialized unit: #{unit}"
+      console.trace(e)
+      throw "LevelLoader: failed initialized unit: #{unit}"
 
     @floor.add(unit, x, y, facing)
     if block

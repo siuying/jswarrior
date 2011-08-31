@@ -5,3 +5,4 @@ exports.Units =
   Sludge: require('./units/sludge').Sludge
   ThickSludge: require('./units/thick_sludge').ThickSludge
   Captive: require('./units/captive').Captive
+  Archer: require('./units/archer').Archer
