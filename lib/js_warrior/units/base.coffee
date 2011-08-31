@@ -1,5 +1,6 @@
 {EventEmitter} = require 'events'
 {Abilities} = require('../abilities')
+
 _ = require('underscore')
 
 class Base

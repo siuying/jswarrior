@@ -3,7 +3,9 @@ exports.JsWarrior =
   Floor: require('./js_warrior/floor').Floor
   Game: require('./js_warrior/game').Game
   Level: require('./js_warrior/level').Level
+  LevelLoader: require('./js_warrior/level_loader').LevelLoader
   Position: require('./js_warrior/position').Position
+  Profile: require('./js_warrior/profile').Profile
   Space: require('./js_warrior/space').Space
   Abilities: require('./js_warrior/abilities').Abilities
   Units: require('./js_warrior/units').Units
