@@ -3,7 +3,7 @@
 
 class Profile
   constructor: (@emitter = null) ->
-    @towerPath = "towers/beginner"
+    @towerPath = "beginner"
     @warriorName = null
     @score = 0
     @abilities = []

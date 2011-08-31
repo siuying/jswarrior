@@ -17,7 +17,7 @@ class Level
   loadPath: ->
     if typeof __dirname != "undefined"
       # local run
-      project_root = __dirname + "/../../"
+      project_root = __dirname + "/../../towers/"
     else
       # browser run
       project_root = ""

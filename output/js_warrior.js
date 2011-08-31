@@ -242,7 +242,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Abilities: require('./js_warrior/abilities').Abilities,
     Units: require('./js_warrior/units').Units,
     Utils: require('./js_warrior/utils').Utils,
-    View: require('./js_warrior/view').View
+    View: require('./js_warrior/view').View,
+    ConsoleView: require('./js_warrior/console_view').ConsoleView
   };
 }).call(this);
 }, "js_warrior/abilities": function(exports, require, module) {(function() {
@@ -510,6 +511,30 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Walk = Walk;
 }).call(this);
+}, "js_warrior/console_view": function(exports, require, module) {(function() {
+  var ConsoleView, View, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  View = require('./view').View;
+  ConsoleView = (function() {
+    __extends(ConsoleView, View);
+    function ConsoleView() {
+      ConsoleView.__super__.constructor.apply(this, arguments);
+    }
+    ConsoleView.prototype.puts = function(text) {
+      return console.log(text);
+    };
+    return ConsoleView;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.ConsoleView = ConsoleView;
+}).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
   var Floor, Position, Space, root, _;
   Space = require('./space').Space;
@@ -706,7 +731,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Level.prototype.loadPath = function() {
       var level_path, project_root;
       if (typeof __dirname !== "undefined") {
-        project_root = __dirname + "/../../";
+        project_root = __dirname + "/../../towers/";
       } else {
         project_root = "";
       }
@@ -961,7 +986,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Profile = (function() {
     function Profile(emitter) {
       this.emitter = emitter != null ? emitter : null;
-      this.towerPath = "towers/beginner";
+      this.towerPath = "beginner";
       this.warriorName = null;
       this.score = 0;
       this.abilities = [];
@@ -1433,27 +1458,28 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }).call(this);
 }, "js_warrior/view": function(exports, require, module) {(function() {
   var View, root;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   View = (function() {
     function View(emitter) {
       this.emitter = emitter;
     }
     View.prototype.listen = function() {
-      this.emitter.on('game.start', function() {
-        return console.log("Welcome to Ruby Warrior");
-      });
-      this.emitter.on('game.level.start', function(level) {
-        return console.log("Starting Level " + level.number);
-      });
-      this.emitter.on('level.floor', function(character) {
-        return console.log(character);
-      });
-      return this.emitter.on('level.turn', function(turn) {
-        return console.log("turn " + turn);
-      });
+      this.emitter.on('game.start', __bind(function() {
+        return this.puts("Welcome to Ruby Warrior");
+      }, this));
+      this.emitter.on('game.level.start', __bind(function(level) {
+        return this.puts("Starting Level " + level.number);
+      }, this));
+      this.emitter.on('level.floor', __bind(function(character) {
+        return this.puts(character);
+      }, this));
+      return this.emitter.on('level.turn', __bind(function(turn) {
+        return this.puts("turn " + turn);
+      }, this));
     };
     View.prototype.close = function() {
       var l, listeners, _i, _len, _results;
-      listeners = ['game.start', 'game.level.start', 'level.floor'];
+      listeners = ['game.start', 'game.level.start', 'level.floor', 'level.turn'];
       _results = [];
       for (_i = 0, _len = listeners.length; _i < _len; _i++) {
         l = listeners[_i];
@@ -1461,6 +1487,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return _results;
     };
+    View.prototype.puts = function(text) {};
     return View;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;

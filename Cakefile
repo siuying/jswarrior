@@ -26,7 +26,7 @@ task 'play', 'sample run the game', (options) ->
 
   emitter = new EventEmitter()
 
-  view = new JsWarrior.View(emitter);
+  view = new JsWarrior.ConsoleView(emitter);
   view.listen();
 
   game = new JsWarrior.Game(emitter);
