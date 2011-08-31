@@ -5,6 +5,14 @@ class Utils
   
   @basename: (path) ->
     path.replace(/^.*[\/\\]/g, '')
+    
+  @lpad: (str, padString, length) ->
+    (str = padString + str) while (str.length < length)      
+    str
+
+  @rpad: (str, padString, length) ->
+    (str = str + padString) while (str.length < length)
+    str
 
 root = exports ? window
 root.Utils = Utils

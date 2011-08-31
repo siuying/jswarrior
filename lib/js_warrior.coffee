@@ -10,3 +10,4 @@ exports.JsWarrior =
   Tower: require('./js_warrior/tower').Tower
   Abilities: require('./js_warrior/abilities').Abilities
   Units: require('./js_warrior/units').Units
+  Utils: require('./js_warrior/utils').Utils

@@ -5,7 +5,8 @@ var coffee  = require('coffee-script');
 var package = stitch.createPackage({
   paths: [
     __dirname + '/vendor',
-    __dirname + '/lib'
+    __dirname + '/lib',
+    __dirname + '/towers',
   ]
 });
 
