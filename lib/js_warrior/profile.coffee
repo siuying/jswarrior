@@ -1,6 +1,6 @@
 {Tower} = require('./tower')
 {Level} = require('./level')
-
+{_} = require('underscore')
 class Profile
   constructor: (@emitter = null) ->
     @towerPath = "beginner"
@@ -27,9 +27,13 @@ class Profile
     @epic
   
   addAbilities: (newAbilities...) ->
+    console.log("newAbilities", newAbilities)
     for ability in newAbilities
-      @abilities.push(ability)
-    @ability = _.uniq(@abilities)
+      @abilities.push(ability) if ability
+    _.uniq(@abilities)
 
+  encode: ->
+    JSON.stringify(this)
+        
 root = exports ? window
 root.Profile = Profile

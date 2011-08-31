@@ -242,6 +242,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Abilities: require('./js_warrior/abilities').Abilities,
     Units: require('./js_warrior/units').Units,
     Utils: require('./js_warrior/utils').Utils,
+    Turn: require('./js_warrior/turn').Turn,
     View: require('./js_warrior/view').View,
     ConsoleView: require('./js_warrior/console_view').ConsoleView
   };
@@ -254,7 +255,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Attack: require('./abilities/attack').Attack,
     Feel: require('./abilities/feel').Feel,
     Explode: require('./abilities/explode').Explode,
-    Walk: require('./abilities/walk').Walk
+    Walk: require('./abilities/walk').Walk,
+    Health: require('./abilities/health').Health,
+    Rest: require('./abilities/rest').Rest,
+    Shoot: require('./abilities/shoot').Shoot,
+    Look: require('./abilities/look').Look
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -306,14 +311,17 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         direction = 'forward';
       }
       this.verifyDirection(direction);
-      receiver = this.unit(direction);
+      receiver = this.getUnit(direction);
       if (receiver) {
         this.unit.say("attacks " + direction + " and hits " + receiver);
         if (direction === 'backward') {
-          return power = Math.ceil(this.unit.attackPower / 2.0);
+          power = Math.ceil(this.unit.attackPower() / 2.0);
         } else {
-          return power = this.unit.attackPower;
+          power = this.unit.attackPower();
         }
+        return this.damage(receiver, power);
+      } else {
+        return this.unit.say("attacks " + direction + " and hits nothing");
       }
     };
     return Attack;
@@ -356,14 +364,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return (_ref = this.unit.position).relativeSpace.apply(_ref, this.offset(direction, forward, right));
     };
-    BaseAbilities.prototype.unit = function(direction, forward, right) {
+    BaseAbilities.prototype.getUnit = function(direction, forward, right) {
       if (forward == null) {
         forward = 1;
       }
       if (right == null) {
         right = 0;
       }
-      return this.space(direction, forward, right).unit();
+      return this.space(direction, forward, right).getUnit();
     };
     BaseAbilities.prototype.damage = function(receiver, amount) {
       receiver.takeDamage(amount);
@@ -379,7 +387,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     BaseAbilities.prototype.verifyDirection = function(direction) {
       if (Position.RELATIVE_DIRECTIONS.indexOf(direction) === -1) {
-        throw "Unknown direction " + direction + ". Should be forward, backward, left or right.";
+        throw "Unknown direction \'" + direction + "\'. Should be forward, backward, left or right.";
       }
     };
     BaseAbilities.prototype.isSense = function() {
@@ -466,6 +474,110 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Feel = Feel;
 }).call(this);
+}, "js_warrior/abilities/health": function(exports, require, module) {(function() {
+  var Health, Sense, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Sense = require('./sense').Sense;
+  Health = (function() {
+    __extends(Health, Sense);
+    function Health() {
+      Health.__super__.constructor.apply(this, arguments);
+    }
+    Health.prototype.description = function() {
+      return "Returns an integer representing your health.";
+    };
+    Health.prototype.perform = function(direction) {
+      if (direction == null) {
+        direction = 'forward';
+      }
+      return this.unit.health;
+    };
+    return Health;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Health = Health;
+}).call(this);
+}, "js_warrior/abilities/look": function(exports, require, module) {(function() {
+  var Look, Sense, root, _;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Sense = require('./sense').Sense;
+  _ = require('underscore')._;
+  Look = (function() {
+    __extends(Look, Sense);
+    function Look() {
+      Look.__super__.constructor.apply(this, arguments);
+    }
+    Look.prototype.description = function() {
+      return "Returns an array of up to three Spaces in the given direction (forward by default).";
+    };
+    Look.prototype.perform = function(direction) {
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      return _.map([1, 2, 3], __bind(function(amount) {
+        return this.space(direction, amount);
+      }, this));
+    };
+    return Look;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Look = Look;
+}).call(this);
+}, "js_warrior/abilities/rest": function(exports, require, module) {(function() {
+  var Action, Rest, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Rest = (function() {
+    __extends(Rest, Action);
+    function Rest() {
+      Rest.__super__.constructor.apply(this, arguments);
+    }
+    Rest.prototype.description = function() {
+      return "Gain 10% of max health back, but do nothing more.";
+    };
+    Rest.prototype.perform = function(direction) {
+      var amount;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      if (this.unit.health < this.unit.maxHealth()) {
+        amount = Math.round(this.unit.maxHealth() * 0.1);
+        if ((this.unit.health + amount) > this.unit.maxHealth()) {
+          amount = this.unit.maxHealth() - this.unit.health;
+        }
+        this.unit.health += amount;
+        return this.unit.say("receives " + amount + " health from resting, up to " + this.unit.health + " health");
+      } else {
+        return this.unit.say("is already fit as a fiddle");
+      }
+    };
+    return Rest;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Rest = Rest;
+}).call(this);
 }, "js_warrior/abilities/sense": function(exports, require, module) {(function() {
   var BaseAbilities, Sense, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
@@ -490,6 +602,50 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Sense = Sense;
 }).call(this);
+}, "js_warrior/abilities/shoot": function(exports, require, module) {(function() {
+  var Action, Shoot, root, _;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Action = require('./action').Action;
+  _ = require('underscore')._;
+  Shoot = (function() {
+    __extends(Shoot, Action);
+    function Shoot() {
+      Shoot.__super__.constructor.apply(this, arguments);
+    }
+    Shoot.prototype.description = function() {
+      return "Shoot your bow & arrow in given direction (forward by default).";
+    };
+    Shoot.prototype.perform = function(direction) {
+      var receiver;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      receiver = _.first(_.compact(this.multiUnits(direction, [1, 2, 3])));
+      if (receiver) {
+        this.unit.say("shoots " + direction + " and hits " + receiver);
+        return this.damage(receiver, this.unit.shootPower());
+      } else {
+        return this.unit.say("shoots and hits nothing");
+      }
+    };
+    Shoot.prototype.multiUnits = function(direction, range) {
+      return _.map(range, __bind(function(r) {
+        return this.getUnit(direction, r);
+      }, this));
+    };
+    return Shoot;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Shoot = Shoot;
+}).call(this);
 }, "js_warrior/abilities/walk": function(exports, require, module) {(function() {
   var Action, Walk, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
@@ -506,6 +662,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     function Walk(unit) {
       this.unit = unit;
     }
+    Walk.prototype.perform = function(direction) {
+      var _ref;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      if (this.unit.position) {
+        this.unit.say("walks " + direction);
+        if (this.space(direction).isEmpty()) {
+          return (_ref = this.unit.position).move.apply(_ref, this.offset(direction));
+        } else {
+          return this.unit.say("bumps into " + (this.space(direction)));
+        }
+      }
+    };
     return Walk;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
@@ -529,6 +700,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     }
     ConsoleView.prototype.puts = function(text) {
       return console.log(text);
+    };
+    ConsoleView.prototype.levelChanged = function(level) {
+      console.log(" - Turn " + level.currentTurn + " - ");
+      return console.log(level.floor.character());
     };
     return ConsoleView;
   })();
@@ -586,7 +761,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Floor.prototype.get = function(x, y) {
       return _.detect(this.__units, function(unit) {
-        return unit.position.at(x, y);
+        if (unit && unit.position) {
+          return unit.position.at(x, y);
+        }
       });
     };
     Floor.prototype.space = function(x, y) {
@@ -662,10 +839,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.playCurrentLevel();
     };
     Game.prototype.playCurrentLevel = function() {
-      var haveFurtherStep;
-      haveFurtherStep = true;
-      this.getCurrentLevel().loadLevel();
       this.getCurrentLevel().loadPlayer();
+      this.getCurrentLevel().loadLevel();
       this.emitter.emit('game.level.start', this.currentLevel);
       return this.playGame();
     };
@@ -674,8 +849,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (step == null) {
         step = 1;
       }
+      haveFurtherStep = true;
       this.currentLevel.play(step);
       if (this.currentLevel.isPassed()) {
+        this.currentLevel.completed();
         if (this.getNextLevel().isExists()) {
           this.emitter.emit("game.level.complete", this.currentLevel);
         } else {
@@ -689,13 +866,22 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         } else {
           this.requestNextLevel();
         }
-      } else {
+      } else if (this.currentLevel.isFailed()) {
         haveFurtherStep = false;
         this.emitter.emit("game.level.failed", this.getCurrentLevel());
       }
-      return setTimeout((__bind(function() {
-        return this.playGame();
-      }, this)), 600);
+      if (haveFurtherStep) {
+        return setTimeout((__bind(function() {
+          return this.playGame();
+        }, this)), 500);
+      }
+    };
+    Game.prototype.requestNextLevel = function() {
+      if (this.getNextLevel().isExists()) {
+        return this.prepareNextLevel();
+      } else {
+        return this.emitter.emit("game.level.complete", this.currentLevel);
+      }
     };
     Game.prototype.getCurrentLevel = function() {
       return this.currentLevel || (this.currentLevel = this.profile.currentLevel());
@@ -709,10 +895,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Game = Game;
 }).call(this);
 }, "js_warrior/level": function(exports, require, module) {(function() {
-  var EventEmitter, Level, LevelLoader, Utils, root;
+  var EventEmitter, Level, LevelLoader, Players, Utils, root, _;
+  _ = require('underscore')._;
   EventEmitter = require('events').EventEmitter;
   Utils = require('./utils').Utils;
   LevelLoader = require('./level_loader').LevelLoader;
+  Players = require('./players').Players;
   Level = (function() {
     function Level(profile, number, emitter) {
       this.profile = profile;
@@ -750,36 +938,39 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (jsString == null) {
         jsString = null;
       }
-      Player = Player = (function() {
-        function Player() {}
-        Player.prototype.playTurn = function(turn) {};
-        return Player;
-      })();
+      Player = Players.ProcPlayer;
       if (jsString) {
         Player = eval(jsString);
       }
       return this.player = new Player();
     };
-    Level.prototype.play = function(turns) {
-      var turn, _ref, _ref2, _results;
-      if (turns == null) {
-        turns = 1000;
+    Level.prototype.completed = function() {
+      var _ref;
+      (_ref = this.profile).addAbilities.apply(_ref, _.keys(this.warrior.abilities));
+      return console.log("encoded profile", this.profile.encode());
+    };
+    Level.prototype.play = function() {
+      var unit, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      if (this.isPassed() || this.isFailed()) {
+        return;
       }
-      _results = [];
-      for (turn = 1; 1 <= turns ? turn <= turns : turn >= turns; 1 <= turns ? turn++ : turn--) {
-        if (this.isPassed() || this.isFailed()) {
-          return;
-        }
-        this.currentTurn += 1;
-        if ((_ref = this.emitter) != null) {
-          _ref.emit('level.turn', this.currentTurn);
-        }
-        if ((_ref2 = this.emitter) != null) {
-          _ref2.emit('level.floor', this.floor.character());
-        }
-        _results.push(this.time_bonus > 0 ? this.time_bonus = this.time_bonus - 1 : void 0);
+      this.currentTurn += 1;
+      if ((_ref = this.emitter) != null) {
+        _ref.emit('level.changed', this);
       }
-      return _results;
+      _ref2 = this.floor.units();
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        unit = _ref2[_i];
+        unit.prepareTurn();
+      }
+      _ref3 = this.floor.units();
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        unit = _ref3[_j];
+        unit.performTurn();
+      }
+      if (this.time_bonus > 0) {
+        return this.time_bonus = this.time_bonus - 1;
+      }
     };
     Level.prototype.isPassed = function() {
       var _ref, _ref2;
@@ -802,7 +993,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       var _ref;
       this.warrior = warrior;
       (_ref = this.warrior).addAbilities.apply(_ref, this.profile.abilities);
-      this.warrior.name = this.profile.warrior_name;
+      this.warrior.setName(this.profile.warriorName);
       this.warrior.player = this.player;
       return this.warrior;
     };
@@ -858,31 +1049,81 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         camelName = "new Units." + (Utils.toCamelCase(unit)) + "()";
         unit = eval(camelName);
       } catch (e) {
-        throw "failed initialized unit: " + unit;
+        console.trace(e);
+        throw "LevelLoader: failed initialized unit: " + unit;
       }
       this.floor.add(unit, x, y, facing);
       if (block) {
         block.call(unit, unit);
       }
+      unit.emitter = this.level.emitter;
       return unit;
     };
     LevelLoader.prototype.warrior = function(x, y, facing, block) {
+      var unit;
       if (facing == null) {
         facing = 'north';
       }
-      return this.level.setupWarrior(this.unit('warrior', x, y, facing, block));
+      unit = this.level.setupWarrior(this.unit('warrior', x, y, facing, block));
+      unit.emitter = this.level.emitter;
+      return unit;
     };
     return LevelLoader;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.LevelLoader = LevelLoader;
 }).call(this);
+}, "js_warrior/players": function(exports, require, module) {(function() {
+  exports.Players = {
+    LazyPlayer: require('./players/lazy_player').LazyPlayer,
+    ProcPlayer: require('./players/proc_player').ProcPlayer
+  };
+}).call(this);
+}, "js_warrior/players/lazy_player": function(exports, require, module) {(function() {
+  var LazyPlayer, root;
+  LazyPlayer = (function() {
+    function LazyPlayer() {}
+    LazyPlayer.prototype.playTurn = function(warrior) {};
+    return LazyPlayer;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.LazyPlayer = LazyPlayer;
+}).call(this);
+}, "js_warrior/players/proc_player": function(exports, require, module) {(function() {
+  var ProcPlayer, root;
+  ProcPlayer = (function() {
+    var DIRECTIONS, RELATIVE_DIRECTIONS;
+    function ProcPlayer() {}
+    DIRECTIONS = ['north', 'east', 'south', 'west'];
+    RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left'];
+    ProcPlayer.prototype.playTurn = function(warrior) {
+      var dir, losingHealth, space, _i, _len;
+      losingHealth = this.lastHealth > warrior.health();
+      this.lastHealth = warrior.health();
+      for (_i = 0, _len = RELATIVE_DIRECTIONS.length; _i < _len; _i++) {
+        dir = RELATIVE_DIRECTIONS[_i];
+        space = warrior.feel(dir);
+        if (space.isEnemy()) {
+          warrior.attack();
+          return;
+        }
+      }
+      if (warrior.health() < 20 && !losingHealth) {
+        warrior.rest();
+        return;
+      }
+      return warrior.walk('forward');
+    };
+    return ProcPlayer;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.ProcPlayer = ProcPlayer;
+}).call(this);
 }, "js_warrior/position": function(exports, require, module) {(function() {
   var Position, root;
   Position = (function() {
-    var DIRECTIONS, RELATIVE_DIRECTIONS;
-    DIRECTIONS = ['north', 'east', 'south', 'west'];
-    RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left'];
+    Position.DIRECTIONS = ['north', 'east', 'south', 'west'];
+    Position.RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left'];
     function Position(floor, x, y, direction) {
       this.floor = floor;
       this.x = x;
@@ -890,13 +1131,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (direction == null) {
         direction = null;
       }
-      this.direction_index = DIRECTIONS.indexOf(direction || 'north');
+      this.direction_index = Position.DIRECTIONS.indexOf(direction || 'north');
     }
     Position.prototype.at = function(x, y) {
       return this.x === x && this.y === y;
     };
     Position.prototype.direction = function() {
-      return DIRECTIONS[this.direction_index];
+      return Position.DIRECTIONS[this.direction_index];
     };
     Position.prototype.rotate = function(amount) {
       this.direction_index += amount;
@@ -908,10 +1149,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     Position.prototype.relativeSpace = function(forward, right) {
+      var x, y, _ref;
       if (right == null) {
         right = 0;
       }
-      return this.floor.space(this.translateOffset(forward, right));
+      _ref = this.translateOffset(forward, right), x = _ref[0], y = _ref[1];
+      return this.floor.space(x, y);
     };
     Position.prototype.space = function() {
       return this.floor.space(this.x, this.y);
@@ -952,14 +1195,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Position.prototype.relativeDirection = function(direction) {
       var offset;
-      offset = DIRECTIONS.indexOf(direction) - this.direction_index;
+      offset = Position.DIRECTIONS.indexOf(direction) - this.direction_index;
       if (offset > 3) {
         offset -= 4;
       }
       if (offset < 0) {
         offset += 4;
       }
-      return RELATIVE_DIRECTIONS[offset];
+      return Position.RELATIVE_DIRECTIONS[offset];
     };
     Position.prototype.translateOffset = function(forward, right) {
       switch (this.direction()) {
@@ -979,10 +1222,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Position = Position;
 }).call(this);
 }, "js_warrior/profile": function(exports, require, module) {(function() {
-  var Level, Profile, Tower, root;
+  var Level, Profile, Tower, root, _;
   var __slice = Array.prototype.slice;
   Tower = require('./tower').Tower;
   Level = require('./level').Level;
+  _ = require('underscore')._;
   Profile = (function() {
     function Profile(emitter) {
       this.emitter = emitter != null ? emitter : null;
@@ -990,7 +1234,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.warriorName = null;
       this.score = 0;
       this.abilities = [];
-      this.levelNumber = 1;
+      this.levelNumber = 4;
       this.epic = false;
       this.lastLevelNumber = void 0;
     }
@@ -1012,11 +1256,17 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Profile.prototype.addAbilities = function() {
       var ability, newAbilities, _i, _len;
       newAbilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      console.log("newAbilities", newAbilities);
       for (_i = 0, _len = newAbilities.length; _i < _len; _i++) {
         ability = newAbilities[_i];
-        this.abilities.push(ability);
+        if (ability) {
+          this.abilities.push(ability);
+        }
       }
-      return this.ability = _.uniq(this.abilities);
+      return _.uniq(this.abilities);
+    };
+    Profile.prototype.encode = function() {
+      return JSON.stringify(this);
     };
     return Profile;
   })();
@@ -1037,39 +1287,39 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Space.prototype.isWarrior = function() {
       var _ref;
-      return ((_ref = this.unit()) != null ? _ref.constructor.name : void 0) === "Warrior";
+      return ((_ref = this.getUnit()) != null ? _ref.constructor.name : void 0) === "Warrior";
     };
     Space.prototype.isGolem = function() {
       var _ref;
-      return ((_ref = this.unit()) != null ? _ref.constructor.name : void 0) === "Golem";
+      return ((_ref = this.getUnit()) != null ? _ref.constructor.name : void 0) === "Golem";
     };
     Space.prototype.isPlayer = function() {
       return this.isWarrior() || this.isGolem();
     };
     Space.prototype.isEnemy = function() {
-      return this.unit() !== null && !this.isPlayer() && !this.isCaptive();
+      return this.getUnit() !== null && !this.isPlayer() && !this.isCaptive();
     };
     Space.prototype.isCaptive = function() {
-      return this.unit() !== null && this.unit().isBound();
+      return this.getUnit() !== null && this.getUnit().isBound();
     };
     Space.prototype.isEmpty = function() {
-      return !this.unit() && !this.isWall();
+      return !this.getUnit() && !this.isWall();
     };
     Space.prototype.isStairs = function() {
       return _.isEqual(this.floor.stairs_location, this.location());
     };
     Space.prototype.isTicking = function() {
-      return this.unit() !== null && this.unit().getAbilities()['explode'] !== null;
+      return this.getUnit() !== null && this.getUnit().getAbilities()['explode'] !== null;
     };
-    Space.prototype.unit = function() {
+    Space.prototype.getUnit = function() {
       return this.floor.get(this.x, this.y) || null;
     };
     Space.prototype.location = function() {
       return [this.x, this.y];
     };
     Space.prototype.character = function() {
-      if (this.unit()) {
-        return this.unit().character();
+      if (this.getUnit()) {
+        return this.getUnit().character();
       } else if (this.isStairs()) {
         return ">";
       } else {
@@ -1077,8 +1327,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     Space.prototype.toString = function() {
-      if (this.unit()) {
-        return this.unit().toString();
+      if (this.getUnit()) {
+        return this.getUnit().toString();
       } else if (this.isWall()) {
         return "wall";
       } else {
@@ -1108,6 +1358,48 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Tower = Tower;
 }).call(this);
+}, "js_warrior/turn": function(exports, require, module) {(function() {
+  var Abilities, Turn, Utils, root, _;
+  var __slice = Array.prototype.slice;
+  Abilities = require('./abilities').Abilities;
+  Utils = require('./utils').Utils;
+  _ = require('underscore')._;
+  Turn = (function() {
+    function Turn(abilities) {
+      var ability, camelAbilityName, name, params;
+      if (abilities == null) {
+        abilities = {};
+      }
+      this.action = null;
+      this.senses = {};
+      for (name in abilities) {
+        params = abilities[name];
+        camelAbilityName = Utils.toCamelCase(name);
+        ability = eval("new Abilities." + camelAbilityName + "()");
+        if (ability.isAction()) {
+          this.addAction(name);
+        } else {
+          this.addSense(name, params);
+        }
+      }
+    }
+    Turn.prototype.addAction = function(action) {
+      return eval("this." + action + " = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; return this.action = ['" + action + "', param]; };");
+    };
+    Turn.prototype.action = function() {
+      var params;
+      params = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return console.log.apply(console, params);
+    };
+    Turn.prototype.addSense = function(name, params) {
+      eval("this." + name + " = function(args) { return this.senses['" + name + "'].perform(args); };");
+      return this.senses[name] = params;
+    };
+    return Turn;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Turn = Turn;
+}).call(this);
 }, "js_warrior/units": function(exports, require, module) {(function() {
   exports.Units = {
     BaseUnit: require('./units/base_unit').BaseUnit,
@@ -1115,15 +1407,73 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Warrior: require('./units/warrior').Warrior,
     Sludge: require('./units/sludge').Sludge,
     ThickSludge: require('./units/thick_sludge').ThickSludge,
-    Captive: require('./units/captive').Captive
+    Captive: require('./units/captive').Captive,
+    Archer: require('./units/archer').Archer
   };
 }).call(this);
+}, "js_warrior/units/archer": function(exports, require, module) {(function() {
+  var Archer, BaseUnit, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  BaseUnit = require('./base_unit').BaseUnit;
+  Archer = (function() {
+    __extends(Archer, BaseUnit);
+    function Archer(health, position) {
+      this.health = health;
+      this.position = position;
+      Archer.__super__.constructor.apply(this, arguments);
+      this.addAbilities('shoot', 'look');
+    }
+    Archer.prototype.playTurn = function(turn) {
+      var direction, s, spaces, _i, _len, _ref, _results;
+      _ref = ['forward', 'left', 'right'];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        direction = _ref[_i];
+        spaces = turn.look(direction);
+        _results.push((function() {
+          var _j, _len2, _results2;
+          _results2 = [];
+          for (_j = 0, _len2 = spaces.length; _j < _len2; _j++) {
+            s = spaces[_j];
+            if (s.isPlayer()) {
+              turn.shoot(direction);
+            } else if (!s.isEmpty()) {
+              break;
+            }
+          }
+          return _results2;
+        })());
+      }
+      return _results;
+    };
+    Archer.prototype.shootPower = function() {
+      return 3;
+    };
+    Archer.prototype.maxHealth = function() {
+      return 7;
+    };
+    Archer.prototype.character = function() {
+      return "a";
+    };
+    return Archer;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Archer = Archer;
+}).call(this);
 }, "js_warrior/units/base_unit": function(exports, require, module) {(function() {
-  var Abilities, BaseUnit, EventEmitter, root, _;
+  var Abilities, BaseUnit, Turn, Utils, root, _;
   var __slice = Array.prototype.slice;
-  EventEmitter = require('events').EventEmitter;
-  Abilities = require('../abilities').Abilities;
+  Utils = require('../utils').Utils;
   _ = require('underscore')._;
+  Abilities = require('../abilities').Abilities;
+  Turn = require('../turn').Turn;
   BaseUnit = (function() {
     function BaseUnit(health, position) {
       this.health = health;
@@ -1146,7 +1496,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       if (this.health) {
         this.health -= amount;
-        this.say("take " + this.amount + " damage, " + this.health + " health power left");
+        this.say("take " + amount + " damage, " + this.health + " health power left");
         if (this.health <= 0) {
           this.position = null;
           return this.say("dies");
@@ -1167,8 +1517,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.bound = true;
     };
     BaseUnit.prototype.say = function(msg) {
-      var _ref;
-      return (_ref = this.emitter) != null ? _ref.emit('unit.say', [this.name, this.message]) : void 0;
+      if (this.emitter) {
+        return this.emitter.emit('unit.say', this.name(), msg);
+      }
     };
     BaseUnit.prototype.name = function() {
       return this.constructor.name;
@@ -1177,35 +1528,33 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.name();
     };
     BaseUnit.prototype.addAbilities = function() {
-      var abilities, ability, camelAbility, new_abilities, _i, _len, _results;
+      var ability, camelAbility, new_abilities, _i, _len, _results;
       new_abilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      abilities = this.getAbilities();
+      this.abilities = this.getAbilities();
       _results = [];
       for (_i = 0, _len = new_abilities.length; _i < _len; _i++) {
         ability = new_abilities[_i];
-        camelAbility = ability.replace(/([a-z])/, function($1) {
-          return $1.toUpperCase();
-        });
+        camelAbility = Utils.toCamelCase(ability);
         _results.push((function() {
           try {
-            return abilities[ability] = eval("new Abilities." + camelAbility + "()");
+            this.abilities[ability] = eval("new Abilities." + camelAbility + "()");
+            return this.abilities[ability].unit = this;
           } catch (e) {
-            console.trace(e);
             throw "BaseUnit.addAbilities: Unexpected ability: " + ability + " " + e;
           }
-        })());
+        }).call(this));
       }
       return _results;
     };
     BaseUnit.prototype.nextTurn = function() {
-      return new Turn(abilities);
+      return new Turn(this.abilities);
     };
     BaseUnit.prototype.prepareTurn = function() {
       this.currentTurn = this.nextTurn();
       return this.playTurn(this.currentTurn);
     };
     BaseUnit.prototype.performTurn = function() {
-      var ability, args, name, _i, _len, _ref, _ref2;
+      var ability, args, name, _i, _len, _ref, _ref2, _ref3;
       if (this.position) {
         _ref = _.values(this.getAbilities());
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1213,8 +1562,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
           ability.passTurn();
         }
         if (this.currentTurn.action && !this.isBound()) {
-          _ref2 = this.action(), name = _ref2[0], args = 2 <= _ref2.length ? __slice.call(_ref2, 1) : [];
-          return this.abilities[name].perform(args);
+          _ref2 = this.currentTurn.action, name = _ref2[0], args = _ref2[1];
+          if (args && args.length === 0) {
+            args = null;
+          }
+          return (_ref3 = this.abilities[name]).perform.apply(_ref3, args);
         }
       }
     };
@@ -1243,7 +1595,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   BaseUnit = require('./base_unit').BaseUnit;
   Captive = (function() {
     __extends(Captive, BaseUnit);
-    function Captive() {
+    function Captive(health, position) {
+      this.health = health;
+      this.position = position;
+      Captive.__super__.constructor.apply(this, arguments);
       this.bind();
     }
     Captive.prototype.maxHealth = function() {
@@ -1270,7 +1625,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   BaseUnit = require('./base_unit').BaseUnit;
   Golem = (function() {
     __extends(Golem, BaseUnit);
-    function Golem() {
+    function Golem(health, position) {
+      this.health = health;
+      this.position = position;
+      Golem.__super__.constructor.apply(this, arguments);
       this.turn = null;
       this.maxHealth = 0;
     }
@@ -1287,7 +1645,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Golem = Golem;
 }).call(this);
 }, "js_warrior/units/sludge": function(exports, require, module) {(function() {
-  var BaseUnit, Sludge, root;
+  var BaseUnit, Position, Sludge, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -1297,13 +1655,25 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return child;
   };
   BaseUnit = require('./base_unit').BaseUnit;
+  Position = require('../position').Position;
   Sludge = (function() {
     __extends(Sludge, BaseUnit);
-    function Sludge() {
+    function Sludge(health, position) {
+      this.health = health;
+      this.position = position;
+      Sludge.__super__.constructor.apply(this, arguments);
       this.addAbilities('attack', 'feel');
     }
     Sludge.prototype.playTurn = function(turn) {
-      return this.player().playTurn(turn);
+      var direction, _i, _len, _ref;
+      _ref = Position.RELATIVE_DIRECTIONS;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        direction = _ref[_i];
+        if (turn.feel(direction).isPlayer()) {
+          turn.attack(direction);
+          return;
+        }
+      }
     };
     Sludge.prototype.attackPower = function() {
       return 3;
@@ -1357,13 +1727,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Golem = require('./golem').Golem;
   Warrior = (function() {
     __extends(Warrior, BaseUnit);
-    function Warrior() {
+    function Warrior(health, position) {
+      this.health = health;
+      this.position = position;
+      Warrior.__super__.constructor.apply(this, arguments);
       this.score = 0;
       this.golem_abilities = [];
     }
     Warrior.prototype.playTurn = function(turn) {
-      console.log("warrior play", this.player);
-      return this.player.playTurn(turn);
+      var _ref;
+      return (_ref = this.player) != null ? _ref.playTurn(turn) : void 0;
     };
     Warrior.prototype.earnPoints = function(points) {
       this.score += points;
@@ -1379,11 +1752,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return 20;
     };
     Warrior.prototype.name = function() {
-      if (this.__name !== null && this.__name !== "") {
+      if (this.__name && this.__name !== "") {
         return this.__name;
       } else {
         return "Warrior";
       }
+    };
+    Warrior.prototype.setName = function(name) {
+      return this.__name = name;
     };
     Warrior.prototype.toString = function() {
       return this.name();
@@ -1465,16 +1841,19 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     }
     View.prototype.listen = function() {
       this.emitter.on('game.start', __bind(function() {
-        return this.puts("Welcome to Ruby Warrior");
+        return this.puts("Welcome to JavaScript Warrior");
+      }, this));
+      this.emitter.on('game.end', __bind(function() {
+        return this.puts("Completed all stage! Try again for more points!");
       }, this));
       this.emitter.on('game.level.start', __bind(function(level) {
         return this.puts("Starting Level " + level.number);
       }, this));
-      this.emitter.on('level.floor', __bind(function(character) {
-        return this.puts(character);
+      this.emitter.on('level.changed', __bind(function(level) {
+        return this.levelChanged(level);
       }, this));
-      return this.emitter.on('level.turn', __bind(function(turn) {
-        return this.puts("turn " + turn);
+      return this.emitter.on('unit.say', __bind(function(name, params) {
+        return this.puts("" + name + " " + params);
       }, this));
     };
     View.prototype.close = function() {
@@ -1488,6 +1867,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return _results;
     };
     View.prototype.puts = function(text) {};
+    View.prototype.levelChanged = function(level) {};
     return View;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
@@ -1504,6 +1884,56 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return this.warrior(0, 0, 'east', function() {
       return this.addAbilities('walk');
     });
+  };
+}).call(this);
+}, "beginner/level_002": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("It is too dark to see anything, but you smell sludge nearby.");
+    this.tip("Use warrior.feel.isEmpty() to see if there's anything in front of you, and warrior.attack() to fight it. Remember, you can only do one action per turn.");
+    this.clue("Add an if/else condition using warrior.feel.isEmpty() to decide whether to warrior.attack() or warrior.walk!.");
+    this.timeBonus(20);
+    this.aceScore(26);
+    this.size(8, 1);
+    this.stairs(7, 0);
+    this.warrior(0, 0, 'east', function() {
+      return this.addAbilities('walk', 'feel', 'attack');
+    });
+    return this.unit('sludge', 4, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_003": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("The air feels thicker than before. There must be a horde of sludge.");
+    this.tip("Be careful not to die! Use warrior.health to keep an eye on your health, and warrior.rest() to earn 10% of max health back.");
+    this.clue("When there's no enemy ahead of you, call warrior.rest() until health is full before walking forward.");
+    this.timeBonus(35);
+    this.aceScore(71);
+    this.size(9, 1);
+    this.stairs(8, 0);
+    this.warrior(0, 0, 'east', function() {
+      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest');
+    });
+    this.unit('sludge', 2, 0, 'west');
+    this.unit('sludge', 4, 0, 'west');
+    this.unit('sludge', 5, 0, 'west');
+    return this.unit('sludge', 7, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_004": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You can hear bow strings being stretched.");
+    this.tip("No new abilities this time, but you must be careful not to rest while taking damage. Save a @health instance variable and compare it on each turn to see if you're taking damage.");
+    this.clue("Set @health to your current health at the end of the turn. If this is greater than your current health next turn then you know you're taking damage and shouldn't rest.");
+    this.timeBonus(45);
+    this.aceScore(90);
+    this.size(7, 1);
+    this.stairs(6, 0);
+    this.warrior(0, 0, 'east', function() {
+      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest');
+    });
+    this.unit('thick_sludge', 2, 0, 'west');
+    this.unit('archer', 3, 0, 'west');
+    return this.unit('thick_sludge', 5, 0, 'west');
   };
 }).call(this);
 }});

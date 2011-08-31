@@ -28,6 +28,8 @@ class Game
     @currentLevel.play(step)
     
     if @currentLevel.isPassed()
+      @currentLevel.completed()
+
       if @getNextLevel().isExists()
         @emitter.emit "game.level.complete", @currentLevel
       else
@@ -43,7 +45,7 @@ class Game
       @emitter.emit "game.level.failed", @getCurrentLevel()
     
     if haveFurtherStep
-      setTimeout (=> @playGame()), 600
+      setTimeout (=> @playGame()), 500
 
   requestNextLevel: ->
     if @getNextLevel().isExists()

@@ -1,3 +1,4 @@
+{_} = require('underscore')
 {EventEmitter} = require 'events'
 {Utils} = require('./utils')
 {LevelLoader} = require('./level_loader')
@@ -36,7 +37,11 @@ class Level
     Player = Players.ProcPlayer
     Player = eval(jsString) if jsString
     @player = new Player()
-
+    
+  completed: ->
+    @profile.addAbilities(_.keys(@warrior.abilities)...)
+    console.log("encoded profile", @profile.encode())
+    
   # Play one step in the game world
   play: ->
     return if @isPassed() || @isFailed()
