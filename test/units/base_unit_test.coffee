@@ -6,7 +6,7 @@ assert = require('assert')
 
 vows.describe('Base').addBatch(
   'with empty space': 
-    'topic': -> new JsWarrior.Units.Base()
+    'topic': -> new JsWarrior.Units.BaseUnit()
 
     'should have an attack power which defaults to zero': (unit) ->
       assert.equal(unit.attackPower(), 0)
@@ -26,14 +26,14 @@ vows.describe('Base').addBatch(
       assert.doesNotThrow(-> unit.earnPoints(10))
 
     'should default health to max health': (unit) ->
-      class StubUnit extends JsWarrior.Units.Base
+      class StubUnit extends JsWarrior.Units.BaseUnit
         maxHealth: ->
           10
       sunit = new StubUnit
       assert.equal(sunit.health, 10)
 
     'should substract health when taking damage': (unit) -> 
-      class StubUnit extends JsWarrior.Units.Base
+      class StubUnit extends JsWarrior.Units.BaseUnit
         maxHealth: ->
           10
       unit = new StubUnit
@@ -44,7 +44,7 @@ vows.describe('Base').addBatch(
       assert.doesNotThrow(-> unit.takeDamage(10))
     
     'should set position to nil when running out of health': (unit) ->
-      class StubUnit extends JsWarrior.Units.Base
+      class StubUnit extends JsWarrior.Units.BaseUnit
         maxHealth: ->
           10
       unit = new StubUnit
@@ -52,14 +52,14 @@ vows.describe('Base').addBatch(
       assert.equal(unit.position, null)
       
     'should return name in toString': (unit) ->
-      assert.equal(unit.name(), 'Base')
-      assert.equal(unit.toString(), 'Base')
+      assert.equal(unit.name(), 'BaseUnit')
+      assert.equal(unit.toString(), 'BaseUnit')
     
     'should appear as question mark on map': (unit) ->
       assert.equal(unit.character(), '?')
       
     'should be released from bounds when taking damage': (unit) ->
-      class StubUnit extends JsWarrior.Units.Base
+      class StubUnit extends JsWarrior.Units.BaseUnit
         maxHealth: ->
           10
       unit = new StubUnit

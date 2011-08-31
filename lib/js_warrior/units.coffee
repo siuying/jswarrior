@@ -1,5 +1,5 @@
 exports.Units = 
-  Base: require('./units/base').Base
+  BaseUnit: require('./units/base_unit').BaseUnit
   Golem: require('./units/golem').Golem
   Warrior: require('./units/warrior').Warrior
   Sludge: require('./units/sludge').Sludge

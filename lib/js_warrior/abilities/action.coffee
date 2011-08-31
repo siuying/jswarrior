@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{BaseAbilities} = require('./base_abilities')
 
-class Action extends Base
+class Action extends BaseAbilities
   constructor: (@unit) ->
 
   isAction: ->

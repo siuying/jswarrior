@@ -1,9 +1,8 @@
 {EventEmitter} = require 'events'
 {Abilities} = require('../abilities')
-
 _ = require('underscore')
 
-class Base
+class BaseUnit
   constructor: (@health, @position) ->
     @health ||= @maxHealth()
     @event = new EventEmitter
@@ -82,5 +81,5 @@ class Base
     "?"
 
 root = exports ? window
-root.Base = Base
+root.BaseUnit = BaseUnit
         

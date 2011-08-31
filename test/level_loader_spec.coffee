@@ -30,8 +30,8 @@ vows.describe('LevelLoader').addBatch(
       assert.deepEqual(level.floor.stairs_location, [1,2])
     
     'should yield new unit when building': ({profile, level, loader}) ->
-      loader.unit('base', 1, 2, 'north', -> 
-        assert.equal(this.constructor.name, 'Base')
+      loader.unit('base_unit', 1, 2, 'north', -> 
+        assert.equal(this.constructor.name, 'BaseUnit')
         assert.equal(this.position.at(1, 2), true)
       )
     

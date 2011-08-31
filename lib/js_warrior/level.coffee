@@ -12,7 +12,11 @@ class Level
     @aceScore = 0
     
   loadPath: ->
-    project_root = __dirname + "../../"
+    if typeof __dirname != "undefined"
+      project_root = __dirname + "../../" 
+    else
+      project_root = ""
+
     level_path =  @profile.towerPath + "/level_" + Utils.lpad(@number.toString(), '0', 3)
     project_root + level_path
 

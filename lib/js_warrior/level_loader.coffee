@@ -31,8 +31,11 @@ class LevelLoader
     @floor.placeStairs(x, y)
   
   unit: (unit, x, y, facing = 'north', block = null) ->
-    camelName = "new Units.#{Utils.toCamelCase(unit)}()"
-    unit = eval(camelName)
+    try
+      camelName = "new Units.#{Utils.toCamelCase(unit)}()"
+      unit = eval(camelName)
+    catch e
+      throw "failed initialized unit: #{unit}"
 
     @floor.add(unit, x, y, facing)
     if block

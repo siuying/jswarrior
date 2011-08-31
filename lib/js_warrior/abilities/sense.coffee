@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{BaseAbilities} = require('./base_abilities')
 
-class Sense extends Base
+class Sense extends BaseAbilities
   constructor: (@unit) ->
 
   isSense: ->

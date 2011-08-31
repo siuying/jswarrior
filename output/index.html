@@ -10,7 +10,15 @@
   <script type="text/javascript" charset="utf-8">
     jQuery(function(){
       var JsWarrior = require("js_warrior").JsWarrior;
-	  console.log("floor", new JsWarrior.Floor())
+
+	  var profile = new JsWarrior.Profile()
+      profile.towerPath = "beginner"
+
+      var level = new JsWarrior.Level(profile, 1)
+      var loader = new JsWarrior.LevelLoader(level)
+	  level.loadLevel()
+	  
+	  console.log(level.description)
     });
   </script>
 </head>

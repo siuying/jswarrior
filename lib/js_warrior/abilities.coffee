@@ -1,5 +1,5 @@
 exports.Abilities = 
-  Base: require('./abilities/base').Base
+  BaseAbilities: require('./abilities/base_abilities').BaseAbilities
   Sense: require('./abilities/sense').Sense
   Action: require('./abilities/action').Action  
   Attack: require('./abilities/attack').Attack

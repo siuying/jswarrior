@@ -1,4 +1,3 @@
-{Base} = require('./base')
 {Action} = require('./action')
 
 class Explode extends Action

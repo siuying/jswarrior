@@ -1,7 +1,7 @@
-{Base} = require('./base')
+{BaseUnit} = require('./base_unit')
 {Golem} = require('./golem')
 
-class Warrior extends Base
+class Warrior extends BaseUnit
   constructor: ->
     @score = 0
     @golem_abilities = []

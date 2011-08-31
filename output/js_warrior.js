@@ -240,21 +240,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Space: require('./js_warrior/space').Space,
     Tower: require('./js_warrior/tower').Tower,
     Abilities: require('./js_warrior/abilities').Abilities,
-    Units: require('./js_warrior/units').Units
+    Units: require('./js_warrior/units').Units,
+    Utils: require('./js_warrior/utils').Utils
   };
 }).call(this);
 }, "js_warrior/abilities": function(exports, require, module) {(function() {
   exports.Abilities = {
-    Base: require('./abilities/base').Base,
+    BaseAbilities: require('./abilities/base_abilities').BaseAbilities,
     Sense: require('./abilities/sense').Sense,
     Action: require('./abilities/action').Action,
     Attack: require('./abilities/attack').Attack,
     Feel: require('./abilities/feel').Feel,
-    Explode: require('./abilities/explode').Explode
+    Explode: require('./abilities/explode').Explode,
+    Walk: require('./abilities/walk').Walk
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
-  var Action, Base, root;
+  var Action, BaseAbilities, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -263,9 +265,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
+  BaseAbilities = require('./base_abilities').BaseAbilities;
   Action = (function() {
-    __extends(Action, Base);
+    __extends(Action, BaseAbilities);
     function Action(unit) {
       this.unit = unit;
     }
@@ -317,14 +319,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Attack = Attack;
 }).call(this);
-}, "js_warrior/abilities/base": function(exports, require, module) {(function() {
-  var Base, Position, root;
+}, "js_warrior/abilities/base_abilities": function(exports, require, module) {(function() {
+  var BaseAbilities, Position, root;
   Position = require('../position').Position;
-  Base = (function() {
-    function Base(unit) {
+  BaseAbilities = (function() {
+    function BaseAbilities(unit) {
       this.unit = unit;
     }
-    Base.prototype.offset = function(direction, forward, right) {
+    BaseAbilities.prototype.offset = function(direction, forward, right) {
       if (forward == null) {
         forward = 1;
       }
@@ -342,7 +344,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
           return [-right, -forward];
       }
     };
-    Base.prototype.space = function(direction, forward, right) {
+    BaseAbilities.prototype.space = function(direction, forward, right) {
       var _ref;
       if (forward == null) {
         forward = 1;
@@ -352,7 +354,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return (_ref = this.unit.position).relativeSpace.apply(_ref, this.offset(direction, forward, right));
     };
-    Base.prototype.unit = function(direction, forward, right) {
+    BaseAbilities.prototype.unit = function(direction, forward, right) {
       if (forward == null) {
         forward = 1;
       }
@@ -361,36 +363,36 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return this.space(direction, forward, right).unit();
     };
-    Base.prototype.damage = function(receiver, amount) {
+    BaseAbilities.prototype.damage = function(receiver, amount) {
       receiver.takeDamage(amount);
       if (!receiver.isAlive()) {
         return this.unit.earnPoints(receiver.max_health);
       }
     };
-    Base.prototype.description = function() {
+    BaseAbilities.prototype.description = function() {
       return;
     };
-    Base.prototype.passTurn = function() {
+    BaseAbilities.prototype.passTurn = function() {
       return;
     };
-    Base.prototype.verifyDirection = function(direction) {
+    BaseAbilities.prototype.verifyDirection = function(direction) {
       if (Position.RELATIVE_DIRECTIONS.indexOf(direction) === -1) {
         throw "Unknown direction " + direction + ". Should be forward, backward, left or right.";
       }
     };
-    Base.prototype.isSense = function() {
+    BaseAbilities.prototype.isSense = function() {
       return false;
     };
-    Base.prototype.isAction = function() {
+    BaseAbilities.prototype.isAction = function() {
       return false;
     };
-    return Base;
+    return BaseAbilities;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
-  root.Base = Base;
+  root.BaseAbilities = BaseAbilities;
 }).call(this);
 }, "js_warrior/abilities/explode": function(exports, require, module) {(function() {
-  var Action, Base, Explode, root;
+  var Action, Explode, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -399,7 +401,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
   Action = require('./action').Action;
   Explode = (function() {
     __extends(Explode, Action);
@@ -464,7 +465,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Feel = Feel;
 }).call(this);
 }, "js_warrior/abilities/sense": function(exports, require, module) {(function() {
-  var Base, Sense, root;
+  var BaseAbilities, Sense, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -473,9 +474,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
+  BaseAbilities = require('./base_abilities').BaseAbilities;
   Sense = (function() {
-    __extends(Sense, Base);
+    __extends(Sense, BaseAbilities);
     function Sense(unit) {
       this.unit = unit;
     }
@@ -486,6 +487,27 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Sense = Sense;
+}).call(this);
+}, "js_warrior/abilities/walk": function(exports, require, module) {(function() {
+  var Action, Walk, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Walk = (function() {
+    __extends(Walk, Action);
+    function Walk(unit) {
+      this.unit = unit;
+    }
+    return Walk;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Walk = Walk;
 }).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
   var Floor, Position, Space, root;
@@ -596,20 +618,38 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
 }).call(this);
 }, "js_warrior/level": function(exports, require, module) {(function() {
-  var Level, root;
+  var Level, LevelLoader, Utils, root;
+  Utils = require('./utils').Utils;
+  LevelLoader = require('./level_loader').LevelLoader;
   Level = (function() {
     function Level(profile, number) {
       this.profile = profile;
       this.number = number;
-      this.time_bouns = 0;
+      this.timeBonus = 0;
       this.description = "";
       this.tip = "";
       this.clue = "";
       this.warrior = null;
       this.floor = null;
-      this.ace_score = 0;
+      this.aceScore = 0;
     }
-    Level.prototype.load_level = function() {};
+    Level.prototype.loadPath = function() {
+      var level_path, project_root;
+      if (typeof __dirname !== "undefined") {
+        project_root = __dirname + "../../";
+      } else {
+        project_root = "";
+      }
+      level_path = this.profile.towerPath + "/level_" + Utils.lpad(this.number.toString(), '0', 3);
+      return project_root + level_path;
+    };
+    Level.prototype.loadLevel = function() {
+      var level, loader;
+      loader = new LevelLoader(this);
+      level = require(this.loadPath()).level;
+      level.apply(loader);
+      return this;
+    };
     Level.prototype.load_player = function() {};
     Level.prototype.play = function(turns) {
       var turn, _i, _len, _results;
@@ -673,8 +713,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     LevelLoader.prototype.timeBonus = function(bonus) {
       return this.level.timeBonus = bonus;
     };
-    LevelLoader.prototype.score = function(score) {
-      return this.level.score = score;
+    LevelLoader.prototype.aceScore = function(score) {
+      return this.level.aceScore = score;
     };
     LevelLoader.prototype.size = function(width, height) {
       this.floor.width = width;
@@ -683,27 +723,27 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     LevelLoader.prototype.stairs = function(x, y) {
       return this.floor.placeStairs(x, y);
     };
-    LevelLoader.prototype.unit = function(unit, x, y, facing, callback) {
+    LevelLoader.prototype.unit = function(unit, x, y, facing, block) {
       var camelName;
       if (facing == null) {
         facing = 'north';
       }
-      if (callback == null) {
-        callback = null;
+      if (block == null) {
+        block = null;
       }
       camelName = "new Units." + (Utils.toCamelCase(unit)) + "()";
       unit = eval(camelName);
       this.floor.add(unit, x, y, facing);
-      if (callback !== null) {
-        callback.apply(unit);
+      if (block) {
+        block.call(unit, unit);
       }
       return unit;
     };
-    LevelLoader.prototype.warrior = function(x, y, facing, callback) {
+    LevelLoader.prototype.warrior = function(x, y, facing, block) {
       if (facing == null) {
         facing = 'north';
       }
-      return this.level.setupWarrior(this.unit('warrior', x, y, facing, callback));
+      return this.level.setupWarrior(this.unit('warrior', x, y, facing, block));
     };
     return LevelLoader;
   })();
@@ -816,7 +856,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   var __slice = Array.prototype.slice;
   Profile = (function() {
     function Profile() {
-      this.towerPath = null;
+      this.towerPath = "tower/beginner";
       this.warriorName = null;
       this.score = 0;
       this.abilities = [];
@@ -935,7 +975,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }).call(this);
 }, "js_warrior/units": function(exports, require, module) {(function() {
   exports.Units = {
-    Base: require('./units/base').Base,
+    BaseUnit: require('./units/base_unit').BaseUnit,
     Golem: require('./units/golem').Golem,
     Warrior: require('./units/warrior').Warrior,
     Sludge: require('./units/sludge').Sludge,
@@ -943,30 +983,30 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Captive: require('./units/captive').Captive
   };
 }).call(this);
-}, "js_warrior/units/base": function(exports, require, module) {(function() {
-  var Abilities, Base, EventEmitter, root, _;
+}, "js_warrior/units/base_unit": function(exports, require, module) {(function() {
+  var Abilities, BaseUnit, EventEmitter, root, _;
   var __slice = Array.prototype.slice;
   EventEmitter = require('events').EventEmitter;
   Abilities = require('../abilities').Abilities;
   _ = require('underscore');
-  Base = (function() {
-    function Base(health, position) {
+  BaseUnit = (function() {
+    function BaseUnit(health, position) {
       this.health = health;
       this.position = position;
       this.health || (this.health = this.maxHealth());
       this.event = new EventEmitter;
       this.bound = false;
     }
-    Base.prototype.attackPower = function() {
+    BaseUnit.prototype.attackPower = function() {
       return 0;
     };
-    Base.prototype.maxHealth = function() {
+    BaseUnit.prototype.maxHealth = function() {
       return 0;
     };
-    Base.prototype.earnPoints = function(point) {
+    BaseUnit.prototype.earnPoints = function(point) {
       return;
     };
-    Base.prototype.takeDamage = function(amount) {
+    BaseUnit.prototype.takeDamage = function(amount) {
       if (this.isBound()) {
         this.unbind();
       }
@@ -979,29 +1019,29 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         }
       }
     };
-    Base.prototype.isAlive = function() {
+    BaseUnit.prototype.isAlive = function() {
       return this.position !== void 0;
     };
-    Base.prototype.isBound = function() {
+    BaseUnit.prototype.isBound = function() {
       return this.bound;
     };
-    Base.prototype.unbind = function() {
+    BaseUnit.prototype.unbind = function() {
       this.say("release from bonds");
       return this.bound = false;
     };
-    Base.prototype.bind = function() {
+    BaseUnit.prototype.bind = function() {
       return this.bound = true;
     };
-    Base.prototype.say = function(msg) {
+    BaseUnit.prototype.say = function(msg) {
       return this.event.emit('unit.say', [this.name, this.message]);
     };
-    Base.prototype.name = function() {
+    BaseUnit.prototype.name = function() {
       return this.constructor.name;
     };
-    Base.prototype.toString = function() {
+    BaseUnit.prototype.toString = function() {
       return this.name();
     };
-    Base.prototype.addAbilities = function() {
+    BaseUnit.prototype.addAbilities = function() {
       var ability, camelAbility, new_abilities, _i, _len, _results;
       new_abilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       _results = [];
@@ -1020,14 +1060,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return _results;
     };
-    Base.prototype.nextTurn = function() {
+    BaseUnit.prototype.nextTurn = function() {
       return new Turn(abilities);
     };
-    Base.prototype.prepareTurn = function() {
+    BaseUnit.prototype.prepareTurn = function() {
       this.currentTurn = this.nextTurn();
       return this.playTurn(this.currentTurn);
     };
-    Base.prototype.performTurn = function() {
+    BaseUnit.prototype.performTurn = function() {
       var ability, args, name, _i, _len, _ref, _ref2;
       if (this.position) {
         _ref = _.values(this.abilities());
@@ -1041,20 +1081,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         }
       }
     };
-    Base.prototype.playTurn = function(turn) {};
-    Base.prototype.abilities = function() {
+    BaseUnit.prototype.playTurn = function(turn) {};
+    BaseUnit.prototype.abilities = function() {
       return this.__abilities || (this.__abilities = {});
     };
-    Base.prototype.character = function() {
+    BaseUnit.prototype.character = function() {
       return "?";
     };
-    return Base;
+    return BaseUnit;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
-  root.Base = Base;
+  root.BaseUnit = BaseUnit;
 }).call(this);
 }, "js_warrior/units/captive": function(exports, require, module) {(function() {
-  var Base, Captive, root;
+  var BaseUnit, Captive, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -1063,9 +1103,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
+  BaseUnit = require('./base_unit').BaseUnit;
   Captive = (function() {
-    __extends(Captive, Base);
+    __extends(Captive, BaseUnit);
     function Captive() {
       this.bind();
     }
@@ -1081,7 +1121,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Captive = Captive;
 }).call(this);
 }, "js_warrior/units/golem": function(exports, require, module) {(function() {
-  var Base, Golem, root;
+  var BaseUnit, Golem, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -1090,9 +1130,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
+  BaseUnit = require('./base_unit').BaseUnit;
   Golem = (function() {
-    __extends(Golem, Base);
+    __extends(Golem, BaseUnit);
     function Golem() {
       this.turn = null;
       this.maxHealth = 0;
@@ -1110,7 +1150,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Golem = Golem;
 }).call(this);
 }, "js_warrior/units/sludge": function(exports, require, module) {(function() {
-  var Base, Sludge, root;
+  var BaseUnit, Sludge, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -1119,9 +1159,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   };
-  Base = require('./base').Base;
+  BaseUnit = require('./base_unit').BaseUnit;
   Sludge = (function() {
-    __extends(Sludge, Base);
+    __extends(Sludge, BaseUnit);
     function Sludge() {
       this.addAbilities('attack', 'feel');
     }
@@ -1167,7 +1207,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.ThickSludge = ThickSludge;
 }).call(this);
 }, "js_warrior/units/warrior": function(exports, require, module) {(function() {
-  var Base, Golem, Warrior, root;
+  var BaseUnit, Golem, Warrior, root;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -1176,10 +1216,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.__super__ = parent.prototype;
     return child;
   }, __slice = Array.prototype.slice;
-  Base = require('./base').Base;
+  BaseUnit = require('./base_unit').BaseUnit;
   Golem = require('./golem').Golem;
   Warrior = (function() {
-    __extends(Warrior, Base);
+    __extends(Warrior, BaseUnit);
     function Warrior() {
       this.score = 0;
       this.golem_abilities = [];
@@ -1264,22 +1304,35 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Utils.basename = function(path) {
       return path.replace(/^.*[\/\\]/g, '');
     };
+    Utils.lpad = function(str, padString, length) {
+      while (str.length < length) {
+        str = padString + str;
+      }
+      return str;
+    };
+    Utils.rpad = function(str, padString, length) {
+      while (str.length < length) {
+        str = str + padString;
+      }
+      return str;
+    };
     return Utils;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Utils = Utils;
 }).call(this);
 }, "beginner/level_001": function(exports, require, module) {(function() {
-  (function() {
-    description("You see before yourself a long hallway with stairs at the end. There is nothing in the way.");
-    tip("Call warrior.walk to walk forward in the Player 'play_turn' method.");
-    time_bonus(15);
-    ace_score(10);
-    size(8, 1);
-    stairs(7, 0);
-    return warrior(0, 0, 'east', function(u) {
-      return u.add_abilities('walk');
+  exports.level = function() {
+    this.description("You see before yourself a long hallway with stairs at the end. There is nothing in the way.");
+    this.tip("Call warrior.walk to walk forward in the Player 'play_turn' method.");
+    this.timeBonus(15);
+    this.aceScore(10);
+    this.size(8, 1);
+    this.stairs(7, 0);
+    return this.warrior(0, 0, 'east', function() {
+      console.log(this);
+      return this.addAbilities('walk');
     });
-  });
+  };
 }).call(this);
 }});

@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{BaseUnit} = require('./base_unit')
 
-class Sludge extends Base
+class Sludge extends BaseUnit
   constructor: ->
     @addAbilities('attack', 'feel')
 

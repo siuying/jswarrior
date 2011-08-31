@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{BaseUnit} = require('./base_unit')
 
-class Captive extends Base
+class Captive extends BaseUnit
   constructor: ->
     @bind()
 

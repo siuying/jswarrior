@@ -1,6 +1,6 @@
-{Base} = require('./base')
+{BaseUnit} = require('./base_unit')
 
-class Golem extends Base
+class Golem extends BaseUnit
   constructor: ->
     @turn = null
     @maxHealth = 0

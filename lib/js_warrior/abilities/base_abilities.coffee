@@ -1,6 +1,6 @@
 {Position} = require('../position')
 
-class Base
+class BaseAbilities
   constructor: (@unit) ->
   
   offset: (direction, forward=1, right=0) ->
@@ -42,4 +42,4 @@ class Base
   
   
 root = exports ? window
-root.Base = Base
+root.BaseAbilities = BaseAbilities

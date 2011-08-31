@@ -20,18 +20,18 @@ vows.describe('Floor').addBatch(
       floor
 
     'if add a unit, able to fetch it at that position': (floor) ->
-      unit = new JsWarrior.Units.Base()
+      unit = new JsWarrior.Units.BaseUnit()
       floor.add(unit, 0, 1, 'north')
       assert.equal(floor.get(0, 1), unit)
   
     'if no position should not consider unit on floor': (floor) ->
-      unit = new JsWarrior.Units.Base()
+      unit = new JsWarrior.Units.BaseUnit()
       floor.add(unit, 0, 1, 'north')
       unit.position = null
       assert.equal(floor.units().indexOf(unit), -1)
       
     'should fetch other units not warrior': (floor) ->
-      unit = new JsWarrior.Units.Base()
+      unit = new JsWarrior.Units.BaseUnit()
       floor.add(unit, 0, 1, 'north')
       assert.notEqual(floor.otherUnits().indexOf(unit), -1)
 
@@ -62,8 +62,8 @@ vows.describe('Floor').addBatch(
       floor
     
     'should return unique units': (floor) ->
-      unit = new JsWarrior.Units.Base()
-      unit2 = new JsWarrior.Units.Base()
+      unit = new JsWarrior.Units.BaseUnit()
+      unit2 = new JsWarrior.Units.BaseUnit()
       floor.add(unit, 0, 0)
       floor.add(unit2, 1, 0)      
       assert.equal(floor.uniqueUnits().length, 1)
