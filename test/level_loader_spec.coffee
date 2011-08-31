@@ -41,7 +41,7 @@ vows.describe('LevelLoader').addBatch(
       )
       
     'should build warrior from profile': ({loader}) ->
-      loader.warrior(1, 2, ->
+      loader.warrior(1, 2, 'east', ->
         assert.equal(this.constructor.name, 'Warrior')
         assert.equal(this.position.at(1, 2), true)
       )
@@ -49,4 +49,20 @@ vows.describe('LevelLoader').addBatch(
     'should be able to set time bonus': ({loader, level})->
       loader.timeBonus(100)
       assert.equal(level.timeBonus, 100)
+
+  'Load a Level from a file':
+    'topic': ->
+      profile = new JsWarrior.Profile()
+      profile.towerPath = "../towers/beginner"
+
+      level = new JsWarrior.Level(profile, 1)
+      loader = new JsWarrior.LevelLoader(level)      
+      profile: profile
+      level: level
+      loader: loader
+      
+    'should load a level': ({profile, level, loader}) ->
+      level.loadLevel()
+      assert.equal(level.timeBonus, 15)
+      
 ).export(module);

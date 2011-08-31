@@ -1,6 +1,6 @@
 class Profile
   constructor: ->
-    @towerPath = null
+    @towerPath = "tower/beginner"
     @warriorName = null
     @score = 0
     @abilities = []

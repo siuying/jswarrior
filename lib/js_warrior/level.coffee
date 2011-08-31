@@ -1,17 +1,28 @@
+{Utils} = require('./utils')
+{LevelLoader} = require('./level_loader')
+
 class Level
   constructor: (@profile, @number) ->
-    @time_bouns = 0
+    @timeBonus = 0
     @description = ""
     @tip = ""
     @clue = ""
     @warrior = null
     @floor = null
-    @ace_score = 0
-  
-  load_level: ->
-    # level = new LevelLoader(this)
-    # eval("with(level) {#{body}}")
-  
+    @aceScore = 0
+    
+  loadPath: ->
+    project_root = __dirname + "../../"
+    level_path =  @profile.towerPath + "/level_" + Utils.lpad(@number.toString(), '0', 3)
+    project_root + level_path
+
+  loadLevel: ->
+    loader = new LevelLoader(this)
+    
+    level = require(@loadPath()).level
+    level.apply(loader)
+    this
+
   load_player: ->
     # load player
     

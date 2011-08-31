@@ -20,8 +20,8 @@ class LevelLoader
   timeBonus: (bonus) ->
     @level.timeBonus = bonus
     
-  score: (score) ->
-    @level.score = score
+  aceScore: (score) ->
+    @level.aceScore = score
   
   size: (width, height) ->
     @floor.width = width
@@ -30,18 +30,18 @@ class LevelLoader
   stairs: (x, y) ->
     @floor.placeStairs(x, y)
   
-  unit: (unit, x, y, facing = 'north', callback = null) ->
+  unit: (unit, x, y, facing = 'north', block = null) ->
     camelName = "new Units.#{Utils.toCamelCase(unit)}()"
     unit = eval(camelName)
 
     @floor.add(unit, x, y, facing)
-    if callback != null
-      callback.apply(unit)
+    if block
+      block.call(unit, unit)
 
     unit
   
-  warrior: (x, y, facing = 'north', callback) ->
-    @level.setupWarrior(@unit('warrior', x, y, facing, callback))
+  warrior: (x, y, facing = 'north', block) ->
+    @level.setupWarrior(@unit('warrior', x, y, facing, block))
 
 root = exports ? window
 root.LevelLoader = LevelLoader
