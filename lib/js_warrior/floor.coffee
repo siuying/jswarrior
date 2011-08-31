@@ -1,5 +1,6 @@
 Space = require('./space').Space
 Position = require('./position').Position
+{_} = require('underscore')
 
 class Floor
   constructor: ->
@@ -31,9 +32,7 @@ class Floor
     units
 
   get: (x, y) ->
-    for unit in @__units
-      return unit if unit.position.at(x, y)
-    null
+    _.detect(@__units, (unit) -> unit.position.at(x, y))
     
   space: (x, y) ->
     new Space(this, x, y)
@@ -42,7 +41,17 @@ class Floor
     x < 0 || y < 0 || x > @width - 1 || y > @height - 1
     
   character: ->
+    line = " " + ("-" for x in [0..@width-1]).join('')
     rows = []
+    rows.push(line)
+    for y in [0..@height-1]
+      row = "|"
+      for x in [0..@width-1]
+        row += @space(x, y).character()
+      row += "|"
+      rows.push(row)
+    rows.push(line)
+    rows.join('\n')
     
   uniqueUnits: ->
     unique_units = []

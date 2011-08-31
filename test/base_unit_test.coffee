@@ -1,8 +1,8 @@
 vows = require('vows')
 assert = require('assert')
 
-{_} = require('../../vendor/underscore')
-{JsWarrior} = require('../../lib/js_warrior')
+{_} = require('../vendor/underscore')
+{JsWarrior} = require('../lib/js_warrior')
 
 vows.describe('Base').addBatch(
   'with empty space': 

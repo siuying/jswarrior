@@ -16,7 +16,7 @@ class Level
     
   loadPath: ->
     if typeof __dirname != "undefined"
-      project_root = __dirname + "../../" 
+      project_root = __dirname + "/../"
     else
       project_root = ""
 
@@ -40,13 +40,14 @@ class Level
     for turn in [1..turns]
       return if @isPassed() || @isFailed()
       @event.emit 'level.turn', turn
+      @event.emit 'level.floor', @floor.character()
       @time_bonus = @time_bonus - 1 if @time_bonus > 0
   
   isPassed: ->
-    @floor.stairsSpace().isWarrior()
+    !!@floor?.stairsSpace()?.isWarrior()
   
   isFailed: ->
-    @floor.units().indexOf(@warrior) == -1
+    @floor?.units().indexOf(@warrior) == -1
     
   isExists: ->
     false

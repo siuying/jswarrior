@@ -16,9 +16,9 @@
 
       var level = new JsWarrior.Level(profile, 1)
       var loader = new JsWarrior.LevelLoader(level)
+	  level.loadPlayer('var Player = (function() { function Player() { } Player.prototype.playTurn = function(turn) { console.log("turn", turn) }; return Player; })();')
 	  level.loadLevel()
-	  
-	  console.log(level.description)
+	  console.log(level.floor.character())
     });
   </script>
 </head>

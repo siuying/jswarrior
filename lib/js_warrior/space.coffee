@@ -7,10 +7,10 @@ class Space
     @floor.isOutOfBounds @x, @y
   
   isWarrior: ->
-    @unit()?.constructor?.name == "Warrior"
+    (@unit()?.constructor.name == "Warrior")
 
   isGolem: ->
-    @unit()?.constructor?.name == "Golem"
+    (@unit()?.constructor.name == "Golem")
 
   isPlayer: ->
     @isWarrior() || @isGolem()
@@ -31,17 +31,18 @@ class Space
     @unit() != null && @unit().getAbilities()['explode'] != null
 
   unit: ->
-    @floor.get(@x, @y) || null
+    @floor.get(@x, @y)
   
   location: ->
     [@x, @y]
   
   character: ->
     if @unit()
-      @unit().character
+      @unit().character()
     else if @isStairs()
       ">"
     else 
+      " "
 
   toString: ->
     if @unit()

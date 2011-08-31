@@ -510,9 +510,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Walk = Walk;
 }).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
-  var Floor, Position, Space, root;
+  var Floor, Position, Space, root, _;
   Space = require('./space').Space;
   Position = require('./position').Position;
+  _ = require('underscore')._;
   Floor = (function() {
     function Floor() {
       this.width = 0;
@@ -558,15 +559,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return units;
     };
     Floor.prototype.get = function(x, y) {
-      var unit, _i, _len, _ref;
-      _ref = this.__units;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        unit = _ref[_i];
-        if (unit.position.at(x, y)) {
-          return unit;
-        }
-      }
-      return null;
+      return _.detect(this.__units, function(unit) {
+        return unit.position.at(x, y);
+      });
     };
     Floor.prototype.space = function(x, y) {
       return new Space(this, x, y);
@@ -575,8 +570,27 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return x < 0 || y < 0 || x > this.width - 1 || y > this.height - 1;
     };
     Floor.prototype.character = function() {
-      var rows;
-      return rows = [];
+      var line, row, rows, x, y, _ref, _ref2;
+      line = " " + ((function() {
+        var _ref, _results;
+        _results = [];
+        for (x = 0, _ref = this.width - 1; 0 <= _ref ? x <= _ref : x >= _ref; 0 <= _ref ? x++ : x--) {
+          _results.push("-");
+        }
+        return _results;
+      }).call(this)).join('');
+      rows = [];
+      rows.push(line);
+      for (y = 0, _ref = this.height - 1; 0 <= _ref ? y <= _ref : y >= _ref; 0 <= _ref ? y++ : y--) {
+        row = "|";
+        for (x = 0, _ref2 = this.width - 1; 0 <= _ref2 ? x <= _ref2 : x >= _ref2; 0 <= _ref2 ? x++ : x--) {
+          row += this.space(x, y).character();
+        }
+        row += "|";
+        rows.push(row);
+      }
+      rows.push(line);
+      return rows.join('\n');
     };
     Floor.prototype.uniqueUnits = function() {
       var unique_unit_names, unique_units, unit, _i, _len, _ref;
@@ -641,7 +655,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Level.prototype.loadPath = function() {
       var level_path, project_root;
       if (typeof __dirname !== "undefined") {
-        project_root = __dirname + "../../";
+        project_root = __dirname + "/../";
       } else {
         project_root = "";
       }
@@ -667,20 +681,22 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.loadLevel();
       _results = [];
       for (turn = 1; 1 <= turns ? turn <= turns : turn >= turns; 1 <= turns ? turn++ : turn--) {
-        console.log("turn", turn);
         if (this.isPassed() || this.isFailed()) {
           return;
         }
         this.event.emit('level.turn', turn);
+        this.event.emit('level.floor', this.floor.character());
         _results.push(this.time_bonus > 0 ? this.time_bonus = this.time_bonus - 1 : void 0);
       }
       return _results;
     };
     Level.prototype.isPassed = function() {
-      return this.floor.stairsSpace().isWarrior();
+      var _ref, _ref2;
+      return !!((_ref = this.floor) != null ? (_ref2 = _ref.stairsSpace()) != null ? _ref2.isWarrior() : void 0 : void 0);
     };
     Level.prototype.isFailed = function() {
-      return this.floor.units().indexOf(this.warrior) === -1;
+      var _ref;
+      return ((_ref = this.floor) != null ? _ref.units().indexOf(this.warrior) : void 0) === -1;
     };
     Level.prototype.isExists = function() {
       return false;
@@ -916,12 +932,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.floor.isOutOfBounds(this.x, this.y);
     };
     Space.prototype.isWarrior = function() {
-      var _ref, _ref2;
-      return ((_ref = this.unit()) != null ? (_ref2 = _ref.constructor) != null ? _ref2.name : void 0 : void 0) === "Warrior";
+      var _ref;
+      return ((_ref = this.unit()) != null ? _ref.constructor.name : void 0) === "Warrior";
     };
     Space.prototype.isGolem = function() {
-      var _ref, _ref2;
-      return ((_ref = this.unit()) != null ? (_ref2 = _ref.constructor) != null ? _ref2.name : void 0 : void 0) === "Golem";
+      var _ref;
+      return ((_ref = this.unit()) != null ? _ref.constructor.name : void 0) === "Golem";
     };
     Space.prototype.isPlayer = function() {
       return this.isWarrior() || this.isGolem();
@@ -942,18 +958,18 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.unit() !== null && this.unit().getAbilities()['explode'] !== null;
     };
     Space.prototype.unit = function() {
-      return this.floor.get(this.x, this.y) || null;
+      return this.floor.get(this.x, this.y);
     };
     Space.prototype.location = function() {
       return [this.x, this.y];
     };
     Space.prototype.character = function() {
       if (this.unit()) {
-        return this.unit().character;
+        return this.unit().character();
       } else if (this.isStairs()) {
         return ">";
       } else {
-
+        return " ";
       }
     };
     Space.prototype.toString = function() {
