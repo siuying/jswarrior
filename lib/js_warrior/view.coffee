@@ -3,14 +3,21 @@ class View
     
   listen: -> 
     @emitter.on 'game.start', =>
-      @puts "Welcome to Ruby Warrior"
+      @puts "Welcome to JavaScript Warrior"
+
+    @emitter.on 'game.end', =>
+      @puts "Completed all stage! Try again for more points!"
 
     @emitter.on 'game.level.start', (level) =>
       @puts "Starting Level #{level.number}"
 
     @emitter.on 'level.changed', (level) =>
       @levelChanged(level)
-  
+
+    @emitter.on 'unit.say', (name, params) =>
+      @puts "#{name} #{params}"
+    
+
   close: ->
     listeners = [
       'game.start'

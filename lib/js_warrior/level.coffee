@@ -34,19 +34,24 @@ class Level
   loadPlayer: (jsString=null) ->
     Player = class Player
       constructor: ->
-      playTurn: (turn) ->
+      playTurn: (warrior) ->
+        warrior.walk()
 
     Player = eval(jsString) if jsString
 
     @player = new Player()
 
-  play: (turns = 1000) ->
-    for turn in [1..turns]
-      return if @isPassed() || @isFailed()
+  # Play one step in the game world
+  play: ->
+    return if @isPassed() || @isFailed()
 
-      @currentTurn += 1
-      @emitter?.emit 'level.changed', this
-      @time_bonus = @time_bonus - 1 if @time_bonus > 0
+    @currentTurn += 1
+    @emitter?.emit 'level.changed', this
+    
+    unit.prepareTurn() for unit in @floor.units()
+    unit.performTurn() for unit in @floor.units()
+
+    @time_bonus = @time_bonus - 1 if @time_bonus > 0
   
   isPassed: ->
     !!@floor?.stairsSpace()?.isWarrior()

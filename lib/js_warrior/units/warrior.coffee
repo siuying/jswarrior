@@ -7,8 +7,7 @@ class Warrior extends BaseUnit
     @golem_abilities = []
   
   playTurn: (turn) ->
-    console.log("warrior play", @player)
-    @player.playTurn(turn)
+    @player?.playTurn(turn)
 
   earnPoints: (points) ->
     @score += points
@@ -34,7 +33,7 @@ class Warrior extends BaseUnit
   
   character: ->
     "@"
-    
+
   performTurn: ->
     @say "does nothing" if @currentTurn.action == null
     super

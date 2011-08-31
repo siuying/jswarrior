@@ -40,11 +40,14 @@ class LevelLoader
     @floor.add(unit, x, y, facing)
     if block
       block.call(unit, unit)
-
+    
+    unit.emitter = @level.emitter
     unit
   
   warrior: (x, y, facing = 'north', block) ->
-    @level.setupWarrior(@unit('warrior', x, y, facing, block))
+    unit = @level.setupWarrior(@unit('warrior', x, y, facing, block))
+    unit.emitter = @level.emitter
+    unit
 
 root = exports ? window
 root.LevelLoader = LevelLoader

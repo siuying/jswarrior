@@ -17,14 +17,14 @@ class Game
     @playCurrentLevel()
 
   playCurrentLevel: ->
-    haveFurtherStep = true
-    @getCurrentLevel().loadLevel()
     @getCurrentLevel().loadPlayer()
+    @getCurrentLevel().loadLevel()
 
     @emitter.emit 'game.level.start', @currentLevel
     @playGame()
   
   playGame: (step=1) ->
+    haveFurtherStep = true
     @currentLevel.play(step)
     
     if @currentLevel.isPassed()
@@ -38,12 +38,20 @@ class Game
         @emitter.emit("game.report", this) if !@continue
       else
         @requestNextLevel()
-    else
+    else if @currentLevel.isFailed()
       haveFurtherStep = false
       @emitter.emit "game.level.failed", @getCurrentLevel()
     
-    setTimeout (=> @playGame()), 600
-      
+    if haveFurtherStep
+      setTimeout (=> @playGame()), 600
+
+  requestNextLevel: ->
+    if @getNextLevel().isExists()
+      @prepareNextLevel()
+    else
+      @emitter.emit "game.level.complete", @currentLevel
+      # @prepareEpicMode()
+    
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()
 

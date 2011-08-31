@@ -1,15 +1,15 @@
 class Position
-  DIRECTIONS = ['north', 'east', 'south', 'west']
-  RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left']
+  @DIRECTIONS = ['north', 'east', 'south', 'west']
+  @RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left']
 
   constructor: (@floor, @x, @y, direction = null) ->
-    @direction_index = DIRECTIONS.indexOf(direction || 'north')
+    @direction_index = Position.DIRECTIONS.indexOf(direction || 'north')
   
   at: (x, y) ->
     @x == x && @y == y
   
   direction: ->
-    DIRECTIONS[@direction_index]
+    Position.DIRECTIONS[@direction_index]
   
   rotate: (amount) ->
     @direction_index += amount
@@ -46,10 +46,10 @@ class Position
       space_y > @y ? 'south' : 'north'
   
   relativeDirection: (direction) ->
-    offset = DIRECTIONS.indexOf(direction) - @direction_index
+    offset = Position.DIRECTIONS.indexOf(direction) - @direction_index
     offset -= 4 if offset > 3
     offset += 4 if offset < 0    
-    RELATIVE_DIRECTIONS[offset]
+    Position.RELATIVE_DIRECTIONS[offset]    
   
   translateOffset: (forward, right) ->
     switch @direction()

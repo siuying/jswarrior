@@ -32,7 +32,7 @@ class BaseAbilities
     
   verifyDirection: (direction) ->
     unless Position.RELATIVE_DIRECTIONS.indexOf(direction) != -1
-      throw "Unknown direction #{direction}. Should be forward, backward, left or right."
+      throw "Unknown direction \'#{direction}\'. Should be forward, backward, left or right."
 
   isSense: ->
     false

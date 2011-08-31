@@ -1,6 +1,9 @@
-{EventEmitter} = require 'events'
-{Abilities} = require('../abilities')
+{Utils} = require('../utils')
 {_} = require('underscore')
+
+{Abilities} = require('../abilities')
+{Turn} = require('../turn')
+
 
 class BaseUnit
   constructor: (@health, @position) ->
@@ -39,7 +42,7 @@ class BaseUnit
     @bound = true
     
   say: (msg) ->
-    @emitter?.emit 'unit.say', [@name, @message]
+    @emitter.emit('unit.say', @constructor.name, msg) if @emitter
 
   name: ->
     @constructor.name
@@ -48,17 +51,17 @@ class BaseUnit
     @name()
   
   addAbilities: (new_abilities...) ->
-    abilities = @getAbilities()
+    @abilities = @getAbilities()
     for ability in new_abilities
-      camelAbility = ability.replace(/([a-z])/, ($1) -> $1.toUpperCase())
+      camelAbility = Utils.toCamelCase(ability)
       try
-        abilities[ability] = eval("new Abilities.#{camelAbility}()")
-      catch e
-        console.trace(e)      
+        @abilities[ability] = eval("new Abilities.#{camelAbility}()")
+        @abilities[ability].unit = this
+      catch e  
         throw "BaseUnit.addAbilities: Unexpected ability: #{ability} #{e}"
       
   nextTurn: ->
-    new Turn(abilities)
+    new Turn(@abilities)
   
   prepareTurn: ->
     @currentTurn = @nextTurn()
@@ -70,7 +73,8 @@ class BaseUnit
         ability.passTurn()
 
       if @currentTurn.action && !@isBound()
-        [name, args...] = @action()
+        [name, args] = @currentTurn.action
+        args = null if args && args.length == 0
         @abilities[name].perform(args)
   
   playTurn: (turn) ->
