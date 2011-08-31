@@ -20,13 +20,17 @@ class BaseUnit
     undefined
 
   takeDamage: (amount) ->
+    console.log("amount", amount)
     @unbind() if @isBound()
     if @health
       @health -= amount
       @say "take #{@amount} damage, #{@health} health power left"
+
       if @health <= 0
         @position = null
         @say "dies"
+    else
+      console.log("health", @health)
   
   isAlive: ->
     @position != undefined
@@ -42,7 +46,7 @@ class BaseUnit
     @bound = true
     
   say: (msg) ->
-    @emitter.emit('unit.say', @constructor.name, msg) if @emitter
+    @emitter.emit('unit.say', @name(), msg) if @emitter
 
   name: ->
     @constructor.name
@@ -75,7 +79,7 @@ class BaseUnit
       if @currentTurn.action && !@isBound()
         [name, args] = @currentTurn.action
         args = null if args && args.length == 0
-        @abilities[name].perform(args)
+        @abilities[name].perform(args...)
   
   playTurn: (turn) ->
     

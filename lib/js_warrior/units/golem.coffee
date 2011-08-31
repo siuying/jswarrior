@@ -1,7 +1,8 @@
 {BaseUnit} = require('./base_unit')
 
 class Golem extends BaseUnit
-  constructor: ->
+  constructor: (@health, @position) ->
+    super
     @turn = null
     @maxHealth = 0
 

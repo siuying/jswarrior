@@ -119,7 +119,7 @@ vows.describe('Space').addBatch(
       assert.equal(space.isEnemy(), false)
     
     'should be ticking if captive has time bomb': (space) ->
-      space.unit().addAbilities('explode')
+      space.getUnit().addAbilities('explode')
       assert.equal(space.isTicking(), true)
   
   'with golem': ->

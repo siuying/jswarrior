@@ -2,7 +2,8 @@
 {Golem} = require('./golem')
 
 class Warrior extends BaseUnit
-  constructor: ->
+  constructor: (@health, @position) ->
+    super
     @score = 0
     @golem_abilities = []
   
@@ -23,10 +24,13 @@ class Warrior extends BaseUnit
     20
   
   name: ->
-    if @__name != null && @__name != ""
+    if @__name && @__name != ""
       @__name
     else
       "Warrior"
+
+  setName: (name) ->
+    @__name = name
   
   toString: ->
     @name()

@@ -1,7 +1,8 @@
 {BaseUnit} = require('./base_unit')
 
 class Captive extends BaseUnit
-  constructor: ->
+  constructor: (@health, @position) ->
+    super
     @bind()
 
   maxHealth: ->

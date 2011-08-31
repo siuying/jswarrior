@@ -17,8 +17,8 @@ class BaseAbilities
   space: (direction, forward=1, right=0) ->
     @unit.position.relativeSpace(@offset(direction, forward, right)...)
   
-  unit: (direction, forward=1, right=0) ->
-    @space(direction, forward, right).unit()
+  getUnit: (direction, forward=1, right=0) ->
+    @space(direction, forward, right).getUnit()
   
   damage: (receiver, amount) ->
     receiver.takeDamage(amount)

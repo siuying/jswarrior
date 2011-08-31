@@ -2,7 +2,7 @@
 
 class Walk extends Action
   constructor: (@unit) ->
-    
+
   perform: (direction='forward') ->
     @verifyDirection(direction)
     if @unit.position

@@ -32,7 +32,7 @@ class Floor
     units
 
   get: (x, y) ->
-    _.detect(@__units, (unit) -> unit.position.at(x, y))
+    _.detect(@__units, (unit) -> unit.position.at(x, y) if unit && unit.position)
     
   space: (x, y) ->
     new Space(this, x, y)

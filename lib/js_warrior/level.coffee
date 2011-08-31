@@ -69,7 +69,7 @@ class Level
   setupWarrior: (warrior) ->
     @warrior = warrior
     @warrior.addAbilities(@profile.abilities...)
-    @warrior.name = @profile.warrior_name
+    @warrior.setName(@profile.warriorName)
     @warrior.player = @player
     @warrior
 

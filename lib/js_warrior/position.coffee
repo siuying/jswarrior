@@ -17,7 +17,8 @@ class Position
     @direction_index += 4 if @direction_index < 0
 
   relativeSpace: (forward, right=0) ->
-    @floor.space(@translateOffset(forward, right))
+    [x, y] = @translateOffset(forward, right)
+    @floor.space(x, y)
 
   space: ->
     @floor.space(@x, @y)

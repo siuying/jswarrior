@@ -1,11 +1,16 @@
 {BaseUnit} = require('./base_unit')
+{Position} = require('../position')
 
 class Sludge extends BaseUnit
-  constructor: ->
+  constructor: (@health, @position) ->
+    super
     @addAbilities('attack', 'feel')
 
   playTurn: (turn) ->
-    @player().playTurn(turn)
+    for direction in Position.RELATIVE_DIRECTIONS
+      if turn.feel(direction).isPlayer()
+        turn.attack(direction)
+        return
 
   attackPower: ->
     3

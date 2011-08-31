@@ -7,46 +7,46 @@ class Space
     @floor.isOutOfBounds @x, @y
   
   isWarrior: ->
-    (@unit()?.constructor.name == "Warrior")
+    (@getUnit()?.constructor.name == "Warrior")
 
   isGolem: ->
-    (@unit()?.constructor.name == "Golem")
+    (@getUnit()?.constructor.name == "Golem")
 
   isPlayer: ->
     @isWarrior() || @isGolem()
     
   isEnemy: ->
-    @unit() != null && !@isPlayer() && !@isCaptive()
+    @getUnit() != null && !@isPlayer() && !@isCaptive()
   
   isCaptive: ->
-    @unit() != null && @unit().isBound()
+    @getUnit() != null && @getUnit().isBound()
     
   isEmpty: ->
-    !@unit() && !@isWall()
+    !@getUnit() && !@isWall()
 
   isStairs: ->
     _.isEqual(@floor.stairs_location, @location())    
 
   isTicking: ->
-    @unit() != null && @unit().getAbilities()['explode'] != null
+    @getUnit() != null && @getUnit().getAbilities()['explode'] != null
 
-  unit: ->
+  getUnit: ->
     @floor.get(@x, @y) || null
   
   location: ->
     [@x, @y]
   
   character: ->
-    if @unit()
-      @unit().character()
+    if @getUnit()
+      @getUnit().character()
     else if @isStairs()
       ">"
     else 
       " "
 
   toString: ->
-    if @unit()
-      @unit().toString()
+    if @getUnit()
+      @getUnit().toString()
     else if @isWall()
       "wall"
     else 
