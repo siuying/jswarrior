@@ -4,8 +4,8 @@
 
 exports.level = ->
   @description "It is too dark to see anything, but you smell sludge nearby."
-  @tip "Use warrior.feel.empty? to see if there's anything in front of you, and warrior.attack! to fight it. Remember, you can only do one action (ending in !) per turn."
-  @clue "Add an if/else condition using warrior.feel.empty? to decide whether to warrior.attack! or warrior.walk!."
+  @tip "Use warrior.feel.isEmpty() to see if there's anything in front of you, and warrior.attack() to fight it. Remember, you can only do one action per turn."
+  @clue "Add an if/else condition using warrior.feel.isEmpty() to decide whether to warrior.attack() or warrior.walk!."
 
   @timeBonus 20
   @aceScore 26

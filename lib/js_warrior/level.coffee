@@ -1,6 +1,7 @@
 {EventEmitter} = require 'events'
 {Utils} = require('./utils')
 {LevelLoader} = require('./level_loader')
+{Players} = require('./players')
 
 class Level
   constructor: (@profile, @number, @emitter = null) ->
@@ -32,13 +33,8 @@ class Level
     this
 
   loadPlayer: (jsString=null) ->
-    Player = class Player
-      constructor: ->
-      playTurn: (warrior) ->
-        warrior.walk()
-
+    Player = Players.ProcPlayer
     Player = eval(jsString) if jsString
-
     @player = new Player()
 
   # Play one step in the game world

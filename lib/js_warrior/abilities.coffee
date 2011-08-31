@@ -6,3 +6,5 @@ exports.Abilities =
   Feel: require('./abilities/feel').Feel
   Explode: require('./abilities/explode').Explode
   Walk: require('./abilities/walk').Walk
+  Health: require('./abilities/health').Health
+  Rest: require('./abilities/rest').Rest

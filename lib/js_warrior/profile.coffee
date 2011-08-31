@@ -7,7 +7,7 @@ class Profile
     @warriorName = null
     @score = 0
     @abilities = []
-    @levelNumber = 2
+    @levelNumber = 3
     @epic = false
     @lastLevelNumber = undefined
 

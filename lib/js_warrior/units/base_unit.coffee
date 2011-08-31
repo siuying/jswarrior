@@ -20,7 +20,6 @@ class BaseUnit
     undefined
 
   takeDamage: (amount) ->
-    console.log("amount", amount)
     @unbind() if @isBound()
     if @health
       @health -= amount
@@ -29,9 +28,7 @@ class BaseUnit
       if @health <= 0
         @position = null
         @say "dies"
-    else
-      console.log("health", @health)
-  
+
   isAlive: ->
     @position != undefined
   
