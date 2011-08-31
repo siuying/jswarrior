@@ -7,5 +7,6 @@ exports.JsWarrior =
   Position: require('./js_warrior/position').Position
   Profile: require('./js_warrior/profile').Profile
   Space: require('./js_warrior/space').Space
+  Tower: require('./js_warrior/tower').Tower
   Abilities: require('./js_warrior/abilities').Abilities
   Units: require('./js_warrior/units').Units
