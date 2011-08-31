@@ -530,7 +530,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Floor.prototype.placeStairs = function(x, y) {
       return this.stairs_location = [x, y];
     };
-    Floor.prototype.stairsSpace = function() {};
+    Floor.prototype.stairsSpace = function() {
+      return this.space.apply(this, this.stairs_location);
+    };
     Floor.prototype.units = function() {
       var unit, units, _i, _len, _ref;
       units = [];
@@ -618,19 +620,22 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
 }).call(this);
 }, "js_warrior/level": function(exports, require, module) {(function() {
-  var Level, LevelLoader, Utils, root;
+  var EventEmitter, Level, LevelLoader, Utils, root;
+  EventEmitter = require('events').EventEmitter;
   Utils = require('./utils').Utils;
   LevelLoader = require('./level_loader').LevelLoader;
   Level = (function() {
     function Level(profile, number) {
       this.profile = profile;
       this.number = number;
+      this.event = new EventEmitter;
       this.timeBonus = 0;
       this.description = "";
       this.tip = "";
       this.clue = "";
       this.warrior = null;
       this.floor = null;
+      this.player = null;
       this.aceScore = 0;
     }
     Level.prototype.loadPath = function() {
@@ -650,29 +655,32 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       level.apply(loader);
       return this;
     };
-    Level.prototype.load_player = function() {};
+    Level.prototype.loadPlayer = function(jsString) {
+      eval(jsString);
+      return this.player = new Player();
+    };
     Level.prototype.play = function(turns) {
-      var turn, _i, _len, _results;
+      var turn, _results;
       if (turns == null) {
         turns = 1000;
       }
-      load_level;
+      this.loadLevel();
       _results = [];
-      for (_i = 0, _len = turns.length; _i < _len; _i++) {
-        turn = turns[_i];
-        if ((typeof passed !== "undefined" && passed !== null) || (typeof failed !== "undefined" && failed !== null)) {
+      for (turn = 1; 1 <= turns ? turn <= turns : turn >= turns; 1 <= turns ? turn++ : turn--) {
+        console.log("turn", turn);
+        if (this.isPassed() || this.isFailed()) {
           return;
         }
-        UI.message("- turn " + (turn + 1) + " -");
+        this.event.emit('level.turn', turn);
         _results.push(this.time_bonus > 0 ? this.time_bonus = this.time_bonus - 1 : void 0);
       }
       return _results;
     };
     Level.prototype.isPassed = function() {
-      return this.floor.stairs_space.isWarrior();
+      return this.floor.stairsSpace().isWarrior();
     };
     Level.prototype.isFailed = function() {
-      return this.floor.units.indexOf(this.warrior) === -1;
+      return this.floor.units().indexOf(this.warrior) === -1;
     };
     Level.prototype.isExists = function() {
       return false;
@@ -681,7 +689,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       var _ref;
       this.warrior = warrior;
       (_ref = this.warrior).addAbilities.apply(_ref, this.profile.abilities);
-      return this.warrior.name = this.profile.warrior_name;
+      this.warrior.name = this.profile.warrior_name;
+      this.warrior.player = this.player;
+      return this.warrior;
     };
     return Level;
   })();
@@ -801,7 +811,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return _ref = this.translateOffset(forward, right), this.x = _ref[0], this.y = _ref[1], _ref;
     };
     Position.prototype.distanceFromStairs = function() {
-      return distanceOf(this.floor.stairsSpaces);
+      return distanceOf(this.floor.stairsSpace());
     };
     Position.prototype.distanceOf = function(space) {
       var x, y, _ref;
@@ -809,7 +819,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return Math.abs(this.x - x) + Math.abs(this.y - y);
     };
     Position.prototype.relativeDirectionOfStairs = function() {
-      return this.relativeDirectionOf(this.floor.stairsSpace);
+      return this.relativeDirectionOf(this.floor.stairsSpace());
     };
     Position.prototype.relativeDirectionOf = function(space) {
       return this.relativeDirection(this.directionOf(space));
@@ -894,7 +904,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Profile = Profile;
 }).call(this);
 }, "js_warrior/space": function(exports, require, module) {(function() {
-  var Space, root;
+  var Space, root, _;
+  _ = require('underscore')._;
   Space = (function() {
     function Space(floor, x, y) {
       this.floor = floor;
@@ -928,7 +939,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return _.isEqual(this.floor.stairs_location, this.location());
     };
     Space.prototype.isTicking = function() {
-      return this.unit() !== null && this.unit().abilities()['explode'] !== null;
+      return this.unit() !== null && this.unit().getAbilities()['explode'] !== null;
     };
     Space.prototype.unit = function() {
       return this.floor.get(this.x, this.y) || null;
@@ -992,7 +1003,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   var __slice = Array.prototype.slice;
   EventEmitter = require('events').EventEmitter;
   Abilities = require('../abilities').Abilities;
-  _ = require('underscore');
+  _ = require('underscore')._;
   BaseUnit = (function() {
     function BaseUnit(health, position) {
       this.health = health;
@@ -1046,8 +1057,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.name();
     };
     BaseUnit.prototype.addAbilities = function() {
-      var ability, camelAbility, new_abilities, _i, _len, _results;
+      var abilities, ability, camelAbility, new_abilities, _i, _len, _results;
       new_abilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      abilities = this.getAbilities();
       _results = [];
       for (_i = 0, _len = new_abilities.length; _i < _len; _i++) {
         ability = new_abilities[_i];
@@ -1056,11 +1068,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         });
         _results.push((function() {
           try {
-            return this.abilities[ability] = eval("new Abilities." + camelAbility + "()");
+            return abilities[ability] = eval("new Abilities." + camelAbility + "()");
           } catch (e) {
-            throw "unexpected ability: " + ability;
+            throw "BaseUnit.addAbilities: Unexpected ability: " + ability;
           }
-        }).call(this));
+        })());
       }
       return _results;
     };
@@ -1229,10 +1241,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.golem_abilities = [];
     }
     Warrior.prototype.playTurn = function(turn) {
-      return this.player().playTurn(turn);
-    };
-    Warrior.prototype.player = function() {
-      return this.__player || (this.__player = Player["new"]);
+      console.log("warrior play", this.player);
+      return this.player.playTurn(turn);
     };
     Warrior.prototype.earnPoints = function(points) {
       this.score += points;

@@ -26,14 +26,14 @@ class Position
     [@x, @y] = @translateOffset(forward, right)
   
   distanceFromStairs: ->
-    distanceOf(@floor.stairsSpaces)
+    distanceOf(@floor.stairsSpace())
     
   distanceOf: (space) ->
     [x, y] = space.location()
     Math.abs(@x - x) + Math.abs(@y - y)
     
   relativeDirectionOfStairs: ->
-    @relativeDirectionOf(@floor.stairsSpace)
+    @relativeDirectionOf(@floor.stairsSpace())
   
   relativeDirectionOf: (space) ->
     @relativeDirection(@directionOf(space))

@@ -16,6 +16,7 @@ class Floor
     @stairs_location = [x, y]
     
   stairsSpace: ->
+    @space(@stairs_location...)
     
   units: ->
     units = []
