@@ -1,5 +1,6 @@
 vows = require('vows')
 assert = require('assert')
+
 {JsWarrior} = require('../lib/js_warrior')
 
 vows.describe('Floor').addBatch(

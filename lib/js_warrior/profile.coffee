@@ -1,5 +1,3 @@
-_ = require('underscore')
-
 class Profile
   constructor: ->
     @towerPath = null

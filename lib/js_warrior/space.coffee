@@ -1,5 +1,3 @@
-_ = require('underscore')
-
 class Space
   constructor: (@floor, @x, @y) ->
     

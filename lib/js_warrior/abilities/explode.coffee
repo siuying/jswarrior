@@ -1,6 +1,5 @@
 {Base} = require('./base')
 {Action} = require('./action')
-_ = require('underscore')
 
 class Explode extends Action
   description: ->
