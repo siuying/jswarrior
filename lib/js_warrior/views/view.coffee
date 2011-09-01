@@ -29,9 +29,20 @@ class View
       
     @emitter.on 'unit.say', (name, params) =>
       @puts "#{name} #{params}"
-      
+
+    @emitter.on "game.score.message", (message) =>
+      @puts message
+
     @emitter.on "game.play.error", (e) =>
       @onError(e)
+      
+    @emitter.on "game.level.report", ({levelScore , timeBonus, clearBonus, scoreCalculation}) =>
+      messages = []
+      messages.push "Level Score: #{levelScore}"
+      messages.push "Time Bonus:  #{timeBonus}"
+      messages.push "Clear Bonus: #{clearBonus}" if clearBonus
+      messages.push "Total Score: #{scoreCalculation}"
+      @puts messages.join("<br/>")
 
   close: ->
     listeners = [

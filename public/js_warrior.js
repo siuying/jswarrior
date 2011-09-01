@@ -1090,10 +1090,29 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     Level.prototype.completed = function() {
-      var _ref;
-      (_ref = this.profile).addAbilities.apply(_ref, _.keys(this.warrior.abilities));
+      var score, scoreCalculation, _ref, _ref2, _ref3;
+      score = 0;
+      if ((_ref = this.emitter) != null) {
+        _ref.emit('game.score.message', "Level Score: " + this.warrior.score);
+      }
+      score += this.warrior.score;
+      if ((_ref2 = this.emitter) != null) {
+        _ref2.emit("Time Bonus: " + this.timeBonus);
+      }
+      score += this.timeBonus;
+      if (this.floor.otherUnits().length === 0) {
+        score += this.clearBonus();
+      }
+      scoreCalculation = this.scoreCalculation(this.profile.score, score);
+      this.profile.score += score;
+      (_ref3 = this.profile).addAbilities.apply(_ref3, _.keys(this.warrior.abilities));
       this.emitter.emit("game.level.complete", this);
-      this.emitter.emit("game.report", this);
+      this.emitter.emit("game.level.report", {
+        levelScore: this.warrior.score,
+        timeBonus: this.timeBonus,
+        clearBonus: this.clearBonus(),
+        scoreCalculation: scoreCalculation
+      });
       return console.log("encoded profile", this.profile.encode());
     };
     Level.prototype.play = function() {
@@ -1127,6 +1146,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       var _ref;
       return ((_ref = this.floor) != null ? _ref.units().indexOf(this.warrior) : void 0) === -1;
     };
+    Level.prototype.scoreCalculation = function(currentScore, addScore) {
+      if (currentScore === 0) {
+        return "" + addScore;
+      } else {
+        return "" + currentScore + " + " + addScore + " = " + (currentScore + addScore);
+      }
+    };
     Level.prototype.isExists = function() {
       var level;
       try {
@@ -1135,6 +1161,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       } catch (e) {
         return false;
       }
+    };
+    Level.prototype.clearBonus = function() {
+      return Math.round((this.warrior.score + this.timeBonus) * 0.2);
     };
     Level.prototype.setupWarrior = function(warrior) {
       var _ref;
@@ -1171,10 +1200,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     LevelLoader.prototype.clue = function(clue) {
       return this.level.clue = clue;
     };
-    LevelLoader.prototype.timeBonus = function(bonus) {
+    LevelLoader.prototype.time_bonus = function(bonus) {
       return this.level.timeBonus = bonus;
     };
-    LevelLoader.prototype.aceScore = function(score) {
+    LevelLoader.prototype.ace_score = function(score) {
       return this.level.aceScore = score;
     };
     LevelLoader.prototype.size = function(width, height) {
@@ -1693,6 +1722,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       return _results;
     };
+    BaseUnit.prototype.add_abilities = function() {
+      var new_abilities;
+      new_abilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return this.addAbilities.apply(this, new_abilities);
+    };
     BaseUnit.prototype.nextTurn = function() {
       return new Turn(this.abilities);
     };
@@ -2046,8 +2080,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelChanged = function(level) {
       this.$("#tower").html("");
       this.$("#tower").append("<p--------------------------------------------</p>");
-      this.$("#tower").append("<p>Lvl " + level.number + "</p>");
-      this.$("#tower").append("<p>HP  " + level.warrior.health + "/" + (level.warrior.maxHealth()) + "</p>");
+      this.$("#tower").append("<p>Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + level.profile.score + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
       return this.$("#tower").append("<p--------------------------------------------</p>");
@@ -2102,8 +2135,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on('unit.say', __bind(function(name, params) {
         return this.puts("" + name + " " + params);
       }, this));
-      return this.emitter.on("game.play.error", __bind(function(e) {
+      this.emitter.on("game.score.message", __bind(function(message) {
+        return this.puts(message);
+      }, this));
+      this.emitter.on("game.play.error", __bind(function(e) {
         return this.onError(e);
+      }, this));
+      return this.emitter.on("game.level.report", __bind(function(_arg) {
+        var clearBonus, levelScore, messages, scoreCalculation, timeBonus;
+        levelScore = _arg.levelScore, timeBonus = _arg.timeBonus, clearBonus = _arg.clearBonus, scoreCalculation = _arg.scoreCalculation;
+        messages = [];
+        messages.push("Level Score: " + levelScore);
+        messages.push("Time Bonus:  " + timeBonus);
+        if (clearBonus) {
+          messages.push("Clear Bonus: " + clearBonus);
+        }
+        messages.push("Total Score: " + scoreCalculation);
+        return this.puts(messages.join("<br/>"));
       }, this));
     };
     View.prototype.close = function() {
@@ -2141,12 +2189,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   exports.level = function() {
     this.description("You see before yourself a long hallway with stairs at the end. There is nothing in the way.");
     this.tip("Call warrior.walk() to walk forward in the Player 'playTurn()' method.");
-    this.timeBonus(15);
-    this.aceScore(10);
+    this.time_bonus(15);
+    this.ace_score(10);
     this.size(8, 1);
     this.stairs(7, 0);
     return this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('walk');
+      return this.add_abilities('walk');
     });
   };
 }).call(this);
@@ -2155,12 +2203,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.description("It is too dark to see anything, but you smell sludge nearby.");
     this.tip("Use warrior.feel().isEmpty() to see if there's anything in front of you, and warrior.attack() to fight it. Remember, you can only do one action per turn.");
     this.clue("Add an if/else condition using warrior.feel().isEmpty() to decide whether to warrior.attack() or warrior.walk!.");
-    this.timeBonus(20);
-    this.aceScore(26);
+    this.time_bonus(20);
+    this.ace_score(26);
     this.size(8, 1);
     this.stairs(7, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('walk', 'feel', 'attack');
+      return this.add_abilities('walk', 'feel', 'attack');
     });
     return this.unit('sludge', 4, 0, 'west');
   };
@@ -2170,12 +2218,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.description("The air feels thicker than before. There must be a horde of sludge.");
     this.tip("Be careful not to die! Use warrior.health() to keep an eye on your health, and warrior.rest() to earn 10% of max health back.");
     this.clue("When there's no enemy ahead of you, call warrior.rest() until health is full before walking forward.");
-    this.timeBonus(35);
-    this.aceScore(71);
+    this.time_bonus(35);
+    this.ace_score(71);
     this.size(9, 1);
     this.stairs(8, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest');
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest');
     });
     this.unit('sludge', 2, 0, 'west');
     this.unit('sludge', 4, 0, 'west');
@@ -2188,12 +2236,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.description("You can hear bow strings being stretched.");
     this.tip("No new abilities this time, but you must be careful not to rest while taking damage. Save a @health instance variable and compare it on each turn to see if you're taking damage.");
     this.clue("Set @health to your current health at the end of the turn. If this is greater than your current health next turn then you know you're taking damage and shouldn't rest.");
-    this.timeBonus(45);
-    this.aceScore(90);
+    this.time_bonus(45);
+    this.ace_score(90);
     this.size(7, 1);
     this.stairs(6, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest');
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest');
     });
     this.unit('thick_sludge', 2, 0, 'west');
     this.unit('archer', 3, 0, 'west');
@@ -2205,18 +2253,36 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.description("You hear cries for help. Captives must need rescuing.");
     this.tip("Use warrior.feel().isCaptive() to see if there's a captive, and warrior.rescue() to rescue him. Don't attack captives.");
     this.clue("Don't forget to constantly check if you're taking damage and rest until your health is full if you aren't taking damage.");
-    this.timeBonus(45);
-    this.aceScore(123);
+    this.time_bonus(45);
+    this.ace_score(123);
     this.size(7, 1);
     this.stairs(6, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
     });
     this.unit('captive', 2, 0, 'west');
     this.unit('archer', 3, 0, 'west');
     this.unit('archer', 4, 0, 'west');
     this.unit('thick_sludge', 5, 0, 'west');
     return this.unit('captive', 6, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_006": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("The wall behind you feels a bit further away in this room. And you hear more cries for help.");
+    this.tip("You can walk backward by passing 'backward' as an argument to walk(). Same goes for feel(), rescue() and attack().");
+    this.clue("Walk backward if you are taking damage from afar and do not have enough health to attack. You may also want to consider walking backward until warrior.feel('backward').isWall().");
+    this.time_bonus(55);
+    this.ace_score(110);
+    this.size(8, 1);
+    this.stairs(7, 0);
+    this.warrior(2, 0, 'east', function() {
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
+    });
+    this.unit('captive', 0, 0, 'east');
+    this.unit('thick_sludge', 4, 0, 'west');
+    this.unit('archer', 6, 0, 'west');
+    return this.unit('archer', 7, 0, 'west');
   };
 }).call(this);
 }});

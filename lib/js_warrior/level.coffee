@@ -45,11 +45,28 @@ class Level
     catch e
       @emitter?.emit "game.play.error", e
       undefined
-    
+
   completed: ->
+    # Update Score
+    score = 0
+    
+    @emitter?.emit 'game.score.message', "Level Score: #{@warrior.score}"
+    score += @warrior.score
+    
+    @emitter?.emit "Time Bonus: #{@timeBonus}"
+    score += @timeBonus
+    
+    if @floor.otherUnits().length == 0
+      score += @clearBonus()
+    
+    scoreCalculation = @scoreCalculation(@profile.score, score)
+    @profile.score += score
+
+    # Update Abilities
     @profile.addAbilities(_.keys(@warrior.abilities)...)
     @emitter.emit "game.level.complete", this
-    @emitter.emit "game.report", this
+    @emitter.emit "game.level.report", levelScore: @warrior.score, timeBonus: @timeBonus, clearBonus: @clearBonus(), scoreCalculation: scoreCalculation
+
     console.log("encoded profile", @profile.encode())
 
   # Play one step in the game world
@@ -69,13 +86,22 @@ class Level
   
   isFailed: ->
     @floor?.units().indexOf(@warrior) == -1
-    
+
+  scoreCalculation: (currentScore, addScore)-> 
+    if currentScore == 0
+      "#{addScore}"
+    else
+      "#{currentScore} + #{addScore} = #{currentScore + addScore}"
+  
   isExists: ->
     try
       level = require(@loadPath()).level
       return true
     catch e
       return false
+  
+  clearBonus: ->
+    Math.round((@warrior.score + @timeBonus)*0.2)
 
   setupWarrior: (warrior) ->
     @warrior = warrior

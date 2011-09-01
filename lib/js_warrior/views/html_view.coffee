@@ -17,8 +17,9 @@ class HtmlView extends View
   levelChanged: (level) ->
     @$("#tower").html("")
     @$("#tower").append("<p--------------------------------------------</p>")
-    @$("#tower").append("<p>Lvl #{level.number}</p>")
-    @$("#tower").append("<p>HP  #{level.warrior.health}/#{level.warrior.maxHealth()}</p>")
+    @$("#tower").append("<p>Lvl&nbsp;&nbsp;&nbsp;&nbsp;#{level.number}<br/>
+    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{level.warrior.health}/#{level.warrior.maxHealth()}<br/>
+    Score&nbsp;&nbsp;#{level.profile.score}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
     @$("#tower").append("<pre>#{level.floor.character()} </pre>")
     @$("#tower").append("<p--------------------------------------------</p>")
