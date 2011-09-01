@@ -47,7 +47,7 @@ class Controller
       @$("#stop").hide()
     
     @$("#hint").click =>
-      @$("#hint_message").toggle()
+      @$("#more_hint_message").toggle()
 
     # show editor when finished
     @$("#editor").show()
@@ -63,7 +63,6 @@ class Controller
     @$("#run").show()
     @$("#stop").hide()
     @$("#hint").show()
-    @game.requestNextLevel()
 
 root = exports ? window
 root.Controller = Controller

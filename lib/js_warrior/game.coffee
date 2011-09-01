@@ -44,8 +44,7 @@ class Game
     if @currentLevel.isPassed()
       haveFurtherStep = false
       @currentLevel.completed()
-      if !@getNextLevel().isExists()
-        @emitter.emit "game.end"
+      @requestNextLevel()
 
     else if @currentLevel.isFailed()
       haveFurtherStep = false
@@ -59,7 +58,10 @@ class Game
     if @getNextLevel().isExists()
       @currentLevel = @getNextLevel()
       @profile.levelNumber += 1
+      @nextLevel = @profile.nextLevel()
       @getCurrentLevel().loadLevel()
+    else
+      @emitter.emit "game.end"
 
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()

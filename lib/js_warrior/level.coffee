@@ -49,9 +49,9 @@ class Level
   completed: ->
     @profile.addAbilities(_.keys(@warrior.abilities)...)
     @emitter.emit "game.level.complete", this
-    @emitter.emit("game.report", this)
+    @emitter.emit "game.report", this
     console.log("encoded profile", @profile.encode())
-    
+
   # Play one step in the game world
   play: ->
     return if @isPassed() || @isFailed()

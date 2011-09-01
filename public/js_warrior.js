@@ -746,8 +746,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Controller.prototype.onGameCompleted = function() {
       this.$("#run").show();
       this.$("#stop").hide();
-      this.$("#hint").show();
-      return this.game.requestNextLevel();
+      return this.$("#hint").show();
     };
     return Controller;
   })();
@@ -927,9 +926,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (this.currentLevel.isPassed()) {
         haveFurtherStep = false;
         this.currentLevel.completed();
-        if (!this.getNextLevel().isExists()) {
-          this.emitter.emit("game.end");
-        }
+        this.requestNextLevel();
       } else if (this.currentLevel.isFailed()) {
         haveFurtherStep = false;
         this.emitter.emit("game.level.failed", this.getCurrentLevel());
@@ -945,7 +942,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (this.getNextLevel().isExists()) {
         this.currentLevel = this.getNextLevel();
         this.profile.levelNumber += 1;
+        this.nextLevel = this.profile.nextLevel();
         return this.getCurrentLevel().loadLevel();
+      } else {
+        return this.emitter.emit("game.end");
       }
     };
     Game.prototype.getCurrentLevel = function() {
