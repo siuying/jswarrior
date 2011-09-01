@@ -3,6 +3,7 @@
 class HtmlView extends View  
   constructor: (@emitter, $)->
     @$ = $
+    @puts "Welcome to JS Warrior"
 
   puts: (text) -> 
     @$("#message").prepend("<p>#{text}</p>")
@@ -24,6 +25,9 @@ class HtmlView extends View
     
   levelCompleted: (level) ->
     @puts "Success! You have found the stairs."
+
+  levelStarted: (level) ->
+    @puts "Starting Level #{level.number}"
 
   clear: ->
     @$("#message").html("")

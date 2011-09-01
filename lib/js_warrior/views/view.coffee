@@ -1,9 +1,10 @@
 class View
   constructor: (@emitter)->
-    
+    @puts "Welcome to JS Warrior"
+
   listen: -> 
     @emitter.on 'game.start', =>
-      @puts "Welcome to JS Warrior"
+      @puts "Game started!"
 
     @emitter.on 'game.stop', =>
       @puts "You quit the Tower! Try again when you are ready."
@@ -49,7 +50,7 @@ class View
   
   levelLoaded: (level) ->
     @levelChanged(level)
-  
+
   levelStarted: (level) ->
     @puts "Starting Level #{level.number}"
 

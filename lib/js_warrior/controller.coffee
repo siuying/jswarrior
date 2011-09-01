@@ -41,10 +41,11 @@ class Controller
       else
         compiled = source
 
-      @game.load()
+      @game.load() if @started
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()
+      @started = true
     
     @$("#stop").click =>
       @game.stop()
@@ -72,7 +73,8 @@ class Controller
     @$("#run").show()
     @$("#stop").hide()
     @$("#hint").show()
-
+    @started = false
+    
   onLevelLoaded: (level) ->
     window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
     

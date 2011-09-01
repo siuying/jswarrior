@@ -729,10 +729,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         } else {
           compiled = source;
         }
-        this.game.load();
+        if (this.started) {
+          this.game.load();
+        }
         this.game.start(compiled);
         this.$("#run").hide();
-        return this.$("#stop").show();
+        this.$("#stop").show();
+        return this.started = true;
       }, this));
       this.$("#stop").click(__bind(function() {
         this.game.stop();
@@ -758,7 +761,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Controller.prototype.onLevelCompleted = function() {
       this.$("#run").show();
       this.$("#stop").hide();
-      return this.$("#hint").show();
+      this.$("#hint").show();
+      return this.started = false;
     };
     Controller.prototype.onLevelLoaded = function(level) {
       if (level) {
@@ -1983,6 +1987,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     function HtmlView(emitter, $) {
       this.emitter = emitter;
       this.$ = $;
+      this.puts("Welcome to JS Warrior");
     }
     HtmlView.prototype.puts = function(text) {
       return this.$("#message").prepend("<p>" + text + "</p>");
@@ -2007,6 +2012,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
     };
+    HtmlView.prototype.levelStarted = function(level) {
+      return this.puts("Starting Level " + level.number);
+    };
     HtmlView.prototype.clear = function() {
       return this.$("#message").html("");
     };
@@ -2021,10 +2029,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   View = (function() {
     function View(emitter) {
       this.emitter = emitter;
+      this.puts("Welcome to JS Warrior");
     }
     View.prototype.listen = function() {
       this.emitter.on('game.start', __bind(function() {
-        return this.puts("Welcome to JS Warrior");
+        return this.puts("Game started!");
       }, this));
       this.emitter.on('game.stop', __bind(function() {
         return this.puts("You quit the Tower! Try again when you are ready.");
