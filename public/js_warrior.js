@@ -721,11 +721,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.view.listen();
       this.$("#run").click(__bind(function() {
         var compiled, source;
-        console.log("run game");
         source = this.editor.getSession().getValue();
-        compiled = this.coffee.compile(source, {
-          bare: true
-        });
+        if (this.coffee) {
+          compiled = this.coffee.compile(source, {
+            bare: true
+          });
+        } else {
+          compiled = source;
+        }
         this.game.load();
         this.game.start(compiled);
         this.$("#run").hide();
@@ -761,7 +764,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (level) {
         return window.history.pushState({
           level: level.number
-        }, "Level " + level.number, "/" + level.number);
+        }, "Level " + level.number, "" + level.number);
       }
     };
     return Controller;
@@ -2021,7 +2024,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     }
     View.prototype.listen = function() {
       this.emitter.on('game.start', __bind(function() {
-        return this.puts("Welcome to JavaScript Warrior");
+        return this.puts("Welcome to JS Warrior");
       }, this));
       this.emitter.on('game.stop', __bind(function() {
         return this.puts("You quit the Tower! Try again when you are ready.");

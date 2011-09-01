@@ -18,9 +18,14 @@
     </div>
   
     <div id="control">
-      <pre id="editor">class Player
-    playTurn: (warrior) ->
-      # do nothing
+      <pre id="editor">var Player = (function() {
+    function Player() {}
+    Player.prototype.playTurn = function(warrior) {
+        // do something
+    };
+    return Player;
+})();
+exports.Player = Player;
       </pre>
       <div id="buttons">
         <button id="hint" class="btn primary" type="button" style="display: none">Hint</button>
@@ -40,24 +45,23 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="/js_warrior.js" type="text/javascript" charset="utf-8"></script>
   <script src="/js/modernizr.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/js/coffee-script.js" type="text/javascript" charset="utf-8"></script>
 
   <script src="/ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
   <script src="/ace/src/theme-twilight.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/ace/src/mode-coffee.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/ace/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
 $(function(){
   JsWarrior     = require ("js_warrior").JsWarrior
-  Mode          = require ("ace/mode/coffee").Mode
+  Mode          = require ("ace/mode/javascript").Mode
 
   var editor = ace.edit("editor")
   editor.setTheme("ace/theme/twilight")
   editor.getSession().setMode(new Mode())
-  editor.getSession().setTabSize(2);
+  editor.getSession().setTabSize(4);
   editor.getSession().setUseSoftTabs(true);
   
-  var controller = new JsWarrior.Controller($, editor, CoffeeScript, Modernizr)
+  var controller = new JsWarrior.Controller($, editor, null, Modernizr)
   controller.setup()
   controller.setGameLevel(<%= levelNumber %>)
 });

@@ -35,10 +35,12 @@ class Controller
 
     # setup click listener for run
     @$("#run").click =>
-      console.log("run game")
       source = @editor.getSession().getValue()
-      compiled = @coffee.compile source, bare: on 
-      
+      if @coffee
+        compiled = @coffee.compile(source, {bare: on})
+      else
+        compiled = source
+
       @game.load()
       @game.start(compiled)
       @$("#run").hide()
@@ -72,7 +74,7 @@ class Controller
     @$("#hint").show()
 
   onLevelLoaded: (level) ->
-    window.history.pushState {level: level.number}, "Level #{level.number}", "/#{level.number}" if level
+    window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
     
 root = exports ? window
 root.Controller = Controller

@@ -10,8 +10,15 @@ app.use express.static("#{__dirname}/public")
 app.get '/', (req, res) ->
     res.render 'index.ejs', levelNumber: 1
 
+app.get '/js', (req, res) ->
+    res.render 'index-js.ejs', levelNumber: 1
+    
 app.get /^\/([0-9]+)$/, (req, res) ->
     res.render 'index.ejs', levelNumber: req.params[0]
+
+app.get /^\/js\/([0-9]+)$/, (req, res) ->
+    res.render 'index-js.ejs', levelNumber: req.params[0]
+
 
 app.listen port, =>
   console.log "Listen on #{port}"
