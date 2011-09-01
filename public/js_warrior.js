@@ -243,8 +243,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Units: require('./js_warrior/units').Units,
     Utils: require('./js_warrior/utils').Utils,
     Turn: require('./js_warrior/turn').Turn,
-    View: require('./js_warrior/view').View,
-    ConsoleView: require('./js_warrior/console_view').ConsoleView
+    Views: require('./js_warrior/views').Views
   };
 }).call(this);
 }, "js_warrior/abilities": function(exports, require, module) {(function() {
@@ -681,34 +680,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Walk = Walk;
-}).call(this);
-}, "js_warrior/console_view": function(exports, require, module) {(function() {
-  var ConsoleView, View, root;
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-    function ctor() { this.constructor = child; }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor;
-    child.__super__ = parent.prototype;
-    return child;
-  };
-  View = require('./view').View;
-  ConsoleView = (function() {
-    __extends(ConsoleView, View);
-    function ConsoleView() {
-      ConsoleView.__super__.constructor.apply(this, arguments);
-    }
-    ConsoleView.prototype.puts = function(text) {
-      return console.log(text);
-    };
-    ConsoleView.prototype.levelChanged = function(level) {
-      console.log(" - Turn " + level.currentTurn + " - ");
-      return console.log(level.floor.character());
-    };
-    return ConsoleView;
-  })();
-  root = typeof exports !== "undefined" && exports !== null ? exports : window;
-  root.ConsoleView = ConsoleView;
 }).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
   var Floor, Position, Space, root, _;
@@ -1832,7 +1803,71 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Utils = Utils;
 }).call(this);
-}, "js_warrior/view": function(exports, require, module) {(function() {
+}, "js_warrior/views": function(exports, require, module) {(function() {
+  exports.Views = {
+    View: require('./views/view').View,
+    HtmlView: require('./views/html_view').HtmlView,
+    ConsoleView: require('./views/console_view').ConsoleView
+  };
+}).call(this);
+}, "js_warrior/views/console_view": function(exports, require, module) {(function() {
+  var ConsoleView, View, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  View = require('./view').View;
+  ConsoleView = (function() {
+    __extends(ConsoleView, View);
+    function ConsoleView() {
+      ConsoleView.__super__.constructor.apply(this, arguments);
+    }
+    ConsoleView.prototype.puts = function(text) {
+      return console.log(text);
+    };
+    ConsoleView.prototype.levelChanged = function(level) {
+      console.log(" - Turn " + level.currentTurn + " - ");
+      return console.log(level.floor.character());
+    };
+    return ConsoleView;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.ConsoleView = ConsoleView;
+}).call(this);
+}, "js_warrior/views/html_view": function(exports, require, module) {(function() {
+  var HtmlView, View, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  View = require('./view').View;
+  HtmlView = (function() {
+    __extends(HtmlView, View);
+    function HtmlView(emitter, $) {
+      this.emitter = emitter;
+      this.$ = $;
+    }
+    HtmlView.prototype.puts = function(text) {
+      return this.$("#message").prepend("<p>" + text + "</p>");
+    };
+    HtmlView.prototype.levelChanged = function(level) {
+      this.$("#tower").html("<pre>" + (level.floor.character()) + " </pre>");
+      return this.$("#tower").prepend("<p> - Turn " + level.currentTurn + " - </p>");
+    };
+    return HtmlView;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.HtmlView = HtmlView;
+}).call(this);
+}, "js_warrior/views/view": function(exports, require, module) {(function() {
   var View, root;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   View = (function() {

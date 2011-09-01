@@ -4,7 +4,8 @@
   <meta charset=utf-8>
   <title>Application</title>
   <!-- Require the main Stitch file -->
-
+  <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+  <link href='/css/style.css' rel='stylesheet' type='text/css'>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="js_warrior.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
@@ -13,7 +14,7 @@
 	  var EventEmitter = require('events').EventEmitter;
 
       var emitter = new EventEmitter()
-      var view = new JsWarrior.ConsoleView(emitter);
+      var view = new JsWarrior.Views.HtmlView(emitter, $);
 	  view.listen();
       
 	  var game = new JsWarrior.Game(emitter);
@@ -22,5 +23,9 @@
   </script>
 </head>
 <body>
+	<div id="tower">
+	</div>
+	<div id="message">
+	</div>
 </body>
 </html>

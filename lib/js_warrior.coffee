@@ -12,5 +12,4 @@ exports.JsWarrior =
   Units: require('./js_warrior/units').Units
   Utils: require('./js_warrior/utils').Utils
   Turn:  require('./js_warrior/turn').Turn
-  View: require('./js_warrior/view').View
-  ConsoleView: require('./js_warrior/console_view').ConsoleView
+  Views: require('./js_warrior/views').Views

@@ -12,9 +12,9 @@ task 'compile', 'rebuild output javascript', (options) ->
   )
 
   package.compile((err, source) -> 
-    fs.writeFile 'output/js_warrior.js', source, (err) ->
+    fs.writeFile 'public/js_warrior.js', source, (err) ->
       throw err if err
-      console.log('Compiled output/js_warrior.js')
+      console.log('Compiled public/js_warrior.js')
   )
 
 task 'test', 'run test', (options) ->
@@ -26,7 +26,7 @@ task 'play', 'sample run the game', (options) ->
 
   emitter = new EventEmitter()
 
-  view = new JsWarrior.ConsoleView(emitter);
+  view = new JsWarrior.Views.ConsoleView(emitter);
   view.listen();
 
   game = new JsWarrior.Game(emitter);
