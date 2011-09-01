@@ -15,7 +15,7 @@ class View
       @levelStarted(level)
       
     @emitter.on "game.level.complete", (level) =>
-      @levelCompleted(level, nextLevel)
+      @levelCompleted(level)
     
     @emitter.on 'game.level.loaded', (level) =>
       @levelLoaded(level)

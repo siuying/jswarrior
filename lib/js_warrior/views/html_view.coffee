@@ -10,6 +10,7 @@ class HtmlView extends View
   levelLoaded: (level) ->
     @levelChanged(level)
     @$("#hint_message").html("<p>#{level.tip}</p>")
+    @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
     @$("#message").prepend("<p>#{level.description}</p>")
 
   levelChanged: (level) ->

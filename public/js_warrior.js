@@ -1964,6 +1964,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelLoaded = function(level) {
       this.levelChanged(level);
       this.$("#hint_message").html("<p>" + level.tip + "</p>");
+      if (level.clud) {
+        this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
+      }
       return this.$("#message").prepend("<p>" + level.description + "</p>");
     };
     HtmlView.prototype.levelChanged = function(level) {
@@ -2005,7 +2008,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.levelStarted(level);
       }, this));
       this.emitter.on("game.level.complete", __bind(function(level) {
-        return this.levelCompleted(level, nextLevel);
+        return this.levelCompleted(level);
       }, this));
       this.emitter.on('game.level.loaded', __bind(function(level) {
         return this.levelLoaded(level);
@@ -2070,8 +2073,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }, "beginner/level_002": function(exports, require, module) {(function() {
   exports.level = function() {
     this.description("It is too dark to see anything, but you smell sludge nearby.");
-    this.tip("Use warrior.feel.isEmpty() to see if there's anything in front of you, and warrior.attack() to fight it. Remember, you can only do one action per turn.");
-    this.clue("Add an if/else condition using warrior.feel.isEmpty() to decide whether to warrior.attack() or warrior.walk!.");
+    this.tip("Use warrior.feel().isEmpty() to see if there's anything in front of you, and warrior.attack() to fight it. Remember, you can only do one action per turn.");
+    this.clue("Add an if/else condition using warrior.feel().isEmpty() to decide whether to warrior.attack() or warrior.walk!.");
     this.timeBonus(20);
     this.aceScore(26);
     this.size(8, 1);

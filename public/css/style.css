@@ -27,12 +27,6 @@ body {
   clear: both;
 }
 
-#hint_message {
-  margin-top: 450px;
-  font-family: 'VT323', cursive;
-  font-size: 26px;
-}
-
 #buttons {
   top: 0px;
   bottom: 0px;
@@ -42,4 +36,16 @@ body {
 
 #buttons button {
   float: right;
+}
+
+/* Hints */
+
+#hint_message {
+  margin-top: 450px;
+}
+
+#hint_message, #more_hint_message {
+  margin-top: 450px;
+  font-family: 'VT323', cursive;
+  font-size: 26px;
 }
