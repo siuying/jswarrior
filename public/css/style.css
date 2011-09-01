@@ -9,6 +9,10 @@ body {
   width: 400px;
 }
 
+#display {
+  float: left;
+}
+
 #control {
   float: right;
   width: 600px;
@@ -20,6 +24,13 @@ body {
   top: 12px;
   bottom: 0px;
   position: absolute;
+  clear: both;
+}
+
+#hint_message {
+  margin-top: 450px;
+  font-family: 'VT323', cursive;
+  font-size: 26px;
 }
 
 #buttons {

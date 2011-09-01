@@ -7,11 +7,10 @@ class Game
     @running = false
 
   load: (playerSource=null) ->
-    @getCurrentLevel().loadPlayer(playerSource)
     @getCurrentLevel().loadLevel()
 
   start: (playerSource=null) -> 
-    @load(playerSource)
+    @getCurrentLevel().loadPlayer(playerSource)
     @shouldStop = false
     @emitter.emit 'game.start'
     @playNormalMode()
@@ -44,18 +43,11 @@ class Game
     
     if @currentLevel.isPassed()
       @currentLevel.completed()
-
-      if @getNextLevel().isExists()
-        @emitter.emit "game.level.complete", @currentLevel, @nextLevel
-      else
-        @emitter.emit "game.level.complete", @currentLevel, @nextLevel
+      if !@getNextLevel().isExists()
         @emitter.emit "game.end"
-        haveFurtherStep = false
 
-      if @profile.isEpic()
-        @emitter.emit("game.report", this) if !@continue
-      else
-        @requestNextLevel()
+      haveFurtherStep = false
+
     else if @currentLevel.isFailed()
       haveFurtherStep = false
       @emitter.emit "game.level.failed", @getCurrentLevel()
@@ -66,10 +58,10 @@ class Game
 
   requestNextLevel: ->
     if @getNextLevel().isExists()
-      @prepareNextLevel()
-    else
-      # @prepareEpicMode()
-    
+      @currentLevel = @getNextLevel()
+      @profile.levelNumber += 1
+      @getCurrentLevel().loadLevel()
+
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()
 

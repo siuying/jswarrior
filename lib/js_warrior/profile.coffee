@@ -1,13 +1,14 @@
 {Tower} = require('./tower')
 {Level} = require('./level')
 {_} = require('underscore')
+
 class Profile
   constructor: (@emitter = null) ->
     @towerPath = "beginner"
     @warriorName = null
     @score = 0
     @abilities = []
-    @levelNumber = 4
+    @levelNumber = 1
     @epic = false
     @lastLevelNumber = undefined
 

@@ -31,16 +31,19 @@ class Level
     loader = new LevelLoader(this)    
     level = require(@loadPath()).level
     level.apply(loader)
-    @emitter?.emit 'game.level.changed', this
+    @emitter?.emit 'game.level.loaded', this
     this
 
   loadPlayer: (jsString=null) ->
     Player = Players.LazyPlayer
     Player = eval(jsString) if jsString
     @player = new Player()
+    @warrior.player = @player
     
   completed: ->
     @profile.addAbilities(_.keys(@warrior.abilities)...)
+    @emitter.emit "game.level.complete", this
+    @emitter.emit("game.report", this)
     console.log("encoded profile", @profile.encode())
     
   # Play one step in the game world

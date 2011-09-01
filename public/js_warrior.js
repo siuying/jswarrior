@@ -695,6 +695,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.editor = editor;
       this.coffee = coffee;
       this.emitter = new EventEmitter();
+      this.emitter.on("game.level.failed", __bind(function() {
+        return this.onGameFailed();
+      }, this));
+      this.emitter.on("game.level.complete", __bind(function() {
+        return this.onGameCompleted();
+      }, this));
     }
     Controller.prototype.setup = function() {
       this.setupViews();
@@ -711,10 +717,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.view.listen();
       this.$("#run").click(__bind(function() {
         var compiled, source;
+        console.log("run game");
         source = this.editor.getSession().getValue();
         compiled = this.coffee.compile(source, {
           bare: true
         });
+        console.log("source", source);
         this.game.start(compiled);
         this.$("#run").hide();
         return this.$("#stop").show();
@@ -724,7 +732,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.$("#run").show();
         return this.$("#stop").hide();
       }, this));
-      return this.$("#editor").show();
+      this.$("#hint").click(__bind(function() {
+        return this.$("#hint_message").toggle();
+      }, this));
+      this.$("#editor").show();
+      this.$("#hint").show();
+      return this.$("#run").show();
+    };
+    Controller.prototype.onGameFailed = function() {
+      this.$("#run").show();
+      this.$("#stop").hide();
+      return this.$("#hint").show();
+    };
+    Controller.prototype.onGameCompleted = function() {
+      this.$("#run").show();
+      this.$("#stop").hide();
+      this.$("#hint").show();
+      return this.game.requestNextLevel();
     };
     return Controller;
   })();
@@ -861,14 +885,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (playerSource == null) {
         playerSource = null;
       }
-      this.getCurrentLevel().loadPlayer(playerSource);
       return this.getCurrentLevel().loadLevel();
     };
     Game.prototype.start = function(playerSource) {
       if (playerSource == null) {
         playerSource = null;
       }
-      this.load(playerSource);
+      this.getCurrentLevel().loadPlayer(playerSource);
       this.shouldStop = false;
       this.emitter.emit('game.start');
       return this.playNormalMode();
@@ -903,20 +926,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       if (this.currentLevel.isPassed()) {
         this.currentLevel.completed();
-        if (this.getNextLevel().isExists()) {
-          this.emitter.emit("game.level.complete", this.currentLevel, this.nextLevel);
-        } else {
-          this.emitter.emit("game.level.complete", this.currentLevel, this.nextLevel);
+        if (!this.getNextLevel().isExists()) {
           this.emitter.emit("game.end");
-          haveFurtherStep = false;
         }
-        if (this.profile.isEpic()) {
-          if (!this["continue"]) {
-            this.emitter.emit("game.report", this);
-          }
-        } else {
-          this.requestNextLevel();
-        }
+        haveFurtherStep = false;
       } else if (this.currentLevel.isFailed()) {
         haveFurtherStep = false;
         this.emitter.emit("game.level.failed", this.getCurrentLevel());
@@ -930,9 +943,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Game.prototype.requestNextLevel = function() {
       if (this.getNextLevel().isExists()) {
-        return this.prepareNextLevel();
-      } else {
-
+        this.currentLevel = this.getNextLevel();
+        this.profile.levelNumber += 1;
+        return this.getCurrentLevel().loadLevel();
       }
     };
     Game.prototype.getCurrentLevel = function() {
@@ -987,7 +1000,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       level = require(this.loadPath()).level;
       level.apply(loader);
       if ((_ref = this.emitter) != null) {
-        _ref.emit('game.level.changed', this);
+        _ref.emit('game.level.loaded', this);
       }
       return this;
     };
@@ -1000,11 +1013,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (jsString) {
         Player = eval(jsString);
       }
-      return this.player = new Player();
+      this.player = new Player();
+      return this.warrior.player = this.player;
     };
     Level.prototype.completed = function() {
       var _ref;
       (_ref = this.profile).addAbilities.apply(_ref, _.keys(this.warrior.abilities));
+      this.emitter.emit("game.level.complete", this);
+      this.emitter.emit("game.report", this);
       return console.log("encoded profile", this.profile.encode());
     };
     Level.prototype.play = function() {
@@ -1292,7 +1308,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.warriorName = null;
       this.score = 0;
       this.abilities = [];
-      this.levelNumber = 4;
+      this.levelNumber = 1;
       this.epic = false;
       this.lastLevelNumber = void 0;
     }
@@ -1945,9 +1961,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.puts = function(text) {
       return this.$("#message").prepend("<p>" + text + "</p>");
     };
+    HtmlView.prototype.levelLoaded = function(level) {
+      this.levelChanged(level);
+      this.$("#hint_message").html("<p>" + level.tip + "</p>");
+      return this.$("#message").prepend("<p>" + level.description + "</p>");
+    };
     HtmlView.prototype.levelChanged = function(level) {
-      this.$("#tower").html("<pre>" + (level.floor.character()) + " </pre>");
-      return this.$("#tower").prepend("<p> - Turn " + level.currentTurn + " - </p>");
+      this.$("#tower").html("");
+      this.$("#tower").append("<p>-------------------------------------------------------</p>");
+      this.$("#tower").append("<p>Level " + level.profile.levelNumber + "</p>");
+      this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
+      return this.$("#tower").append("<p>-------------------------------------------------------</p>");
+    };
+    HtmlView.prototype.levelCompleted = function(level) {
+      return this.puts("Success! You have found the stairs.");
+    };
+    HtmlView.prototype.clear = function() {
+      return this.$("#message").html("");
     };
     return HtmlView;
   })();
@@ -1974,11 +2004,17 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on('game.level.start', __bind(function(level) {
         return this.levelStarted(level);
       }, this));
-      this.emitter.on("game.level.complete", __bind(function(level, nextLevel) {
+      this.emitter.on("game.level.complete", __bind(function(level) {
         return this.levelCompleted(level, nextLevel);
+      }, this));
+      this.emitter.on('game.level.loaded', __bind(function(level) {
+        return this.levelLoaded(level);
       }, this));
       this.emitter.on('game.level.changed', __bind(function(level) {
         return this.levelChanged(level);
+      }, this));
+      this.emitter.on("game.level.failed", __bind(function(level) {
+        return this.puts("You failed! Improve your warrior and try again!");
       }, this));
       this.emitter.on('unit.say', __bind(function(name, params) {
         return this.puts("" + name + " " + params);
@@ -1999,12 +2035,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     View.prototype.puts = function(text) {};
     View.prototype.levelChanged = function(level) {};
+    View.prototype.levelLoaded = function(level) {
+      return this.levelChanged(level);
+    };
     View.prototype.levelStarted = function(level) {
       return this.puts("Starting Level " + level.number);
     };
-    View.prototype.levelCompleted = function(level, nextLevel) {
+    View.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
     };
+    View.prototype.clear = function() {};
     View.prototype.onError = function(e) {
       console.trace(e);
       return this.puts("Error in Player: " + e.message);
@@ -2017,7 +2057,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }, "beginner/level_001": function(exports, require, module) {(function() {
   exports.level = function() {
     this.description("You see before yourself a long hallway with stairs at the end. There is nothing in the way.");
-    this.tip("Call warrior.walk to walk forward in the Player 'play_turn' method.");
+    this.tip("Call warrior.walk() to walk forward in the Player 'playTurn()' method.");
     this.timeBonus(15);
     this.aceScore(10);
     this.size(8, 1);

@@ -14,12 +14,18 @@ class View
     @emitter.on 'game.level.start', (level) =>
       @levelStarted(level)
       
-    @emitter.on "game.level.complete", (level, nextLevel) =>
+    @emitter.on "game.level.complete", (level) =>
       @levelCompleted(level, nextLevel)
-
+    
+    @emitter.on 'game.level.loaded', (level) =>
+      @levelLoaded(level)
+  
     @emitter.on 'game.level.changed', (level) =>
       @levelChanged(level)
 
+    @emitter.on "game.level.failed", (level) =>
+      @puts "You failed! Improve your warrior and try again!"
+      
     @emitter.on 'unit.say', (name, params) =>
       @puts "#{name} #{params}"
       
@@ -41,12 +47,18 @@ class View
   levelChanged: (level) ->
     # do nothing
   
+  levelLoaded: (level) ->
+    @levelChanged(level)
+  
   levelStarted: (level) ->
     @puts "Starting Level #{level.number}"
 
-  levelCompleted: (level, nextLevel) ->
+  levelCompleted: (level) ->
     @puts "Success! You have found the stairs."
-  
+
+  clear: ->
+    # clear screen
+    
   onError: (e) ->
     console.trace(e)
     @puts "Error in Player: #{e.message}"
