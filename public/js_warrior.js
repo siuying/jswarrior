@@ -681,6 +681,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Walk = Walk;
 }).call(this);
+}, "js_warrior/controller": function(exports, require, module) {(function() {
+
+}).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
   var Floor, Position, Space, root, _;
   Space = require('./space').Space;
@@ -805,13 +808,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.profile = new Profile(this.emitter);
       }
       this.currentLevel = null;
+      this.running = false;
     }
-    Game.prototype.load = function() {
-      this.getCurrentLevel().loadPlayer();
+    Game.prototype.load = function(playerSource) {
+      if (playerSource == null) {
+        playerSource = null;
+      }
+      this.getCurrentLevel().loadPlayer(playerSource);
       return this.getCurrentLevel().loadLevel();
     };
-    Game.prototype.start = function() {
-      this.load();
+    Game.prototype.start = function(playerSource) {
+      if (playerSource == null) {
+        playerSource = null;
+      }
+      this.load(playerSource);
       this.emitter.emit('game.start');
       return this.playNormalMode();
     };
@@ -827,8 +837,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (step == null) {
         step = 1;
       }
+      this.running = true;
       haveFurtherStep = true;
-      this.currentLevel.play(step);
+      try {
+        this.currentLevel.play(step);
+      } catch (e) {
+        this.emitter.emit("game.play.error", e);
+        haveFurtherStep = false;
+      }
       if (this.currentLevel.isPassed()) {
         this.currentLevel.completed();
         if (this.getNextLevel().isExists()) {
@@ -849,6 +865,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         haveFurtherStep = false;
         this.emitter.emit("game.level.failed", this.getCurrentLevel());
       }
+      this.running = haveFurtherStep;
       if (haveFurtherStep) {
         return setTimeout((__bind(function() {
           return this.playGame();
@@ -867,6 +884,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Game.prototype.getNextLevel = function() {
       return this.nextLevel || (this.nextLevel = this.profile.nextLevel());
+    };
+    Game.prototype.isRunning = function() {
+      return this.running;
     };
     return Game;
   })();
@@ -1901,8 +1921,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on('game.level.changed', __bind(function(level) {
         return this.levelChanged(level);
       }, this));
-      return this.emitter.on('unit.say', __bind(function(name, params) {
+      this.emitter.on('unit.say', __bind(function(name, params) {
         return this.puts("" + name + " " + params);
+      }, this));
+      return this.emitter.on("game.play.error", __bind(function(e) {
+        return this.onError(e);
       }, this));
     };
     View.prototype.close = function() {
@@ -1922,6 +1945,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     View.prototype.levelCompleted = function(level, nextLevel) {
       return this.puts("Success! You have found the stairs.");
+    };
+    View.prototype.onError = function(e) {
+      console.trace(e);
+      return this.puts("Error in Player: " + e.message);
     };
     return View;
   })();

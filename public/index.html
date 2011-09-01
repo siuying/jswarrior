@@ -6,22 +6,23 @@
   <!-- Require the main Stitch file -->
   <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
   <link href='/css/style.css' rel='stylesheet' type='text/css'>
-  
 </head>
 <body>
-  <div id="display">
-  	<div id="tower">
-  	</div>
-  	<div id="message">
-  	</div>
-  </div>
+  <div class="container">
+    <div id="display">
+    	<div id="tower">
+    	</div>
+    	<div id="message">
+    	</div>
+    </div>
   
-  <div id="control">
-    <pre id="editor" style="display: none">class LazyPlayer
-  playTurn: (warrior) ->
-    # do nothing
-
-    </pre>
+    <div id="control">
+      <pre id="editor" style="display: none">class Player
+    playTurn: (warrior) ->
+      # do nothing
+      </pre>
+      <button id="run" class="btn primary" type="button">Run</button>
+    </div>
   </div>
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -45,12 +46,11 @@ $( ->
   
   # Setup Model  
   profile = new JsWarrior.Profile(emitter)
-  profile.levelNumber = 2
+  profile.levelNumber = 1
 
   # Setup Game
   game = new JsWarrior.Game(emitter, profile)
   game.load()
-  # game.start()
 
   # Setup Code Editor
   editor = ace.edit "editor"
@@ -58,6 +58,10 @@ $( ->
   editor.getSession().setMode(new Mode())
   
   $("#editor").show()
+  $("#run").click =>
+    source = editor.getSession().getValue()
+    compiled = CoffeeScript.compile source, bare: on 
+    game.start(compiled)
 );
 </script>
 </body>

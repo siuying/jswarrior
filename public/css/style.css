@@ -9,11 +9,23 @@ body {
   width: 400px;
 }
     
-#editor { 
-    margin: 0;
-    position: absolute;
-    width: 600px;
-    top: 0;
-    bottom: 0px;
-    right: 0;
+#control { 
+  margin: 0;
+  position: absolute;
+  width: 600px;
+  top: 0;
+  bottom: 0px;
+  right: 0;
+}
+
+#editor {
+  margin: 0;
+  width: 600px;
+  top: 20px;
+  bottom: 0px;
+  right: 0;
+}
+
+#run {
+  float: right;
 }

@@ -19,7 +19,9 @@ class View
 
     @emitter.on 'unit.say', (name, params) =>
       @puts "#{name} #{params}"
-    
+      
+    @emitter.on "game.play.error", (e) =>
+      @onError(e)
 
   close: ->
     listeners = [
@@ -41,6 +43,10 @@ class View
 
   levelCompleted: (level, nextLevel) ->
     @puts "Success! You have found the stairs."
+  
+  onError: (e) ->
+    console.trace(e)
+    @puts "Error in Player: #{e.message}"
 
 root = exports ? window
 root.View = View

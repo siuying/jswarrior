@@ -4,13 +4,14 @@ class Game
   constructor: (@emitter, @profile = null)->
     @profile ?= new Profile(@emitter)
     @currentLevel = null
+    @running = false
 
-  load: ->
-    @getCurrentLevel().loadPlayer()
+  load: (playerSource=null) ->
+    @getCurrentLevel().loadPlayer(playerSource)
     @getCurrentLevel().loadLevel()
 
-  start: -> 
-    @load()
+  start: (playerSource=null) -> 
+    @load(playerSource)
     @emitter.emit 'game.start'
     @playNormalMode()
 
@@ -22,8 +23,14 @@ class Game
     @playGame()
   
   playGame: (step=1) ->
+    @running = true
     haveFurtherStep = true
-    @currentLevel.play(step)
+    
+    try
+      @currentLevel.play(step)
+    catch e
+      @emitter.emit "game.play.error", e
+      haveFurtherStep = false
     
     if @currentLevel.isPassed()
       @currentLevel.completed()
@@ -42,7 +49,8 @@ class Game
     else if @currentLevel.isFailed()
       haveFurtherStep = false
       @emitter.emit "game.level.failed", @getCurrentLevel()
-    
+
+    @running = haveFurtherStep
     if haveFurtherStep
       setTimeout (=> @playGame()), 600
 
@@ -57,6 +65,9 @@ class Game
 
   getNextLevel: ->
     @nextLevel ||= @profile.nextLevel()
+    
+  isRunning: ->
+    @running
     
 
 root = exports ? window
