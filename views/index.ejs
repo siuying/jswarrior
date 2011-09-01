@@ -54,6 +54,8 @@ $(function(){
   var editor = ace.edit("editor")
   editor.setTheme("ace/theme/twilight")
   editor.getSession().setMode(new Mode())
+  editor.getSession().setTabSize(2);
+  editor.getSession().setUseSoftTabs(true);
   
   var controller = new JsWarrior.Controller($, editor, CoffeeScript, Modernizr)
   controller.setup()
