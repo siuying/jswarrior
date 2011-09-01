@@ -1,0 +1,23 @@
+# -------
+# |@ CaaSC|
+# -------
+
+
+exports.level = ->
+  @description "You hear cries for help. Captives must need rescuing."
+  @tip "Use warrior.feel().isCaptive() to see if there's a captive, and warrior.rescue() to rescue him. Don't attack captives."
+  @clue "Don't forget to constantly check if you're taking damage and rest until your health is full if you aren't taking damage."
+
+  @timeBonus 45
+  @aceScore 123
+  @size 7, 1
+  @stairs 6, 0
+
+  @warrior 0, 0, 'east', ->
+    @addAbilities 'rescue'
+
+  @unit 'captive', 2, 0, 'west'
+  @unit 'archer', 3, 0, 'west'
+  @unit 'archer', 4, 0, 'west'
+  @unit 'thick_sludge', 5, 0, 'west'
+  @unit 'captive', 6, 0, 'west'
