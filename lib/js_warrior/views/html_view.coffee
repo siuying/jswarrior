@@ -4,7 +4,7 @@
 class HtmlView extends View  
   constructor: (@emitter, $)->
     @$ = $
-    @puts "Welcome to JS Warrior"
+    @puts "Welcome to Coffee Warrior"
 
   puts: (text) -> 
     @$("#message").prepend("<p>#{text}</p>")
