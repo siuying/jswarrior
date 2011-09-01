@@ -825,7 +825,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (this.currentLevel.isPassed()) {
         this.currentLevel.completed();
         if (this.getNextLevel().isExists()) {
-          this.emitter.emit("game.level.complete", this.currentLevel);
+          this.emitter.emit("game.level.complete", this.currentLevel, this.nextLevel);
         } else {
           this.emitter.emit("game.end");
           haveFurtherStep = false;
@@ -1882,7 +1882,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.puts("Completed all stage! Try again for more points!");
       }, this));
       this.emitter.on('game.level.start', __bind(function(level) {
-        return this.puts("Starting Level " + level.number);
+        return this.levelStarted(level);
+      }, this));
+      this.emitter.on("game.level.complete", __bind(function(level, nextLevel) {
+        return this.levelCompleted(level, nextLevel);
       }, this));
       this.emitter.on('level.changed', __bind(function(level) {
         return this.levelChanged(level);
@@ -1903,6 +1906,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     View.prototype.puts = function(text) {};
     View.prototype.levelChanged = function(level) {};
+    View.prototype.levelStarted = function(level) {
+      return this.puts("Starting Level " + level.number);
+    };
+    View.prototype.levelCompleted = function(level, nextLevel) {
+      if (nextLevel.isExists()) {
+        return this.puts("Success! You have found the stairs.");
+      } else {
+        return this.puts("CONGRATULATIONS! You have climbed to the top of the tower and rescued the fair maiden Coffee.");
+      }
+    };
     return View;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;

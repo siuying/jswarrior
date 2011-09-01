@@ -47,7 +47,7 @@ class Level
     return if @isPassed() || @isFailed()
 
     @currentTurn += 1
-    @emitter?.emit 'level.changed', this
+    @emitter?.emit 'game.level.changed', this
     
     unit.prepareTurn() for unit in @floor.units()
     unit.performTurn() for unit in @floor.units()

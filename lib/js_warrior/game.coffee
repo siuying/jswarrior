@@ -31,8 +31,9 @@ class Game
       @currentLevel.completed()
 
       if @getNextLevel().isExists()
-        @emitter.emit "game.level.complete", @currentLevel
+        @emitter.emit "game.level.complete", @currentLevel, @nextLevel
       else
+        @emitter.emit "game.level.complete", @currentLevel, @nextLevel
         @emitter.emit "game.end"
         haveFurtherStep = false
 
@@ -45,13 +46,12 @@ class Game
       @emitter.emit "game.level.failed", @getCurrentLevel()
     
     if haveFurtherStep
-      setTimeout (=> @playGame()), 500
+      setTimeout (=> @playGame()), 600
 
   requestNextLevel: ->
     if @getNextLevel().isExists()
       @prepareNextLevel()
     else
-      @emitter.emit "game.level.complete", @currentLevel
       # @prepareEpicMode()
     
   getCurrentLevel: ->
