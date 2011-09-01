@@ -827,6 +827,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         if (this.getNextLevel().isExists()) {
           this.emitter.emit("game.level.complete", this.currentLevel, this.nextLevel);
         } else {
+          this.emitter.emit("game.level.complete", this.currentLevel, this.nextLevel);
           this.emitter.emit("game.end");
           haveFurtherStep = false;
         }
@@ -844,14 +845,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (haveFurtherStep) {
         return setTimeout((__bind(function() {
           return this.playGame();
-        }, this)), 500);
+        }, this)), 600);
       }
     };
     Game.prototype.requestNextLevel = function() {
       if (this.getNextLevel().isExists()) {
         return this.prepareNextLevel();
       } else {
-        return this.emitter.emit("game.level.complete", this.currentLevel);
+
       }
     };
     Game.prototype.getCurrentLevel = function() {
@@ -927,7 +928,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       this.currentTurn += 1;
       if ((_ref = this.emitter) != null) {
-        _ref.emit('level.changed', this);
+        _ref.emit('game.level.changed', this);
       }
       _ref2 = this.floor.units();
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
@@ -1879,7 +1880,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.puts("Welcome to JavaScript Warrior");
       }, this));
       this.emitter.on('game.end', __bind(function() {
-        return this.puts("Completed all stage! Try again for more points!");
+        return this.puts("CONGRATULATIONS! You have climbed to the top of the tower and rescued the fair maiden Coffee.");
       }, this));
       this.emitter.on('game.level.start', __bind(function(level) {
         return this.levelStarted(level);
@@ -1887,7 +1888,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on("game.level.complete", __bind(function(level, nextLevel) {
         return this.levelCompleted(level, nextLevel);
       }, this));
-      this.emitter.on('level.changed', __bind(function(level) {
+      this.emitter.on('game.level.changed', __bind(function(level) {
         return this.levelChanged(level);
       }, this));
       return this.emitter.on('unit.say', __bind(function(name, params) {
@@ -1910,11 +1911,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.puts("Starting Level " + level.number);
     };
     View.prototype.levelCompleted = function(level, nextLevel) {
-      if (nextLevel.isExists()) {
-        return this.puts("Success! You have found the stairs.");
-      } else {
-        return this.puts("CONGRATULATIONS! You have climbed to the top of the tower and rescued the fair maiden Coffee.");
-      }
+      return this.puts("Success! You have found the stairs.");
     };
     return View;
   })();
