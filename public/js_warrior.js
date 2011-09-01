@@ -231,6 +231,7 @@ var j=function(a){this._wrapped=a};b.prototype=j.prototype;var r=function(a,c){r
 arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return this};j.prototype.value=function(){return this._wrapped}})();}, "js_warrior": function(exports, require, module) {(function() {
   exports.JsWarrior = {
     version: '0.0.1',
+    Controller: require('./js_warrior/controller').Controller,
     Floor: require('./js_warrior/floor').Floor,
     Game: require('./js_warrior/game').Game,
     Level: require('./js_warrior/level').Level,
@@ -682,7 +683,53 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Walk = Walk;
 }).call(this);
 }, "js_warrior/controller": function(exports, require, module) {(function() {
-
+  var Controller, EventEmitter, Game, Profile, Views, root;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Profile = require("./profile").Profile;
+  Game = require("./game").Game;
+  Views = require("./views").Views;
+  EventEmitter = require("events").EventEmitter;
+  Controller = (function() {
+    function Controller($, editor, coffee) {
+      this.$ = $;
+      this.editor = editor;
+      this.coffee = coffee;
+      this.emitter = new EventEmitter();
+    }
+    Controller.prototype.setup = function() {
+      this.setupViews();
+      return this.setupModels();
+    };
+    Controller.prototype.setupModels = function() {
+      this.profile = new Profile(this.emitter);
+      this.profile.levelNumber = 1;
+      this.game = new Game(this.emitter, this.profile);
+      return this.game.load();
+    };
+    Controller.prototype.setupViews = function() {
+      this.view = new Views.HtmlView(this.emitter, $);
+      this.view.listen();
+      this.$("#run").click(__bind(function() {
+        var compiled, source;
+        source = this.editor.getSession().getValue();
+        compiled = this.coffee.compile(source, {
+          bare: true
+        });
+        this.game.start(compiled);
+        this.$("#run").hide();
+        return this.$("#stop").show();
+      }, this));
+      this.$("#stop").click(__bind(function() {
+        this.game.stop();
+        this.$("#run").show();
+        return this.$("#stop").hide();
+      }, this));
+      return this.$("#editor").show();
+    };
+    return Controller;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Controller = Controller;
 }).call(this);
 }, "js_warrior/floor": function(exports, require, module) {(function() {
   var Floor, Position, Space, root, _;
@@ -822,8 +869,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         playerSource = null;
       }
       this.load(playerSource);
+      this.shouldStop = false;
       this.emitter.emit('game.start');
       return this.playNormalMode();
+    };
+    Game.prototype.stop = function() {
+      return this.shouldStop = true;
     };
     Game.prototype.playNormalMode = function() {
       return this.playCurrentLevel();
@@ -836,6 +887,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       var haveFurtherStep;
       if (step == null) {
         step = 1;
+      }
+      if (this.shouldStop) {
+        this.running = false;
+        this.emitter.emit("game.stop", this);
+        return;
       }
       this.running = true;
       haveFurtherStep = true;
@@ -1908,6 +1964,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     View.prototype.listen = function() {
       this.emitter.on('game.start', __bind(function() {
         return this.puts("Welcome to JavaScript Warrior");
+      }, this));
+      this.emitter.on('game.stop', __bind(function() {
+        return this.puts("You quit the Tower! Try again when you are ready.");
       }, this));
       this.emitter.on('game.end', __bind(function() {
         return this.puts("CONGRATULATIONS! You have climbed to the top of the tower and rescued the fair maiden Coffee.");

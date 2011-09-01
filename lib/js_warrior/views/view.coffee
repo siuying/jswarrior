@@ -5,6 +5,9 @@ class View
     @emitter.on 'game.start', =>
       @puts "Welcome to JavaScript Warrior"
 
+    @emitter.on 'game.stop', =>
+      @puts "You quit the Tower! Try again when you are ready."
+
     @emitter.on 'game.end', =>
       @puts "CONGRATULATIONS! You have climbed to the top of the tower and rescued the fair maiden Coffee."
 

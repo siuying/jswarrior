@@ -1,5 +1,6 @@
 exports.JsWarrior = 
   version: '0.0.1'
+  Controller: require('./js_warrior/controller').Controller
   Floor: require('./js_warrior/floor').Floor
   Game: require('./js_warrior/game').Game
   Level: require('./js_warrior/level').Level

@@ -12,8 +12,13 @@ class Game
 
   start: (playerSource=null) -> 
     @load(playerSource)
+    @shouldStop = false
     @emitter.emit 'game.start'
     @playNormalMode()
+
+  # stop a running game
+  stop: ->
+    @shouldStop = true
 
   playNormalMode: ->
     @playCurrentLevel()
@@ -23,6 +28,11 @@ class Game
     @playGame()
   
   playGame: (step=1) ->
+    if @shouldStop
+      @running = false
+      @emitter.emit "game.stop", this
+      return
+
     @running = true
     haveFurtherStep = true
     
