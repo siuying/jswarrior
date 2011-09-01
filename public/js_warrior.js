@@ -705,6 +705,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     function Walk(unit) {
       this.unit = unit;
     }
+    Walk.prototype.description = function() {
+      return "Move in the given direction (forward by default).";
+    };
     Walk.prototype.perform = function(direction) {
       var _ref;
       if (direction == null) {
@@ -2021,7 +2024,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   };
 }).call(this);
 }, "js_warrior/views/console_view": function(exports, require, module) {(function() {
-  var ConsoleView, View, root;
+  var ConsoleView, View, root, _;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -2031,6 +2034,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return child;
   };
   View = require('./view').View;
+  _ = require('underscore')._;
   ConsoleView = (function() {
     __extends(ConsoleView, View);
     function ConsoleView() {
@@ -2043,13 +2047,26 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       console.log(" - Turn " + level.currentTurn + " - ");
       return console.log(level.floor.character());
     };
+    ConsoleView.prototype.setWarriorAbilities = function(abilities) {
+      var ability, abilityName, _i, _len, _ref, _results;
+      this.puts("Warrior Abilities:");
+      _ref = _.keys(abilities);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        abilityName = _ref[_i];
+        ability = level.warrior.abilities[abilityName];
+        this.puts("  warrior." + abilityName + "()");
+        _results.push(this.puts("    " + (ability.description())));
+      }
+      return _results;
+    };
     return ConsoleView;
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.ConsoleView = ConsoleView;
 }).call(this);
 }, "js_warrior/views/html_view": function(exports, require, module) {(function() {
-  var HtmlView, View, root;
+  var HtmlView, View, root, _;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -2059,6 +2076,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return child;
   };
   View = require('./view').View;
+  _ = require('underscore')._;
   HtmlView = (function() {
     __extends(HtmlView, View);
     function HtmlView(emitter, $) {
@@ -2072,6 +2090,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelLoaded = function(level) {
       this.levelChanged(level);
       this.$("#hint_message").html("<p>" + level.tip + "</p>");
+      this.setWarriorAbilities(level.warrior.abilities);
       if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
@@ -2084,6 +2103,18 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
       return this.$("#tower").append("<p--------------------------------------------</p>");
+    };
+    HtmlView.prototype.setWarriorAbilities = function(abilities) {
+      var ability, abilityName, _i, _len, _ref, _results;
+      this.$("#hint_message").append("<p>Warrior Abilities:</p>");
+      _ref = _.keys(abilities);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        abilityName = _ref[_i];
+        ability = abilities[abilityName];
+        _results.push(this.$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior." + abilityName + "()</p><p class='ability-details'>" + (ability.description()) + "</p></div>"));
+      }
+      return _results;
     };
     HtmlView.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
@@ -2175,6 +2206,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     View.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
     };
+    View.prototype.setWarriorAbilities = function(abilities) {};
     View.prototype.clear = function() {};
     View.prototype.onError = function(e) {
       console.trace(e);

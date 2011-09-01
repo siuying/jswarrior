@@ -45,7 +45,19 @@ body {
 }
 
 #hint_message, #more_hint_message {
-  margin-top: 450px;
   font-family: 'VT323', cursive;
   font-size: 22px;
+}
+
+.ability {
+  margin-left: 10px;
+}
+
+.ability-label {
+  margin-bottom: 0;
+}
+
+.ability-details {
+  margin-top: 0;
+  margin-left: 10px;
 }

@@ -67,7 +67,9 @@ class View
 
   levelCompleted: (level) ->
     @puts "Success! You have found the stairs."
-
+    
+  setWarriorAbilities: (abilities) ->
+    
   clear: ->
     # clear screen
     

@@ -1,4 +1,5 @@
 {View} = require('./view')
+{_} = require('underscore')
 
 class HtmlView extends View  
   constructor: (@emitter, $)->
@@ -9,8 +10,12 @@ class HtmlView extends View
     @$("#message").prepend("<p>#{text}</p>")
 
   levelLoaded: (level) ->
+    # Redraw Level
     @levelChanged(level)
+    
+    # Add Hints
     @$("#hint_message").html("<p>#{level.tip}</p>")
+    @setWarriorAbilities(level.warrior.abilities)    
     @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
     @$("#message").prepend("<p>#{level.description}</p>")
 
@@ -23,7 +28,14 @@ class HtmlView extends View
     @$("#tower").append("<p--------------------------------------------</p>")
     @$("#tower").append("<pre>#{level.floor.character()} </pre>")
     @$("#tower").append("<p--------------------------------------------</p>")
-    
+
+  setWarriorAbilities: (abilities) ->
+    @$("#hint_message").append("<p>Warrior Abilities:</p>")
+    for abilityName in _.keys(abilities)
+      ability = abilities[abilityName]
+      @$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior.#{abilityName}()</p>
+<p class='ability-details'>#{ability.description()}</p></div>")    
+
   levelCompleted: (level) ->
     @puts "Success! You have found the stairs."
 
