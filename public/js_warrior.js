@@ -690,17 +690,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Views = require("./views").Views;
   EventEmitter = require("events").EventEmitter;
   Controller = (function() {
-    function Controller($, editor, coffee) {
+    function Controller($, editor, coffee, modernizr) {
       this.$ = $;
       this.editor = editor;
       this.coffee = coffee;
+      this.modernizr = modernizr != null ? modernizr : nil;
       this.emitter = new EventEmitter();
       this.emitter.on("game.level.failed", __bind(function() {
-        return this.onGameFailed();
+        return this.onLevelFailed();
       }, this));
       this.emitter.on("game.level.complete", __bind(function() {
-        return this.onGameCompleted();
+        return this.onLevelCompleted();
       }, this));
+      if (this.modernizr.history) {
+        this.emitter.on("game.level.loaded", __bind(function(lvl) {
+          return this.onLevelLoaded(lvl);
+        }, this));
+      }
     }
     Controller.prototype.setup = function() {
       this.setupViews();
@@ -741,15 +747,22 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.profile.levelNumber = level;
       return this.game.load();
     };
-    Controller.prototype.onGameFailed = function() {
+    Controller.prototype.onLevelFailed = function() {
       this.$("#run").show();
       this.$("#stop").hide();
       return this.$("#hint").show();
     };
-    Controller.prototype.onGameCompleted = function() {
+    Controller.prototype.onLevelCompleted = function() {
       this.$("#run").show();
       this.$("#stop").hide();
       return this.$("#hint").show();
+    };
+    Controller.prototype.onLevelLoaded = function(level) {
+      if (level) {
+        return window.history.pushState({
+          level: level.number
+        }, "Level " + level.number, "/" + level.number);
+      }
     };
     return Controller;
   })();
@@ -1982,7 +1995,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelChanged = function(level) {
       this.$("#tower").html("");
       this.$("#tower").append("<p--------------------------------------------</p>");
-      this.$("#tower").append("<p>Lvl " + level.profile.levelNumber + "</p>");
+      this.$("#tower").append("<p>Lvl " + level.number + "</p>");
       this.$("#tower").append("<p>HP  " + level.warrior.health + "/" + (level.warrior.maxHealth()) + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");

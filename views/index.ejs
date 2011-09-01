@@ -39,6 +39,7 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="js_warrior.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="js/coffee-script.js" type="text/javascript" charset="utf-8"></script>
 
   <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -54,9 +55,13 @@ $(function(){
   editor.setTheme("ace/theme/twilight")
   editor.getSession().setMode(new Mode())
   
-  var controller = new JsWarrior.Controller($, editor, CoffeeScript)
+  var controller = new JsWarrior.Controller($, editor, CoffeeScript, Modernizr)
   controller.setup()
   controller.setGameLevel(<%= levelNumber %>)
+  
+  if (Modernizr.history) {
+    
+  }
 
 });
 </script>

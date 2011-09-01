@@ -4,14 +4,18 @@
 {EventEmitter}  = require "events"
 
 class Controller
-  constructor: (@$, @editor, @coffee) ->
+  constructor: (@$, @editor, @coffee, @modernizr=nil) ->
     @emitter = new EventEmitter()
     
     @emitter.on "game.level.failed", =>
-      @onGameFailed()
+      @onLevelFailed()
     
     @emitter.on "game.level.complete", =>
-      @onGameCompleted()
+      @onLevelCompleted()
+
+    if @modernizr.history
+      @emitter.on "game.level.loaded", (lvl) =>
+        @onLevelLoaded(lvl)
 
   setup: ->
     @setupViews() 
@@ -55,17 +59,20 @@ class Controller
   
   setGameLevel: (level) ->
     @profile.levelNumber = level
-    @game.load()
+    @game.load()    
 
-  onGameFailed: ->
+  onLevelFailed: ->
     @$("#run").show()
     @$("#stop").hide()
     @$("#hint").show()
 
-  onGameCompleted: ->
+  onLevelCompleted: ->
     @$("#run").show()
     @$("#stop").hide()
     @$("#hint").show()
 
+  onLevelLoaded: (level) ->
+    window.history.pushState {level: level.number}, "Level #{level.number}", "/#{level.number}" if level
+    
 root = exports ? window
 root.Controller = Controller
