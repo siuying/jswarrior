@@ -15,10 +15,12 @@ class HtmlView extends View
 
   levelChanged: (level) ->
     @$("#tower").html("")
-    @$("#tower").append("<p>-------------------------------------------------------</p>")
-    @$("#tower").append("<p>Level #{level.profile.levelNumber}</p>")
+    @$("#tower").append("<p--------------------------------------------</p>")
+    @$("#tower").append("<p>Lvl #{level.profile.levelNumber}</p>")
+    @$("#tower").append("<p>HP  #{level.warrior.health}/#{level.warrior.maxHealth()}</p>")
+    @$("#tower").append("<p--------------------------------------------</p>")
     @$("#tower").append("<pre>#{level.floor.character()} </pre>")
-    @$("#tower").append("<p>-------------------------------------------------------</p>")
+    @$("#tower").append("<p--------------------------------------------</p>")
     
   levelCompleted: (level) ->
     @puts "Success! You have found the stairs."

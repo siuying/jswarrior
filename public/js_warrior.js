@@ -722,6 +722,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         compiled = this.coffee.compile(source, {
           bare: true
         });
+        this.game.load();
         this.game.start(compiled);
         this.$("#run").hide();
         return this.$("#stop").show();
@@ -732,7 +733,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.$("#stop").hide();
       }, this));
       this.$("#hint").click(__bind(function() {
-        return this.$("#hint_message").toggle();
+        return this.$("#more_hint_message").toggle();
       }, this));
       this.$("#editor").show();
       this.$("#hint").show();
@@ -1978,10 +1979,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     HtmlView.prototype.levelChanged = function(level) {
       this.$("#tower").html("");
-      this.$("#tower").append("<p>-------------------------------------------------------</p>");
-      this.$("#tower").append("<p>Level " + level.profile.levelNumber + "</p>");
+      this.$("#tower").append("<p--------------------------------------------</p>");
+      this.$("#tower").append("<p>Lvl " + level.profile.levelNumber + "</p>");
+      this.$("#tower").append("<p>HP  " + level.warrior.health + "/" + (level.warrior.maxHealth()) + "</p>");
+      this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
-      return this.$("#tower").append("<p>-------------------------------------------------------</p>");
+      return this.$("#tower").append("<p--------------------------------------------</p>");
     };
     HtmlView.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
@@ -2095,7 +2098,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }, "beginner/level_003": function(exports, require, module) {(function() {
   exports.level = function() {
     this.description("The air feels thicker than before. There must be a horde of sludge.");
-    this.tip("Be careful not to die! Use warrior.health to keep an eye on your health, and warrior.rest() to earn 10% of max health back.");
+    this.tip("Be careful not to die! Use warrior.health() to keep an eye on your health, and warrior.rest() to earn 10% of max health back.");
     this.clue("When there's no enemy ahead of you, call warrior.rest() until health is full before walking forward.");
     this.timeBonus(35);
     this.aceScore(71);

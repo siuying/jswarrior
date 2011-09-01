@@ -36,7 +36,8 @@ class Controller
       console.log("run game")
       source = @editor.getSession().getValue()
       compiled = @coffee.compile source, bare: on 
-
+      
+      @game.load()
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()
@@ -45,7 +46,7 @@ class Controller
       @game.stop()
       @$("#run").show()
       @$("#stop").hide()
-    
+
     @$("#hint").click =>
       @$("#more_hint_message").toggle()
 
