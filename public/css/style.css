@@ -1,3 +1,4 @@
 #message p, #message pre, #tower p, #tower pre {
-  font-family: 'courier', 'VT323', cursive;
+  font-family: 'VT323', cursive;
+  font-size: 26px;
 }
