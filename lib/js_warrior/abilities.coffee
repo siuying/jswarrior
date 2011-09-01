@@ -10,3 +10,4 @@ exports.Abilities =
   Rest: require('./abilities/rest').Rest
   Shoot: require('./abilities/shoot').Shoot
   Look: require('./abilities/look').Look
+  Rescue: require('./abilities/rescue').Rescue

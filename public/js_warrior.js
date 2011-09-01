@@ -259,7 +259,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Health: require('./abilities/health').Health,
     Rest: require('./abilities/rest').Rest,
     Shoot: require('./abilities/shoot').Shoot,
-    Look: require('./abilities/look').Look
+    Look: require('./abilities/look').Look,
+    Rescue: require('./abilities/rescue').Rescue
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -537,6 +538,48 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Look = Look;
+}).call(this);
+}, "js_warrior/abilities/rescue": function(exports, require, module) {(function() {
+  var Action, Rescue, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Rescue = (function() {
+    __extends(Rescue, Action);
+    function Rescue() {
+      Rescue.__super__.constructor.apply(this, arguments);
+    }
+    Rescue.prototype.description = function() {
+      return "Rescue a captive from his chains (earning 20 points) in given direction (forward by default).";
+    };
+    Rescue.prototype.perform = function(direction) {
+      var receiver;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      if (this.space(direction).isCaptive()) {
+        receiver = this.getUnit(direction);
+        this.unit.say("unbinds " + direction + " and rescues " + receiver);
+        receiver.unbind();
+        if (receiver.constructor.name === "Captive") {
+          receiver.position = null;
+          return this.unit.earnPoints(20);
+        }
+      } else {
+        return this.unit.say("unbinds " + direction + " and rescues nothing");
+      }
+    };
+    return Rescue;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Rescue = Rescue;
 }).call(this);
 }, "js_warrior/abilities/rest": function(exports, require, module) {(function() {
   var Action, Rest, root;
@@ -2167,7 +2210,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(7, 1);
     this.stairs(6, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.addAbilities('rescue');
+      return this.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
     });
     this.unit('captive', 2, 0, 'west');
     this.unit('archer', 3, 0, 'west');
