@@ -797,21 +797,28 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Profile = require('./profile').Profile;
   Game = (function() {
-    function Game(emitter) {
+    function Game(emitter, profile) {
+      var _ref;
       this.emitter = emitter;
+      this.profile = profile != null ? profile : null;
+      if ((_ref = this.profile) == null) {
+        this.profile = new Profile(this.emitter);
+      }
       this.currentLevel = null;
     }
+    Game.prototype.load = function() {
+      this.getCurrentLevel().loadPlayer();
+      return this.getCurrentLevel().loadLevel();
+    };
     Game.prototype.start = function() {
+      this.load();
       this.emitter.emit('game.start');
-      this.profile = new Profile(this.emitter);
       return this.playNormalMode();
     };
     Game.prototype.playNormalMode = function() {
       return this.playCurrentLevel();
     };
     Game.prototype.playCurrentLevel = function() {
-      this.getCurrentLevel().loadPlayer();
-      this.getCurrentLevel().loadLevel();
       this.emitter.emit('game.level.start', this.currentLevel);
       return this.playGame();
     };
@@ -899,10 +906,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return project_root + level_path;
     };
     Level.prototype.loadLevel = function() {
-      var level, loader;
+      var level, loader, _ref;
       loader = new LevelLoader(this);
       level = require(this.loadPath()).level;
       level.apply(loader);
+      if ((_ref = this.emitter) != null) {
+        _ref.emit('game.level.changed', this);
+      }
       return this;
     };
     Level.prototype.loadPlayer = function(jsString) {
@@ -910,7 +920,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (jsString == null) {
         jsString = null;
       }
-      Player = Players.ProcPlayer;
+      Player = Players.LazyPlayer;
       if (jsString) {
         Player = eval(jsString);
       }

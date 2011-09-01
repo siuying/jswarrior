@@ -31,10 +31,11 @@ class Level
     loader = new LevelLoader(this)    
     level = require(@loadPath()).level
     level.apply(loader)
+    @emitter?.emit 'game.level.changed', this
     this
 
   loadPlayer: (jsString=null) ->
-    Player = Players.ProcPlayer
+    Player = Players.LazyPlayer
     Player = eval(jsString) if jsString
     @player = new Player()
     

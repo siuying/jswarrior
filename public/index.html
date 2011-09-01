@@ -17,8 +17,10 @@
   </div>
   
   <div id="control">
-    <pre id="editor">class Player
+    <pre id="editor" style="display: none">class LazyPlayer
   playTurn: (warrior) ->
+    # do nothing
+
     </pre>
   </div>
 
@@ -33,22 +35,29 @@
 $( ->
   {JsWarrior}     = require "js_warrior"
   {EventEmitter}  = require "events"
-  
+  {Mode}          = require "ace/mode/coffee"
+
   emitter = new EventEmitter()
   
-  # Setup Model  
-  game = new JsWarrior.Game(emitter);
-  game.start();
-
   # Setup Views
-  view = new JsWarrior.Views.HtmlView(emitter, $);
-  view.listen();
+  view = new JsWarrior.Views.HtmlView(emitter, $)
+  view.listen()
+  
+  # Setup Model  
+  profile = new JsWarrior.Profile(emitter)
+  profile.levelNumber = 2
+
+  # Setup Game
+  game = new JsWarrior.Game(emitter, profile)
+  game.load()
+  # game.start()
 
   # Setup Code Editor
   editor = ace.edit "editor"
-  {Mode} = require "ace/mode/coffee"
   editor.setTheme "ace/theme/twilight"
   editor.getSession().setMode(new Mode())
+  
+  $("#editor").show()
 );
 </script>
 </body>

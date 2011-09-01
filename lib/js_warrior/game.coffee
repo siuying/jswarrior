@@ -1,25 +1,23 @@
 {Profile} = require './profile'
 
 class Game
-  constructor: (@emitter)->
+  constructor: (@emitter, @profile = null)->
+    @profile ?= new Profile(@emitter)
     @currentLevel = null
 
-  start: -> 
-    @emitter.emit 'game.start'
-    
-    # create profile if needed
-    @profile = new Profile(@emitter)
+  load: ->
+    @getCurrentLevel().loadPlayer()
+    @getCurrentLevel().loadLevel()
 
-    # start a game
+  start: -> 
+    @load()
+    @emitter.emit 'game.start'
     @playNormalMode()
 
   playNormalMode: ->
     @playCurrentLevel()
 
   playCurrentLevel: ->
-    @getCurrentLevel().loadPlayer()
-    @getCurrentLevel().loadLevel()
-
     @emitter.emit 'game.level.start', @currentLevel
     @playGame()
   
