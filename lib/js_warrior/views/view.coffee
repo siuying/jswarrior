@@ -3,7 +3,7 @@ class View
     
   listen: -> 
     @emitter.on 'game.start', =>
-      @puts "Welcome to JavaScript Warrior"
+      @puts "Welcome to JS Warrior"
 
     @emitter.on 'game.stop', =>
       @puts "You quit the Tower! Try again when you are ready."

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset=utf-8>
-  <title>Application</title>
+  <title>JS Warrior</title>
   <!-- Require the main Stitch file -->
   <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
   <link href='/css/style.css' rel='stylesheet' type='text/css'>
@@ -58,11 +58,6 @@ $(function(){
   var controller = new JsWarrior.Controller($, editor, CoffeeScript, Modernizr)
   controller.setup()
   controller.setGameLevel(<%= levelNumber %>)
-  
-  if (Modernizr.history) {
-    
-  }
-
 });
 </script>
 </body>
