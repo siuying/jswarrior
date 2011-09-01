@@ -8,13 +8,13 @@ exports.level = ->
   @tip "Use warrior.feel().isCaptive() to see if there's a captive, and warrior.rescue() to rescue him. Don't attack captives."
   @clue "Don't forget to constantly check if you're taking damage and rest until your health is full if you aren't taking damage."
 
-  @timeBonus 45
-  @aceScore 123
+  @time_bonus 45
+  @ace_score 123
   @size 7, 1
   @stairs 6, 0
 
   @warrior 0, 0, 'east', ->
-    @addAbilities 'walk', 'feel', 'attack', 'health', 'rest', 'rescue'
+    @add_abilities 'walk', 'feel', 'attack', 'health', 'rest', 'rescue'
 
   @unit 'captive', 2, 0, 'west'
   @unit 'archer', 3, 0, 'west'

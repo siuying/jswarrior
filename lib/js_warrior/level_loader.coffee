@@ -17,10 +17,10 @@ class LevelLoader
   clue: (clue) ->
     @level.clue = clue
     
-  timeBonus: (bonus) ->
+  time_bonus: (bonus) ->
     @level.timeBonus = bonus
     
-  aceScore: (score) ->
+  ace_score: (score) ->
     @level.aceScore = score
   
   size: (width, height) ->

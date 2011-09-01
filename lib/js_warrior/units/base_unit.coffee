@@ -60,7 +60,10 @@ class BaseUnit
         @abilities[ability].unit = this
       catch e  
         throw "BaseUnit.addAbilities: Unexpected ability: #{ability} #{e}"
-      
+  
+  add_abilities: (new_abilities...) ->
+    @addAbilities(new_abilities...)
+
   nextTurn: ->
     new Turn(@abilities)
   
