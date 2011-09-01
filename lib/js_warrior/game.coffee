@@ -10,10 +10,10 @@ class Game
     @getCurrentLevel().loadLevel()
 
   start: (playerSource=null) -> 
-    @getCurrentLevel().loadPlayer(playerSource)
-    @shouldStop = false
-    @emitter.emit 'game.start'
-    @playNormalMode()
+    if @getCurrentLevel().loadPlayer(playerSource)
+      @shouldStop = false
+      @emitter.emit 'game.start'
+      @playNormalMode()
 
   # stop a running game
   stop: ->
@@ -42,11 +42,10 @@ class Game
       haveFurtherStep = false
     
     if @currentLevel.isPassed()
+      haveFurtherStep = false
       @currentLevel.completed()
       if !@getNextLevel().isExists()
         @emitter.emit "game.end"
-
-      haveFurtherStep = false
 
     else if @currentLevel.isFailed()
       haveFurtherStep = false

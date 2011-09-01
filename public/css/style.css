@@ -5,7 +5,7 @@ body {
 
 #message p, #message pre, #tower p, #tower pre {
   font-family: 'VT323', cursive;
-  font-size: 26px;
+  font-size: 22px;
   width: 400px;
 }
 
@@ -47,5 +47,5 @@ body {
 #hint_message, #more_hint_message {
   margin-top: 450px;
   font-family: 'VT323', cursive;
-  font-size: 26px;
+  font-size: 22px;
 }

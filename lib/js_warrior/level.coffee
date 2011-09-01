@@ -36,9 +36,15 @@ class Level
 
   loadPlayer: (jsString=null) ->
     Player = Players.LazyPlayer
-    Player = eval(jsString) if jsString
-    @player = new Player()
-    @warrior.player = @player
+
+    try
+      Player = eval(jsString) if jsString
+      @player = new Player()
+      @warrior.player = @player
+
+    catch e
+      @emitter?.emit "game.play.error", e
+      undefined
     
   completed: ->
     @profile.addAbilities(_.keys(@warrior.abilities)...)

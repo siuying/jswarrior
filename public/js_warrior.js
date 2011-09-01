@@ -722,7 +722,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         compiled = this.coffee.compile(source, {
           bare: true
         });
-        console.log("source", source);
         this.game.start(compiled);
         this.$("#run").hide();
         return this.$("#stop").show();
@@ -891,10 +890,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (playerSource == null) {
         playerSource = null;
       }
-      this.getCurrentLevel().loadPlayer(playerSource);
-      this.shouldStop = false;
-      this.emitter.emit('game.start');
-      return this.playNormalMode();
+      if (this.getCurrentLevel().loadPlayer(playerSource)) {
+        this.shouldStop = false;
+        this.emitter.emit('game.start');
+        return this.playNormalMode();
+      }
     };
     Game.prototype.stop = function() {
       return this.shouldStop = true;
@@ -925,11 +925,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         haveFurtherStep = false;
       }
       if (this.currentLevel.isPassed()) {
+        haveFurtherStep = false;
         this.currentLevel.completed();
         if (!this.getNextLevel().isExists()) {
           this.emitter.emit("game.end");
         }
-        haveFurtherStep = false;
       } else if (this.currentLevel.isFailed()) {
         haveFurtherStep = false;
         this.emitter.emit("game.level.failed", this.getCurrentLevel());
@@ -1005,16 +1005,23 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this;
     };
     Level.prototype.loadPlayer = function(jsString) {
-      var Player;
+      var Player, _ref;
       if (jsString == null) {
         jsString = null;
       }
       Player = Players.LazyPlayer;
-      if (jsString) {
-        Player = eval(jsString);
+      try {
+        if (jsString) {
+          Player = eval(jsString);
+        }
+        this.player = new Player();
+        return this.warrior.player = this.player;
+      } catch (e) {
+        if ((_ref = this.emitter) != null) {
+          _ref.emit("game.play.error", e);
+        }
+        return;
       }
-      this.player = new Player();
-      return this.warrior.player = this.player;
     };
     Level.prototype.completed = function() {
       var _ref;
@@ -1458,7 +1465,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     }
     Turn.prototype.addAction = function(action) {
-      return eval("this." + action + " = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; return this.action = ['" + action + "', param]; };");
+      return eval("this." + action + " = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; if (this.action) {throw 'You can only run one action per turn!'; } return this.action = ['" + action + "', param]; };");
     };
     Turn.prototype.action = function() {
       var params;
@@ -1964,7 +1971,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelLoaded = function(level) {
       this.levelChanged(level);
       this.$("#hint_message").html("<p>" + level.tip + "</p>");
-      if (level.clud) {
+      if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
       return this.$("#message").prepend("<p>" + level.description + "</p>");
@@ -2050,7 +2057,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     View.prototype.clear = function() {};
     View.prototype.onError = function(e) {
       console.trace(e);
-      return this.puts("Error in Player: " + e.message);
+      return this.puts("Error: " + e);
     };
     return View;
   })();

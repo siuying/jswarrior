@@ -16,7 +16,7 @@ class Turn
         @addSense(name, params)
 
   addAction: (action) ->
-    eval "this.#{action} = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; return this.action = ['#{action}', param]; };"
+    eval "this.#{action} = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; if (this.action) {throw 'You can only run one action per turn!'; } return this.action = ['#{action}', param]; };"
 
   action: (params...) ->
     console.log(params...)

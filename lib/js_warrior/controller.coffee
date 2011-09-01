@@ -36,7 +36,7 @@ class Controller
       console.log("run game")
       source = @editor.getSession().getValue()
       compiled = @coffee.compile source, bare: on 
-      console.log("source", source)
+
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()

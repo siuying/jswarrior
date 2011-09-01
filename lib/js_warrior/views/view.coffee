@@ -61,7 +61,7 @@ class View
     
   onError: (e) ->
     console.trace(e)
-    @puts "Error in Player: #{e.message}"
+    @puts "Error: #{e}"
 
 root = exports ? window
 root.View = View
