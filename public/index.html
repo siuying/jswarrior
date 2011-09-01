@@ -6,26 +6,50 @@
   <!-- Require the main Stitch file -->
   <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
   <link href='/css/style.css' rel='stylesheet' type='text/css'>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="js_warrior.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" charset="utf-8">
-    jQuery(function(){
-      var JsWarrior = require("js_warrior").JsWarrior;
-	  var EventEmitter = require('events').EventEmitter;
-
-      var emitter = new EventEmitter()
-      var view = new JsWarrior.Views.HtmlView(emitter, $);
-	  view.listen();
-      
-	  var game = new JsWarrior.Game(emitter);
-	  game.start();
-    });
-  </script>
+  
 </head>
 <body>
-	<div id="tower">
-	</div>
-	<div id="message">
-	</div>
+  <div id="display">
+  	<div id="tower">
+  	</div>
+  	<div id="message">
+  	</div>
+  </div>
+  
+  <div id="control">
+    <pre id="editor">class Player
+  playTurn: (warrior) ->
+    </pre>
+  </div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/coffee-script.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js_warrior.js" type="text/javascript" charset="utf-8"></script>
+  <script src="ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="ace/src/theme-twilight.js" type="text/javascript" charset="utf-8"></script>
+  <script src="ace/src/mode-coffee.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/coffeescript">
+$( ->
+  {JsWarrior}     = require "js_warrior"
+  {EventEmitter}  = require "events"
+  
+  emitter = new EventEmitter()
+  
+  # Setup Model  
+  game = new JsWarrior.Game(emitter);
+  game.start();
+
+  # Setup Views
+  view = new JsWarrior.Views.HtmlView(emitter, $);
+  view.listen();
+
+  # Setup Code Editor
+  editor = ace.edit "editor"
+  {Mode} = require "ace/mode/coffee"
+  editor.setTheme "ace/theme/twilight"
+  editor.getSession().setMode(new Mode())
+);
+</script>
 </body>
 </html>

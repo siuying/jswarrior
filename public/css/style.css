@@ -1,4 +1,19 @@
+body {
+  background: #000;
+  color: #fff;
+}
+
 #message p, #message pre, #tower p, #tower pre {
   font-family: 'VT323', cursive;
   font-size: 26px;
+  width: 400px;
+}
+    
+#editor { 
+    margin: 0;
+    position: absolute;
+    width: 600px;
+    top: 0;
+    bottom: 0px;
+    right: 0;
 }
