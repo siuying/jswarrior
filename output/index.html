@@ -13,7 +13,7 @@
 	  var EventEmitter = require('events').EventEmitter;
 
       var emitter = new EventEmitter()
-      var view = new JsWarrior.View(emitter);
+      var view = new JsWarrior.ConsoleView(emitter);
 	  view.listen();
       
 	  var game = new JsWarrior.Game(emitter);
