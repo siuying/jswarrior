@@ -8,24 +8,27 @@ body {
   font-size: 26px;
   width: 400px;
 }
-    
-#control { 
-  margin: 0;
-  position: absolute;
+
+#control {
+  float: right;
   width: 600px;
-  top: 0;
-  bottom: 0px;
-  right: 0;
 }
 
 #editor {
-  margin: 0;
   width: 600px;
-  top: 20px;
+  height: 400px;
+  top: 12px;
   bottom: 0px;
-  right: 0;
+  position: absolute;
 }
 
-#control button {
+#buttons {
+  top: 0px;
+  bottom: 0px;
+  right: 0;
+  position: absolute;
+}
+
+#buttons button {
   float: right;
 }
