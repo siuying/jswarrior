@@ -708,9 +708,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Controller.prototype.setupModels = function() {
       this.profile = new Profile(this.emitter);
-      this.profile.levelNumber = 1;
-      this.game = new Game(this.emitter, this.profile);
-      return this.game.load();
+      return this.game = new Game(this.emitter, this.profile);
     };
     Controller.prototype.setupViews = function() {
       this.view = new Views.HtmlView(this.emitter, $);
@@ -738,6 +736,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#editor").show();
       this.$("#hint").show();
       return this.$("#run").show();
+    };
+    Controller.prototype.setGameLevel = function(level) {
+      this.profile.levelNumber = level;
+      return this.game.load();
     };
     Controller.prototype.onGameFailed = function() {
       this.$("#run").show();
@@ -2128,6 +2130,25 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.unit('thick_sludge', 2, 0, 'west');
     this.unit('archer', 3, 0, 'west');
     return this.unit('thick_sludge', 5, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_005": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You hear cries for help. Captives must need rescuing.");
+    this.tip("Use warrior.feel().isCaptive() to see if there's a captive, and warrior.rescue() to rescue him. Don't attack captives.");
+    this.clue("Don't forget to constantly check if you're taking damage and rest until your health is full if you aren't taking damage.");
+    this.timeBonus(45);
+    this.aceScore(123);
+    this.size(7, 1);
+    this.stairs(6, 0);
+    this.warrior(0, 0, 'east', function() {
+      return this.addAbilities('rescue');
+    });
+    this.unit('captive', 2, 0, 'west');
+    this.unit('archer', 3, 0, 'west');
+    this.unit('archer', 4, 0, 'west');
+    this.unit('thick_sludge', 5, 0, 'west');
+    return this.unit('captive', 6, 0, 'west');
   };
 }).call(this);
 }});

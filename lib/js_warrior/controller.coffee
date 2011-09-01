@@ -20,11 +20,9 @@ class Controller
   setupModels: ->
     # Setup Model  
     @profile = new Profile(@emitter)
-    @profile.levelNumber = 1
 
     # Setup Game
     @game = new Game(@emitter, @profile)
-    @game.load()
 
   setupViews: ->
     # Setup Views
@@ -54,6 +52,10 @@ class Controller
     @$("#editor").show()
     @$("#hint").show()
     @$("#run").show()
+  
+  setGameLevel: (level) ->
+    @profile.levelNumber = level
+    @game.load()
 
   onGameFailed: ->
     @$("#run").show()
