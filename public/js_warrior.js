@@ -515,7 +515,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
-  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  };
   Sense = require('./sense').Sense;
   _ = require('underscore')._;
   Look = (function() {
@@ -527,13 +527,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return "Returns an array of up to three Spaces in the given direction (forward by default).";
     };
     Look.prototype.perform = function(direction) {
+      var offset, _results;
       if (direction == null) {
         direction = 'forward';
       }
       this.verifyDirection(direction);
-      return _.map([1, 2, 3], __bind(function(amount) {
-        return this.space(direction, amount);
-      }, this));
+      _results = [];
+      for (offset = 1; offset <= 3; offset++) {
+        _results.push(this.space(direction, offset));
+      }
+      return _results;
     };
     return Look;
   })();
@@ -990,7 +993,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Game = (function() {
     var EPIC_TIME, NORMAL_TIME;
     NORMAL_TIME = 600;
-    EPIC_TIME = 30;
+    EPIC_TIME = 100;
     function Game(emitter, profile) {
       var _ref;
       this.emitter = emitter;

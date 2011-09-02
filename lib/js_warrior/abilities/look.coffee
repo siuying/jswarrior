@@ -7,7 +7,7 @@ class Look extends Sense
 
   perform: (direction='forward') ->
     @verifyDirection(direction)
-    _.map([1..3], (amount) => @space(direction, amount) )
+    (@space(direction, offset) for offset in [1..3])
   
 root = exports ? window
 root.Look = Look

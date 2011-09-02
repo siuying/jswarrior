@@ -4,7 +4,7 @@
 
 class Game
   NORMAL_TIME = 600
-  EPIC_TIME = 30
+  EPIC_TIME = 100
   
   constructor: (@emitter, @profile = null)->
     @profile ?= new Profile(@emitter)

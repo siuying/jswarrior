@@ -31,17 +31,17 @@ class Profile
     @epic
   
   addAbilities: (newAbilities...) ->
-    console.log("newAbilities", newAbilities)
     for ability in newAbilities
       @abilities.push(ability) if ability
-    _.uniq(@abilities)
+    @abilities = _.uniq(@abilities)
   
   calculateAverageGrade: ->
-    if @currentEpicGrades.length > 0
-      sum = 0
-      for grade, score in @currentEpicGrades
-        sum += score
-      sum / @currentEpicGrades.length
+    noOfGrades = _.values(@currentEpicGrades).length
+    if noOfGrades > 0
+      sum = 0.0
+      for score in _.values(@currentEpicGrades)
+        sum += score 
+      sum / noOfGrades
     else
       0.0
 
