@@ -18,6 +18,7 @@ body {
 }
 
 #display {
+  float: left;
   width: 400px;
   left: 4px;
 }
@@ -28,18 +29,17 @@ body {
 
 #control {
   width: 500px;
-  margin-left: 430px;
-  margin-top: -200px;
+  float: right;
 }
 
 #editor {
   width: 500px;
   height: 420px;
-  top: 12px;
+  top: 26px;
 }
 
 #buttons {
-  margin-left: 400px;
+  float: right;
 }
 
 #buttons button {
@@ -48,6 +48,7 @@ body {
 /* Hints */
 
 #hint_message {
+  margin-top: 460px;
 }
 
 #hint_message, #more_hint_message {
