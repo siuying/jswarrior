@@ -20,6 +20,7 @@ body {
 #display {
   float: left;
   width: 400px;
+  margin-right: 40px;
   left: 4px;
 }
 
