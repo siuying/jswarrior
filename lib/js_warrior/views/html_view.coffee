@@ -18,7 +18,7 @@ class HtmlView extends View
     @$("#hint_message").html("<p>#{level.tip}</p>")
     @setWarriorAbilities(level.warrior.abilities)    
     @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
-    @$("#message").append("<p>#{level.description}</p>")
+    @puts level.description
 
   levelChanged: (level) ->
     @$("#tower").html("")
@@ -38,6 +38,11 @@ class HtmlView extends View
     Score&nbsp;&nbsp;#{score}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
     @$("#tower").append("<pre>#{level.floor.character()} </pre>")
+    @$("#tower").append("<p--------------------------------------------</p>")
+    
+    units = ("#{unit.character()} - #{unit.name()} (HP: #{unit.health})" for unit in level.floor.units())
+    units.push("> - Stair")
+    @$("#tower").append("<p class='unit'>#{units.join("\n<br/>")}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
 
   setWarriorAbilities: (abilities) ->

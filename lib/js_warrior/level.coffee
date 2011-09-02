@@ -62,11 +62,9 @@ class Level
     # Update Score
     score = 0
 
-    @emitter?.emit 'game.score.message', "Level Score: #{@warrior.score}"
     console.log('level score', @warrior.score)
     score += @warrior.score
 
-    @emitter?.emit "Time Bonus: #{@timeBonus}"
     console.log('time bonus', @timeBonus)
     score += @timeBonus
 

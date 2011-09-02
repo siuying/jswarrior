@@ -1236,16 +1236,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     Level.prototype.completed = function() {
-      var score, scoreCalculation, _ref, _ref2, _ref3;
+      var score, scoreCalculation, _ref;
       score = 0;
-      if ((_ref = this.emitter) != null) {
-        _ref.emit('game.score.message', "Level Score: " + this.warrior.score);
-      }
       console.log('level score', this.warrior.score);
       score += this.warrior.score;
-      if ((_ref2 = this.emitter) != null) {
-        _ref2.emit("Time Bonus: " + this.timeBonus);
-      }
       console.log('time bonus', this.timeBonus);
       score += this.timeBonus;
       if (this.floor.otherUnits().length === 0) {
@@ -1264,7 +1258,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       } else {
         scoreCalculation = this.scoreCalculation(this.profile.score, score);
         this.profile.score += score;
-        (_ref3 = this.profile).addAbilities.apply(_ref3, _.keys(this.warrior.abilities));
+        (_ref = this.profile).addAbilities.apply(_ref, _.keys(this.warrior.abilities));
       }
       this.emitter.emit("game.level.complete", this);
       return this.emitter.emit("game.level.report", {
@@ -2290,10 +2284,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
-      return this.$("#message").append("<p>" + level.description + "</p>");
+      return this.puts(level.description);
     };
     HtmlView.prototype.levelChanged = function(level) {
-      var epic, score, tower;
+      var epic, score, tower, unit, units;
       this.$("#tower").html("");
       this.$("#tower").append("<p--------------------------------------------</p>");
       tower = level.profile.towerPath.toUpperCase();
@@ -2307,6 +2301,19 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#tower").append("<p>Tower&nbsp;&nbsp;" + tower + " " + epic + "<br/>    Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
+      this.$("#tower").append("<p--------------------------------------------</p>");
+      units = (function() {
+        var _i, _len, _ref, _results;
+        _ref = level.floor.units();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          unit = _ref[_i];
+          _results.push("" + (unit.character()) + " - " + (unit.name()) + " (HP: " + unit.health + ")");
+        }
+        return _results;
+      })();
+      units.push("> - Stair");
+      this.$("#tower").append("<p class='unit'>" + (units.join("\n<br/>")) + "</p>");
       return this.$("#tower").append("<p--------------------------------------------</p>");
     };
     HtmlView.prototype.setWarriorAbilities = function(abilities) {

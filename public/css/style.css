@@ -13,7 +13,7 @@ body {
 #message {
   top: 160px;
   width: 420px;
-  height: 600px;
+  height: 360px;
   overflow-y: auto;
 }
 
@@ -23,6 +23,10 @@ body {
   bottom: 0px;
   left: 4px;
   position: absolute;
+}
+
+#display .unit {
+  padding-left: 20px;
 }
 
 #control {
