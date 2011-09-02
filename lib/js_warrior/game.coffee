@@ -16,27 +16,26 @@ class Game
 
   start: (playerSource=null) -> 
     if @getCurrentLevel().loadPlayer(playerSource)
-      @shouldStop = false
+      @stop()
       @emitter.emit 'game.start'
       @playNormalMode()
 
   # stop a running game
   stop: ->
-    @shouldStop = true
+    clearInterval(@intervalId) if @intervalId
+    @running = false
 
   playNormalMode: ->
     @playCurrentLevel()
-
       
   playCurrentLevel: ->
     @emitter.emit 'game.level.start', @currentLevel
-    @playGame()
-  
+    if @profile.epic
+      @intervalId = setInterval (=> @playGame()), EPIC_TIME 
+    else
+      @intervalId = setInterval (=> @playGame()), NORMAL_TIME
+    
   playGame: (step=1) ->
-    if @shouldStop
-      @running = false
-      return
-
     @running = true
     haveFurtherStep = true
     
@@ -44,27 +43,20 @@ class Game
       @currentLevel.play(step)
     catch e
       @emitter.emit "game.play.error", e
-      haveFurtherStep = false
+      @stop()
     
     if @currentLevel.isPassed()
-      haveFurtherStep = @profile.isEpic()
+      @stop() unless @profile.isEpic()
       @currentLevel.completed()
       @requestNextLevel()
 
     else if @currentLevel.isFailed()
-      haveFurtherStep = false
+      @stop()
       @emitter.emit "game.level.failed", @getCurrentLevel()
-
-    @running = haveFurtherStep
-    if haveFurtherStep
-      if @profile.isEpic()
-        setTimeout (=> @playGame()), EPIC_TIME
-      else
-        setTimeout (=> @playGame()), NORMAL_TIME
 
   prepareEpicMode: ->
     @profile.score = 0
-    @profile.epic = 1
+    @profile.epic = true
     @profile.levelNumber = 1
     @profile.currentEpicScore = 0
     @profile.currentEpicGrades = {}
@@ -93,7 +85,8 @@ class Game
       @emitter.emit "game.end"
       if @profile.isEpic()
         @emitter?.emit 'game.level.changed', @getCurrentLevel()
-        @shouldStop = true
+        @stop()
+        
         @emitter.emit "game.epic.end", this
       else
         # Enter Epic Mode!

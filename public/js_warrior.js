@@ -1032,29 +1032,36 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         playerSource = null;
       }
       if (this.getCurrentLevel().loadPlayer(playerSource)) {
-        this.shouldStop = false;
+        this.stop();
         this.emitter.emit('game.start');
         return this.playNormalMode();
       }
     };
     Game.prototype.stop = function() {
-      return this.shouldStop = true;
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+      return this.running = false;
     };
     Game.prototype.playNormalMode = function() {
       return this.playCurrentLevel();
     };
     Game.prototype.playCurrentLevel = function() {
       this.emitter.emit('game.level.start', this.currentLevel);
-      return this.playGame();
+      if (this.profile.epic) {
+        return this.intervalId = setInterval((__bind(function() {
+          return this.playGame();
+        }, this)), EPIC_TIME);
+      } else {
+        return this.intervalId = setInterval((__bind(function() {
+          return this.playGame();
+        }, this)), NORMAL_TIME);
+      }
     };
     Game.prototype.playGame = function(step) {
       var haveFurtherStep;
       if (step == null) {
         step = 1;
-      }
-      if (this.shouldStop) {
-        this.running = false;
-        return;
       }
       this.running = true;
       haveFurtherStep = true;
@@ -1062,32 +1069,22 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.currentLevel.play(step);
       } catch (e) {
         this.emitter.emit("game.play.error", e);
-        haveFurtherStep = false;
+        this.stop();
       }
       if (this.currentLevel.isPassed()) {
-        haveFurtherStep = this.profile.isEpic();
-        this.currentLevel.completed();
-        this.requestNextLevel();
-      } else if (this.currentLevel.isFailed()) {
-        haveFurtherStep = false;
-        this.emitter.emit("game.level.failed", this.getCurrentLevel());
-      }
-      this.running = haveFurtherStep;
-      if (haveFurtherStep) {
-        if (this.profile.isEpic()) {
-          return setTimeout((__bind(function() {
-            return this.playGame();
-          }, this)), EPIC_TIME);
-        } else {
-          return setTimeout((__bind(function() {
-            return this.playGame();
-          }, this)), NORMAL_TIME);
+        if (!this.profile.isEpic()) {
+          this.stop();
         }
+        this.currentLevel.completed();
+        return this.requestNextLevel();
+      } else if (this.currentLevel.isFailed()) {
+        this.stop();
+        return this.emitter.emit("game.level.failed", this.getCurrentLevel());
       }
     };
     Game.prototype.prepareEpicMode = function() {
       this.profile.score = 0;
-      this.profile.epic = 1;
+      this.profile.epic = true;
       this.profile.levelNumber = 1;
       this.profile.currentEpicScore = 0;
       this.profile.currentEpicGrades = {};
@@ -1132,7 +1129,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
           if ((_ref = this.emitter) != null) {
             _ref.emit('game.level.changed', this.getCurrentLevel());
           }
-          this.shouldStop = true;
+          this.stop();
           return this.emitter.emit("game.epic.end", this);
         } else {
           this.emitter.emit('game.epic.start', this);
