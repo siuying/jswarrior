@@ -77,16 +77,17 @@ class Level
 
     if @profile.isEpic()
       scoreCalculation = @scoreCalculation(@profile.currentEpicScore, score)
-      @profile.currentEpicGrades[@number] = (score / @aceScore) if @aceScore
+      rate = @profile.currentEpicGrades[@number] = (score / @aceScore) if @aceScore
       console.log("lvl #{@number}: (score / @aceScore) == (#{score} / #{@aceScore})")
       @profile.currentEpicScore += score
     else
       scoreCalculation = @scoreCalculation(@profile.score, score)
+      rate = (score / @aceScore) if @aceScore
       @profile.score += score
       @profile.addAbilities(_.keys(@warrior.abilities)...)
 
     @emitter.emit "game.level.complete", this
-    @emitter.emit "game.level.report", levelScore: @warrior.score, timeBonus: @timeBonus, clearBonus: @clearBonus(), scoreCalculation: scoreCalculation
+    @emitter.emit "game.level.report", grade: Level.gradeLetter(rate), levelScore: @warrior.score, timeBonus: @timeBonus, clearBonus: @clearBonus(), scoreCalculation: scoreCalculation
 
   isPassed: ->
     !!@floor?.stairsSpace()?.isWarrior()

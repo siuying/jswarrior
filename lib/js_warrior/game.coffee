@@ -64,13 +64,12 @@ class Game
     @nextLevel = @profile.nextLevel()
     @getCurrentLevel().loadLevel()
   
-  finalReport: ->
-    if @profile.calculateAverageGrade      
-      levels = ("  Level #{level}: #{Level.gradeLetter(@profile.currentEpicGrades[level])}" for level in _.keys(@profile.currentEpicGrades))
-      report = "Your average grade for this tower is: #{Level.gradeLetter(@profile.calculateAverageGrade())}<br/>
-      #{levels.join('<br/>\n')}<br/>"
-      console.log(levels.join('\n'))
-      report
+  finalReport: ->   
+    levels = ("  Level #{level}: #{Level.gradeLetter(@profile.currentEpicGrades[level])}" for level in _.keys(@profile.currentEpicGrades))
+    report = "Your average grade for this tower is: #{Level.gradeLetter(@profile.calculateAverageGrade())}<br/>
+    #{levels.join('<br/>\n')}<br/>"
+    console.log(levels.join('\n'))
+    report
 
   requestNextLevel: ->
     if @getNextLevel().isExists()

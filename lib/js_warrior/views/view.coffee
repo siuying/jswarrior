@@ -43,12 +43,12 @@ class View
     @emitter.on "game.epic.end", (game)  =>
       @epicModeCompleted(game)
       
-    @emitter.on "game.level.report", ({levelScore , timeBonus, clearBonus, scoreCalculation}) =>
+    @emitter.on "game.level.report", ({grade, levelScore , timeBonus, clearBonus, scoreCalculation}) =>
       messages = []
       messages.push "Level Score: #{levelScore}"
       messages.push "Time Bonus:  #{timeBonus}"
       messages.push "Clear Bonus: #{clearBonus}" if clearBonus
-      messages.push "Total Score: #{scoreCalculation}"
+      messages.push "Total Score: #{scoreCalculation} (#{grade})"
       @puts messages.join("<br/>")
 
   close: ->

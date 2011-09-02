@@ -1098,21 +1098,19 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Game.prototype.finalReport = function() {
       var level, levels, report;
-      if (this.profile.calculateAverageGrade) {
-        levels = (function() {
-          var _i, _len, _ref, _results;
-          _ref = _.keys(this.profile.currentEpicGrades);
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            level = _ref[_i];
-            _results.push("  Level " + level + ": " + (Level.gradeLetter(this.profile.currentEpicGrades[level])));
-          }
-          return _results;
-        }).call(this);
-        report = "Your average grade for this tower is: " + (Level.gradeLetter(this.profile.calculateAverageGrade())) + "<br/>      " + (levels.join('<br/>\n')) + "<br/>";
-        console.log(levels.join('\n'));
-        return report;
-      }
+      levels = (function() {
+        var _i, _len, _ref, _results;
+        _ref = _.keys(this.profile.currentEpicGrades);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          level = _ref[_i];
+          _results.push("  Level " + level + ": " + (Level.gradeLetter(this.profile.currentEpicGrades[level])));
+        }
+        return _results;
+      }).call(this);
+      report = "Your average grade for this tower is: " + (Level.gradeLetter(this.profile.calculateAverageGrade())) + "<br/>    " + (levels.join('<br/>\n')) + "<br/>";
+      console.log(levels.join('\n'));
+      return report;
     };
     Game.prototype.requestNextLevel = function() {
       var player, _ref;
@@ -1241,7 +1239,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     Level.prototype.completed = function() {
-      var score, scoreCalculation, _ref;
+      var rate, score, scoreCalculation, _ref;
       score = 0;
       console.log('level score', this.warrior.score);
       score += this.warrior.score;
@@ -1256,17 +1254,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (this.profile.isEpic()) {
         scoreCalculation = this.scoreCalculation(this.profile.currentEpicScore, score);
         if (this.aceScore) {
-          this.profile.currentEpicGrades[this.number] = score / this.aceScore;
+          rate = this.profile.currentEpicGrades[this.number] = score / this.aceScore;
         }
         console.log("lvl " + this.number + ": (score / @aceScore) == (" + score + " / " + this.aceScore + ")");
         this.profile.currentEpicScore += score;
       } else {
         scoreCalculation = this.scoreCalculation(this.profile.score, score);
+        if (this.aceScore) {
+          rate = score / this.aceScore;
+        }
         this.profile.score += score;
         (_ref = this.profile).addAbilities.apply(_ref, _.keys(this.warrior.abilities));
       }
       this.emitter.emit("game.level.complete", this);
       return this.emitter.emit("game.level.report", {
+        grade: Level.gradeLetter(rate),
         levelScore: this.warrior.score,
         timeBonus: this.timeBonus,
         clearBonus: this.clearBonus(),
@@ -2407,15 +2409,15 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.epicModeCompleted(game);
       }, this));
       return this.emitter.on("game.level.report", __bind(function(_arg) {
-        var clearBonus, levelScore, messages, scoreCalculation, timeBonus;
-        levelScore = _arg.levelScore, timeBonus = _arg.timeBonus, clearBonus = _arg.clearBonus, scoreCalculation = _arg.scoreCalculation;
+        var clearBonus, grade, levelScore, messages, scoreCalculation, timeBonus;
+        grade = _arg.grade, levelScore = _arg.levelScore, timeBonus = _arg.timeBonus, clearBonus = _arg.clearBonus, scoreCalculation = _arg.scoreCalculation;
         messages = [];
         messages.push("Level Score: " + levelScore);
         messages.push("Time Bonus:  " + timeBonus);
         if (clearBonus) {
           messages.push("Clear Bonus: " + clearBonus);
         }
-        messages.push("Total Score: " + scoreCalculation);
+        messages.push("Total Score: " + scoreCalculation + " (" + grade + ")");
         return this.puts(messages.join("<br/>"));
       }, this));
     };
