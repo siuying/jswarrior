@@ -103,7 +103,7 @@ body {
 }
 
 #message {
-  padding-top: 32px;
+  margin-top: 32px;
   height: 344px;
   overflow-y: auto;
 }
@@ -120,7 +120,7 @@ body {
 #editor {
   width: 436px;
   height: 344px;
-  padding-top: 28px;
+  margin-top: 28px;
 }
 
 #tower {
