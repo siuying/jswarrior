@@ -22,7 +22,7 @@ class BaseAbilities
   
   damage: (receiver, amount) ->
     receiver.takeDamage(amount)
-    @unit.earnPoints(receiver.max_health) unless receiver.isAlive()
+    @unit.earnPoints(receiver.maxHealth()) unless receiver.isAlive()
   
   description: ->
     undefined

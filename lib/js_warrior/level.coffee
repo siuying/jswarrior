@@ -46,29 +46,6 @@ class Level
       @emitter?.emit "game.play.error", e
       undefined
 
-  completed: ->
-    # Update Score
-    score = 0
-    
-    @emitter?.emit 'game.score.message', "Level Score: #{@warrior.score}"
-    score += @warrior.score
-    
-    @emitter?.emit "Time Bonus: #{@timeBonus}"
-    score += @timeBonus
-    
-    if @floor.otherUnits().length == 0
-      score += @clearBonus()
-    
-    scoreCalculation = @scoreCalculation(@profile.score, score)
-    @profile.score += score
-
-    # Update Abilities
-    @profile.addAbilities(_.keys(@warrior.abilities)...)
-    @emitter.emit "game.level.complete", this
-    @emitter.emit "game.level.report", levelScore: @warrior.score, timeBonus: @timeBonus, clearBonus: @clearBonus(), scoreCalculation: scoreCalculation
-
-    console.log("encoded profile", @profile.encode())
-
   # Play one step in the game world
   play: ->
     return if @isPassed() || @isFailed()
@@ -79,8 +56,39 @@ class Level
     unit.prepareTurn() for unit in @floor.units()
     unit.performTurn() for unit in @floor.units()
 
-    @time_bonus = @time_bonus - 1 if @time_bonus > 0
-  
+    @timeBonus = @timeBonus - 1 if @timeBonus > 0
+
+  completed: ->
+    # Update Score
+    score = 0
+
+    @emitter?.emit 'game.score.message', "Level Score: #{@warrior.score}"
+    console.log('level score', @warrior.score)
+    score += @warrior.score
+
+    @emitter?.emit "Time Bonus: #{@timeBonus}"
+    console.log('time bonus', @timeBonus)
+    score += @timeBonus
+
+    if @floor.otherUnits().length == 0
+      console.log('clear bonus', @clearBonus())
+      score += @clearBonus()
+    else
+      console.log('other units', @floor.otherUnits())
+
+    if @profile.isEpic()
+      scoreCalculation = @scoreCalculation(@profile.currentEpicScore, score)
+      @profile.currentEpicGrades[@number] = (score / @aceScore) if @aceScore
+      console.log("lvl #{@number}: (score / @aceScore) == (#{score} / #{@aceScore})")
+      @profile.currentEpicScore += score
+    else
+      scoreCalculation = @scoreCalculation(@profile.score, score)
+      @profile.score += score
+      @profile.addAbilities(_.keys(@warrior.abilities)...)
+
+    @emitter.emit "game.level.complete", this
+    @emitter.emit "game.level.report", levelScore: @warrior.score, timeBonus: @timeBonus, clearBonus: @clearBonus(), scoreCalculation: scoreCalculation
+
   isPassed: ->
     !!@floor?.stairsSpace()?.isWarrior()
   
@@ -110,5 +118,20 @@ class Level
     @warrior.player = @player
     @warrior
 
+  @gradeLetter: (percent) ->
+    if percent >= 1.0
+      return "S"
+    else if percent >= 0.9
+      return "A"
+    else if percent >=0.8
+      return "B"
+    else if percent >=0.7
+      return "C"
+    else if percent >= 0.6
+      return "D"
+    else
+      return "F"
+    
+    
 root = exports ? window
 root.Level = Level

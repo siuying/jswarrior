@@ -22,9 +22,18 @@ class HtmlView extends View
   levelChanged: (level) ->
     @$("#tower").html("")
     @$("#tower").append("<p--------------------------------------------</p>")
-    @$("#tower").append("<p>Lvl&nbsp;&nbsp;&nbsp;&nbsp;#{level.number}<br/>
+
+    tower = level.profile.towerPath.toUpperCase()
+    if level.profile.isEpic()
+      score = level.profile.currentEpicScore
+      epic = "(EPIC)"
+    else
+      score = level.profile.score
+      epic = ""
+
+    @$("#tower").append("<p>#{tower}  Lvl #{level.number} #{epic}<br/>
     HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{level.warrior.health}/#{level.warrior.maxHealth()}<br/>
-    Score&nbsp;&nbsp;#{level.profile.score}</p>")
+    Score&nbsp;&nbsp;#{score}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
     @$("#tower").append("<pre>#{level.floor.character()} </pre>")
     @$("#tower").append("<p--------------------------------------------</p>")
@@ -41,6 +50,11 @@ class HtmlView extends View
 
   levelStarted: (level) ->
     @puts "Starting Level #{level.number}"
+
+  epicModeStarted: (game) ->
+    
+  epicModeCompleted: (game) ->
+    @puts game.finalReport()
 
   clear: ->
     @$("#message").html("")

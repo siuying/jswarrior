@@ -27,7 +27,7 @@ class Floor
   
   otherUnits: ->
     units = []
-    for unit in @__units when unit.constructor.name != 'Warrior'
+    for unit in @units() when unit.constructor.name != 'Warrior'
       units.push unit
     units
 

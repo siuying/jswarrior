@@ -30,7 +30,7 @@ class BaseUnit
         @say "dies"
 
   isAlive: ->
-    @position != undefined
+    @position != undefined && @position != null
   
   isBound: ->
     @bound
@@ -49,7 +49,7 @@ class BaseUnit
     @constructor.name
   
   toString: ->
-    @name()
+    @name().replace("_", " ")
   
   addAbilities: (new_abilities...) ->
     @abilities = @getAbilities()

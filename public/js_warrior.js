@@ -378,7 +378,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     BaseAbilities.prototype.damage = function(receiver, amount) {
       receiver.takeDamage(amount);
       if (!receiver.isAlive()) {
-        return this.unit.earnPoints(receiver.max_health);
+        return this.unit.earnPoints(receiver.maxHealth());
       }
     };
     BaseAbilities.prototype.description = function() {
@@ -829,8 +829,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#hint").show();
       return this.$("#run").show();
     };
-    Controller.prototype.setGameLevel = function(level) {
-      this.profile.levelNumber = level;
+    Controller.prototype.setGameLevel = function(level, epic) {
+      if (level == null) {
+        level = 1;
+      }
+      if (epic == null) {
+        epic = false;
+      }
+      if (epic) {
+        this.profile.epic = true;
+        this.profile.levelNumber = 1;
+        this.profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot');
+      } else {
+        this.profile.levelNumber = level;
+      }
       return this.game.load();
     };
     Controller.prototype.onLevelFailed = function() {
@@ -845,10 +857,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.started = false;
     };
     Controller.prototype.onLevelLoaded = function(level) {
-      if (level) {
-        return window.history.pushState({
-          level: level.number
-        }, "Level " + level.number, "" + level.number);
+      if (!level.profile.isEpic()) {
+        if (level) {
+          return window.history.pushState({
+            level: level.number
+          }, "Level " + level.number, "" + level.number);
+        }
       }
     };
     return Controller;
@@ -896,7 +910,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Floor.prototype.otherUnits = function() {
       var unit, units, _i, _len, _ref;
       units = [];
-      _ref = this.__units;
+      _ref = this.units();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         unit = _ref[_i];
         if (unit.constructor.name !== 'Warrior') {
@@ -968,13 +982,15 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.Floor = Floor;
 }).call(this);
 }, "js_warrior/game": function(exports, require, module) {(function() {
-  var Game, Profile, root;
+  var Game, Level, Profile, root, _;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Profile = require('./profile').Profile;
+  Level = require('./level').Level;
+  _ = require('underscore')._;
   Game = (function() {
     var EPIC_TIME, NORMAL_TIME;
     NORMAL_TIME = 600;
-    EPIC_TIME = 300;
+    EPIC_TIME = 30;
     function Game(emitter, profile) {
       var _ref;
       this.emitter = emitter;
@@ -1053,12 +1069,32 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.profile.score = 0;
       this.profile.epic = 1;
       this.profile.levelNumber = 1;
+      this.profile.currentEpicScore = 0;
+      this.profile.currentEpicGrades = {};
       this.currentLevel = this.profile.currentLevel();
       this.nextLevel = this.profile.nextLevel();
       return this.getCurrentLevel().loadLevel();
     };
+    Game.prototype.finalReport = function() {
+      var level, levels, report;
+      if (this.profile.calculateAverageGrade) {
+        levels = (function() {
+          var _i, _len, _ref, _results;
+          _ref = _.keys(this.profile.currentEpicGrades);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            level = _ref[_i];
+            _results.push("  Level " + level + ": " + (Level.gradeLetter(this.profile.currentEpicGrades[level])));
+          }
+          return _results;
+        }).call(this);
+        report = "Your average grade for this tower is: " + (Level.gradeLetter(this.profile.calculateAverageGrade())) + "<br/>      " + (levels.join('<br/>\n')) + "<br/>";
+        console.log(levels.join('\n'));
+        return report;
+      }
+    };
     Game.prototype.requestNextLevel = function() {
-      var player;
+      var player, _ref;
       if (this.getNextLevel().isExists()) {
         if (this.profile.isEpic()) {
           player = this.getCurrentLevel().player;
@@ -1073,11 +1109,14 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       } else {
         this.emitter.emit("game.end");
         if (this.profile.isEpic()) {
+          if ((_ref = this.emitter) != null) {
+            _ref.emit('game.level.changed', this.getCurrentLevel());
+          }
           this.shouldStop = true;
-          return this.emitter.emit("game.epic.end");
+          return this.emitter.emit("game.epic.end", this);
         } else {
           this.prepareEpicMode();
-          return this.emitter.emit('game.epic.start');
+          return this.emitter.emit('game.epic.start', this);
         }
       }
     };
@@ -1156,32 +1195,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return;
       }
     };
-    Level.prototype.completed = function() {
-      var score, scoreCalculation, _ref, _ref2, _ref3;
-      score = 0;
-      if ((_ref = this.emitter) != null) {
-        _ref.emit('game.score.message', "Level Score: " + this.warrior.score);
-      }
-      score += this.warrior.score;
-      if ((_ref2 = this.emitter) != null) {
-        _ref2.emit("Time Bonus: " + this.timeBonus);
-      }
-      score += this.timeBonus;
-      if (this.floor.otherUnits().length === 0) {
-        score += this.clearBonus();
-      }
-      scoreCalculation = this.scoreCalculation(this.profile.score, score);
-      this.profile.score += score;
-      (_ref3 = this.profile).addAbilities.apply(_ref3, _.keys(this.warrior.abilities));
-      this.emitter.emit("game.level.complete", this);
-      this.emitter.emit("game.level.report", {
-        levelScore: this.warrior.score,
-        timeBonus: this.timeBonus,
-        clearBonus: this.clearBonus(),
-        scoreCalculation: scoreCalculation
-      });
-      return console.log("encoded profile", this.profile.encode());
-    };
     Level.prototype.play = function() {
       var unit, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       if (this.isPassed() || this.isFailed()) {
@@ -1201,9 +1214,48 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         unit = _ref3[_j];
         unit.performTurn();
       }
-      if (this.time_bonus > 0) {
-        return this.time_bonus = this.time_bonus - 1;
+      if (this.timeBonus > 0) {
+        return this.timeBonus = this.timeBonus - 1;
       }
+    };
+    Level.prototype.completed = function() {
+      var score, scoreCalculation, _ref, _ref2, _ref3;
+      score = 0;
+      if ((_ref = this.emitter) != null) {
+        _ref.emit('game.score.message', "Level Score: " + this.warrior.score);
+      }
+      console.log('level score', this.warrior.score);
+      score += this.warrior.score;
+      if ((_ref2 = this.emitter) != null) {
+        _ref2.emit("Time Bonus: " + this.timeBonus);
+      }
+      console.log('time bonus', this.timeBonus);
+      score += this.timeBonus;
+      if (this.floor.otherUnits().length === 0) {
+        console.log('clear bonus', this.clearBonus());
+        score += this.clearBonus();
+      } else {
+        console.log('other units', this.floor.otherUnits());
+      }
+      if (this.profile.isEpic()) {
+        scoreCalculation = this.scoreCalculation(this.profile.currentEpicScore, score);
+        if (this.aceScore) {
+          this.profile.currentEpicGrades[this.number] = score / this.aceScore;
+        }
+        console.log("lvl " + this.number + ": (score / @aceScore) == (" + score + " / " + this.aceScore + ")");
+        this.profile.currentEpicScore += score;
+      } else {
+        scoreCalculation = this.scoreCalculation(this.profile.score, score);
+        this.profile.score += score;
+        (_ref3 = this.profile).addAbilities.apply(_ref3, _.keys(this.warrior.abilities));
+      }
+      this.emitter.emit("game.level.complete", this);
+      return this.emitter.emit("game.level.report", {
+        levelScore: this.warrior.score,
+        timeBonus: this.timeBonus,
+        clearBonus: this.clearBonus(),
+        scoreCalculation: scoreCalculation
+      });
     };
     Level.prototype.isPassed = function() {
       var _ref, _ref2;
@@ -1239,6 +1291,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.warrior.setName(this.profile.warriorName);
       this.warrior.player = this.player;
       return this.warrior;
+    };
+    Level.gradeLetter = function(percent) {
+      if (percent >= 1.0) {
+        return "S";
+      } else if (percent >= 0.9) {
+        return "A";
+      } else if (percent >= 0.8) {
+        return "B";
+      } else if (percent >= 0.7) {
+        return "C";
+      } else if (percent >= 0.6) {
+        return "D";
+      } else {
+        return "F";
+      }
     };
     return Level;
   })();
@@ -1480,6 +1547,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.levelNumber = 1;
       this.epic = false;
       this.lastLevelNumber = void 0;
+      this.currentEpicScore = 0;
+      this.currentEpicGrades = {};
+      this.epicScore = 0;
     }
     Profile.prototype.toString = function() {
       return [this.warriorName, "level " + this.levelNumber, "score " + this.score].join('-');
@@ -1507,6 +1577,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         }
       }
       return _.uniq(this.abilities);
+    };
+    Profile.prototype.calculateAverageGrade = function() {
+      var grade, score, sum, _len, _ref;
+      if (this.currentEpicGrades.length > 0) {
+        sum = 0;
+        _ref = this.currentEpicGrades;
+        for (score = 0, _len = _ref.length; score < _len; score++) {
+          grade = _ref[score];
+          sum += score;
+        }
+        return sum / this.currentEpicGrades.length;
+      } else {
+        return 0.0;
+      }
     };
     Profile.prototype.encode = function() {
       return JSON.stringify(this);
@@ -1744,7 +1828,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     BaseUnit.prototype.isAlive = function() {
-      return this.position !== void 0;
+      return this.position !== void 0 && this.position !== null;
     };
     BaseUnit.prototype.isBound = function() {
       return this.bound;
@@ -1765,7 +1849,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.constructor.name;
     };
     BaseUnit.prototype.toString = function() {
-      return this.name();
+      return this.name().replace("_", " ");
     };
     BaseUnit.prototype.addAbilities = function() {
       var ability, camelAbility, new_abilities, _i, _len, _results;
@@ -1952,6 +2036,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     }
     ThickSludge.prototype.character = function() {
       return "S";
+    };
+    ThickSludge.prototype.maxHealth = function() {
+      return 24;
     };
     return ThickSludge;
   })();
@@ -2188,9 +2275,18 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.$("#message").prepend("<p>" + level.description + "</p>");
     };
     HtmlView.prototype.levelChanged = function(level) {
+      var epic, score, tower;
       this.$("#tower").html("");
       this.$("#tower").append("<p--------------------------------------------</p>");
-      this.$("#tower").append("<p>Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + level.profile.score + "</p>");
+      tower = level.profile.towerPath.toUpperCase();
+      if (level.profile.isEpic()) {
+        score = level.profile.currentEpicScore;
+        epic = "(EPIC)";
+      } else {
+        score = level.profile.score;
+        epic = "";
+      }
+      this.$("#tower").append("<p>" + tower + "  Lvl " + level.number + " " + epic + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
       return this.$("#tower").append("<p--------------------------------------------</p>");
@@ -2212,6 +2308,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     HtmlView.prototype.levelStarted = function(level) {
       return this.puts("Starting Level " + level.number);
+    };
+    HtmlView.prototype.epicModeStarted = function(game) {};
+    HtmlView.prototype.epicModeCompleted = function(game) {
+      return this.puts(game.finalReport());
     };
     HtmlView.prototype.clear = function() {
       return this.$("#message").html("");
@@ -2263,6 +2363,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on("game.play.error", __bind(function(e) {
         return this.onError(e);
       }, this));
+      this.emitter.on("game.epic.start", __bind(function(game) {
+        return this.epicModeStarted(game);
+      }, this));
+      this.emitter.on("game.epic.end", __bind(function(game) {
+        return this.epicModeCompleted(game);
+      }, this));
       return this.emitter.on("game.level.report", __bind(function(_arg) {
         var clearBonus, levelScore, messages, scoreCalculation, timeBonus;
         levelScore = _arg.levelScore, timeBonus = _arg.timeBonus, clearBonus = _arg.clearBonus, scoreCalculation = _arg.scoreCalculation;
@@ -2297,6 +2403,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     View.prototype.levelCompleted = function(level) {
       return this.puts("Success! You have found the stairs.");
     };
+    View.prototype.epicModeStarted = function(game) {};
+    View.prototype.epicModeCompleted = function(game) {};
     View.prototype.setWarriorAbilities = function(abilities) {};
     View.prototype.clear = function() {};
     View.prototype.onError = function(e) {

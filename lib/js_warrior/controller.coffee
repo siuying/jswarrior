@@ -60,8 +60,13 @@ class Controller
     @$("#hint").show()
     @$("#run").show()
   
-  setGameLevel: (level) ->
-    @profile.levelNumber = level
+  setGameLevel: (level = 1, epic = false) ->
+    if epic
+      @profile.epic = true
+      @profile.levelNumber = 1
+      @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
+    else
+      @profile.levelNumber = level
     @game.load()    
 
   onLevelFailed: ->
@@ -76,7 +81,8 @@ class Controller
     @started = false
     
   onLevelLoaded: (level) ->
-    window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
-    
+    if !level.profile.isEpic()
+      window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
+
 root = exports ? window
 root.Controller = Controller

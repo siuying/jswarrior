@@ -1,8 +1,10 @@
 {Profile} = require './profile'
+{Level}   = require './level'
+{_}       = require 'underscore'
 
 class Game
   NORMAL_TIME = 600
-  EPIC_TIME = 300
+  EPIC_TIME = 30
   
   constructor: (@emitter, @profile = null)->
     @profile ?= new Profile(@emitter)
@@ -64,9 +66,19 @@ class Game
     @profile.score = 0
     @profile.epic = 1
     @profile.levelNumber = 1
+    @profile.currentEpicScore = 0
+    @profile.currentEpicGrades = {}
     @currentLevel = @profile.currentLevel()
     @nextLevel = @profile.nextLevel()
     @getCurrentLevel().loadLevel()
+  
+  finalReport: ->
+    if @profile.calculateAverageGrade      
+      levels = ("  Level #{level}: #{Level.gradeLetter(@profile.currentEpicGrades[level])}" for level in _.keys(@profile.currentEpicGrades))
+      report = "Your average grade for this tower is: #{Level.gradeLetter(@profile.calculateAverageGrade())}<br/>
+      #{levels.join('<br/>\n')}<br/>"
+      console.log(levels.join('\n'))
+      report
 
   requestNextLevel: ->
     if @getNextLevel().isExists()
@@ -82,11 +94,11 @@ class Game
       if @profile.isEpic()
         @emitter?.emit 'game.level.changed', @getCurrentLevel()
         @shouldStop = true
-        @emitter.emit "game.epic.end"
+        @emitter.emit "game.epic.end", this
       else
         # Enter Epic Mode!
         @prepareEpicMode()
-        @emitter.emit 'game.epic.start'
+        @emitter.emit 'game.epic.start', this
 
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()

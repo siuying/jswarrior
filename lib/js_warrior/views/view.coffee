@@ -35,6 +35,12 @@ class View
 
     @emitter.on "game.play.error", (e) =>
       @onError(e)
+
+    @emitter.on "game.epic.start", (game) =>
+      @epicModeStarted(game)
+
+    @emitter.on "game.epic.end", (game)  =>
+      @epicModeCompleted(game)
       
     @emitter.on "game.level.report", ({levelScore , timeBonus, clearBonus, scoreCalculation}) =>
       messages = []
@@ -67,6 +73,10 @@ class View
 
   levelCompleted: (level) ->
     @puts "Success! You have found the stairs."
+
+  epicModeStarted: (game) ->
+    
+  epicModeCompleted: (game) ->
     
   setWarriorAbilities: (abilities) ->
     
