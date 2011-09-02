@@ -46,10 +46,10 @@ class BaseUnit
     @emitter.emit('unit.say', @name(), msg) if @emitter
 
   name: ->
-    @constructor.name
+    @constructor.name.replace("_", " ").replace(/^(.[a-z_ ]+)([A-Z])(.+)/, "$1 $2$3")
   
   toString: ->
-    @name().replace("_", " ")
+    @name()
   
   addAbilities: (new_abilities...) ->
     @abilities = @getAbilities()

@@ -17,6 +17,9 @@ class Controller
     @emitter.on "game.epic.start", =>
       window.history.pushState {}, "Epic", "/epic"
 
+    @emitter.on "game.play.error", =>
+      @onLevelFailed()
+      
     if @modernizr.history
       @emitter.on "game.level.loaded", (lvl) =>
         @onLevelLoaded(lvl)
@@ -47,11 +50,12 @@ class Controller
 
       if @isEpic()
         @profile.levelNumber = 1
+        @view.clear()
         @game = new Game(@emitter, @profile)
         @game.load()
       else if @started
         @game.load()
-
+        
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()
@@ -82,7 +86,7 @@ class Controller
       @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
     else
       @profile.levelNumber = level
-    @game.load()    
+    @game.load()
 
   onLevelFailed: ->
     @$("#run").show()

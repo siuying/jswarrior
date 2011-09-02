@@ -13,11 +13,12 @@ class HtmlView extends View
   levelLoaded: (level) ->
     # Redraw Level
     @levelChanged(level)
-    
+
     # Add Hints
     @$("#hint_message").html("<p>#{level.tip}</p>")
     @setWarriorAbilities(level.warrior.abilities)    
     @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
+    @puts "- Level #{level.number} -"
     @puts level.description
 
   levelChanged: (level) ->
@@ -44,6 +45,8 @@ class HtmlView extends View
     units.push("> - Stair")
     @$("#tower").append("<p class='unit'>#{units.join("\n<br/>")}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
+    
+    @puts "- Turn #{level.currentTurn} -" if level.currentTurn > 0
 
   setWarriorAbilities: (abilities) ->
     @$("#hint_message").append("<p>Warrior Abilities:</p>")

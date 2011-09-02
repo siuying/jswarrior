@@ -31,6 +31,7 @@ class Level
     loader = new LevelLoader(this)    
     level = require(@loadPath()).level
     level.apply(loader)
+    @currentTurn = 0
     @emitter?.emit 'game.level.loaded', this
     this
 

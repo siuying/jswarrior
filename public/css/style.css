@@ -58,13 +58,16 @@ body {
 /* Hints */
 
 #hint_message {
-  position: absolute;
-  top: 450px;
+  margin-top: 450px;
 }
 
 #hint_message, #more_hint_message {
   font-family: 'Courier', 'Andale Mono', cursive;
   font-size: 16px;
+}
+
+#more_hint_message {
+  color: #0f0;
 }
 
 .ability {
@@ -79,6 +82,5 @@ body {
 .ability-details {
   margin-top: 2px;
   margin-left: 10px;
-  font-size: 14px;
-  color: #ddd;
+  color: #aaa;
 }

@@ -26,6 +26,7 @@ class View
 
     @emitter.on "game.level.failed", (level) =>
       @puts "You failed! Improve your warrior and try again!"
+      @levelChanged(level)
       
     @emitter.on 'unit.say', (name, params) =>
       @puts "#{name} #{params}"

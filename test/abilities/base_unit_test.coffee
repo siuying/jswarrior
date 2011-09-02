@@ -52,8 +52,8 @@ vows.describe('Base').addBatch(
       assert.equal(unit.position, null)
       
     'should return name in toString': (unit) ->
-      assert.equal(unit.name(), 'BaseUnit')
-      assert.equal(unit.toString(), 'BaseUnit')
+      assert.equal(unit.name(), 'Base Unit')
+      assert.equal(unit.toString(), 'Base Unit')
     
     'should appear as question mark on map': (unit) ->
       assert.equal(unit.character(), '?')

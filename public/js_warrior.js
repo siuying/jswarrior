@@ -788,6 +788,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on("game.epic.start", __bind(function() {
         return window.history.pushState({}, "Epic", "/epic");
       }, this));
+      this.emitter.on("game.play.error", __bind(function() {
+        return this.onLevelFailed();
+      }, this));
       if (this.modernizr.history) {
         this.emitter.on("game.level.loaded", __bind(function(lvl) {
           return this.onLevelLoaded(lvl);
@@ -817,6 +820,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         }
         if (this.isEpic()) {
           this.profile.levelNumber = 1;
+          this.view.clear();
           this.game = new Game(this.emitter, this.profile);
           this.game.load();
         } else if (this.started) {
@@ -1188,6 +1192,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       loader = new LevelLoader(this);
       level = require(this.loadPath()).level;
       level.apply(loader);
+      this.currentTurn = 0;
       if ((_ref = this.emitter) != null) {
         _ref.emit('game.level.loaded', this);
       }
@@ -1857,10 +1862,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
     };
     BaseUnit.prototype.name = function() {
-      return this.constructor.name;
+      return this.constructor.name.replace("_", " ").replace(/^(.[a-z_ ]+)([A-Z])(.+)/, "$1 $2$3");
     };
     BaseUnit.prototype.toString = function() {
-      return this.name().replace("_", " ");
+      return this.name();
     };
     BaseUnit.prototype.addAbilities = function() {
       var ability, camelAbility, new_abilities, _i, _len, _results;
@@ -2284,6 +2289,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
+      this.puts("- Level " + level.number + " -");
       return this.puts(level.description);
     };
     HtmlView.prototype.levelChanged = function(level) {
@@ -2314,7 +2320,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       })();
       units.push("> - Stair");
       this.$("#tower").append("<p class='unit'>" + (units.join("\n<br/>")) + "</p>");
-      return this.$("#tower").append("<p--------------------------------------------</p>");
+      this.$("#tower").append("<p--------------------------------------------</p>");
+      if (level.currentTurn > 0) {
+        return this.puts("- Turn " + level.currentTurn + " -");
+      }
     };
     HtmlView.prototype.setWarriorAbilities = function(abilities) {
       var ability, abilityName, _i, _len, _ref, _results;
@@ -2379,7 +2388,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return this.levelChanged(level);
       }, this));
       this.emitter.on("game.level.failed", __bind(function(level) {
-        return this.puts("You failed! Improve your warrior and try again!");
+        this.puts("You failed! Improve your warrior and try again!");
+        return this.levelChanged(level);
       }, this));
       this.emitter.on('unit.say', __bind(function(name, params) {
         return this.puts("" + name + " " + params);
