@@ -11,3 +11,4 @@ exports.Abilities =
   Shoot: require('./abilities/shoot').Shoot
   Look: require('./abilities/look').Look
   Rescue: require('./abilities/rescue').Rescue
+  Pivot: require('./abilities/pivot').Pivot

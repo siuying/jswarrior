@@ -260,7 +260,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Rest: require('./abilities/rest').Rest,
     Shoot: require('./abilities/shoot').Shoot,
     Look: require('./abilities/look').Look,
-    Rescue: require('./abilities/rescue').Rescue
+    Rescue: require('./abilities/rescue').Rescue,
+    Pivot: require('./abilities/pivot').Pivot
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -538,6 +539,39 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Look = Look;
+}).call(this);
+}, "js_warrior/abilities/pivot": function(exports, require, module) {(function() {
+  var Action, Pivot, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Pivot = (function() {
+    __extends(Pivot, Action);
+    function Pivot() {
+      Pivot.__super__.constructor.apply(this, arguments);
+    }
+    Pivot.ROTATION_DIRECTIONS = ['forward', 'right', 'backward', 'left'];
+    Pivot.prototype.description = function() {
+      return "Rotate 'left', 'right' or 'backward' (default)";
+    };
+    Pivot.prototype.perform = function(direction) {
+      if (direction == null) {
+        direction = 'backward';
+      }
+      this.verifyDirection(direction);
+      this.unit.position.rotate(Pivot.ROTATION_DIRECTIONS.indexOf(direction));
+      return this.unit.say("pivots " + direction);
+    };
+    return Pivot;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Pivot = Pivot;
 }).call(this);
 }, "js_warrior/abilities/rescue": function(exports, require, module) {(function() {
   var Action, Rescue, root;
@@ -2082,7 +2116,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     function HtmlView(emitter, $) {
       this.emitter = emitter;
       this.$ = $;
-      this.puts("Welcome to JS Warrior");
+      this.puts("Welcome to Coffee Warrior");
     }
     HtmlView.prototype.puts = function(text) {
       return this.$("#message").prepend("<p>" + text + "</p>");
@@ -2315,6 +2349,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.unit('thick_sludge', 4, 0, 'west');
     this.unit('archer', 6, 0, 'west');
     return this.unit('archer', 7, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_007": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You feel a wall right in front of you and an opening behind you.");
+    this.tip("You are not as effective at attacking backward. Use warrior.feel().isWall() and warrior.pivot() to turn around.");
+    this.time_bonus(30);
+    this.ace_score(50);
+    this.size(6, 1);
+    this.stairs(0, 0);
+    this.warrior(5, 0, 'east', function() {
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot');
+    });
+    this.unit('archer', 1, 0, 'east');
+    return this.unit('thick_sludge', 3, 0, 'east');
   };
 }).call(this);
 }});
