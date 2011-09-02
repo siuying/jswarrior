@@ -66,6 +66,6 @@ vows.describe('LevelLoader').addBatch(
       assert.equal(level.timeBonus, 15)
       assert.equal(level.aceScore, 10)
       assert.equal(level.description, "You see before yourself a long hallway with stairs at the end. There is nothing in the way.")
-      assert.equal(level.tip, "Call warrior.walk to walk forward in the Player 'play_turn' method.")
+      assert.equal(level.tip, "Call warrior.walk() to walk forward in the Player 'playTurn()' method.")
       
 ).export(module);

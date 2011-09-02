@@ -5,7 +5,7 @@ assert = require('assert')
 {JsWarrior} = require('../lib/js_warrior')
 
 vows.describe('Floor').addBatch(
-  'Initialize': 
+  'Floor': 
     'topic': ->
       profile = new JsWarrior.Profile()
       floor = new JsWarrior.Floor(1)
@@ -31,10 +31,10 @@ vows.describe('Floor').addBatch(
       assert.equal(_.keys(level.warrior.getAbilities()).indexOf('attack') > -1, true)
 
     "should setup warrior name with profile name": ({profile, level}) ->
-      profile.warrior_name = "Joe"
+      profile.warriorName = "Joe"
       level.warrior = new JsWarrior.Units.Warrior()
       level.setupWarrior(level.warrior)
-      assert.equal(level.warrior.name, "Joe")
+      assert.equal(level.warrior.name(), "Joe")
 
   'Attempt loading non existing level': 
     'topic': ->
