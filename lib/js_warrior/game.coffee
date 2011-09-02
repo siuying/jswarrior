@@ -97,8 +97,8 @@ class Game
         @emitter.emit "game.epic.end", this
       else
         # Enter Epic Mode!
-        @prepareEpicMode()
         @emitter.emit 'game.epic.start', this
+        @prepareEpicMode()
 
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()

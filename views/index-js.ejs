@@ -47,7 +47,7 @@ exports.Player = Player;
   <script src="/js/modernizr.js" type="text/javascript" charset="utf-8"></script>
 
   <script src="/ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/ace/src/theme-twilight.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/ace/src/theme-cobalt.js" type="text/javascript" charset="utf-8"></script>
   <script src="/ace/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
@@ -56,7 +56,7 @@ $(function(){
   Mode          = require ("ace/mode/javascript").Mode
 
   var editor = ace.edit("editor")
-  editor.setTheme("ace/theme/twilight")
+  editor.setTheme("ace/theme/cobalt")
   editor.getSession().setMode(new Mode())
   editor.getSession().setTabSize(4);
   editor.getSession().setUseSoftTabs(true);

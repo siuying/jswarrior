@@ -13,6 +13,10 @@ class Controller
     @emitter.on "game.level.complete", =>
       @onLevelCompleted()
 
+    # in epic mode, display run button and show restart button
+    @emitter.on "game.epic.start", =>
+      window.history.pushState {}, "Epic", "/epic"
+
     if @modernizr.history
       @emitter.on "game.level.loaded", (lvl) =>
         @onLevelLoaded(lvl)
@@ -41,7 +45,13 @@ class Controller
       else
         compiled = source
 
-      @game.load() if @started
+      if @isEpic()
+        @profile.levelNumber = 1
+        @game = new Game(@emitter, @profile)
+        @game.load()
+      else if @started
+        @game.load()
+
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()
@@ -54,6 +64,11 @@ class Controller
 
     @$("#hint").click =>
       @$("#more_hint_message").toggle()
+
+    @$("#restart").click =>
+      @game.stop()
+      @setGameLevel(1, true)
+      @game.start()
 
     # show editor when finished
     @$("#editor").show()
@@ -75,14 +90,18 @@ class Controller
     @$("#hint").show()
 
   onLevelCompleted: ->
-    @$("#run").show()
-    @$("#stop").hide()
-    @$("#hint").show()
-    @started = false
-    
+    if not @isEpic()
+      @$("#run").show()
+      @$("#stop").hide()
+      @$("#hint").show()
+      @started = false
+
   onLevelLoaded: (level) ->
-    if !level.profile.isEpic()
+    if not @isEpic()
       window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
+      
+  isEpic: ->
+    @profile.isEpic()
 
 root = exports ? window
 root.Controller = Controller

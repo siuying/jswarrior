@@ -32,6 +32,5 @@ vows.describe('Profile').addBatch(
       profile.addAbilities('attack')      
       afterCount = profile.abilities.length
       assert.equal(afterCount - beforeCount, 1)
-      
-      
+
 ).export(module);

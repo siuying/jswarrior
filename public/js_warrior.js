@@ -785,6 +785,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on("game.level.complete", __bind(function() {
         return this.onLevelCompleted();
       }, this));
+      this.emitter.on("game.epic.start", __bind(function() {
+        return window.history.pushState({}, "Epic", "/epic");
+      }, this));
       if (this.modernizr.history) {
         this.emitter.on("game.level.loaded", __bind(function(lvl) {
           return this.onLevelLoaded(lvl);
@@ -812,7 +815,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         } else {
           compiled = source;
         }
-        if (this.started) {
+        if (this.isEpic()) {
+          this.profile.levelNumber = 1;
+          this.game = new Game(this.emitter, this.profile);
+          this.game.load();
+        } else if (this.started) {
           this.game.load();
         }
         this.game.start(compiled);
@@ -827,6 +834,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }, this));
       this.$("#hint").click(__bind(function() {
         return this.$("#more_hint_message").toggle();
+      }, this));
+      this.$("#restart").click(__bind(function() {
+        this.game.stop();
+        this.setGameLevel(1, true);
+        return this.game.start();
       }, this));
       this.$("#editor").show();
       this.$("#hint").show();
@@ -854,19 +866,24 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.$("#hint").show();
     };
     Controller.prototype.onLevelCompleted = function() {
-      this.$("#run").show();
-      this.$("#stop").hide();
-      this.$("#hint").show();
-      return this.started = false;
+      if (!this.isEpic()) {
+        this.$("#run").show();
+        this.$("#stop").hide();
+        this.$("#hint").show();
+        return this.started = false;
+      }
     };
     Controller.prototype.onLevelLoaded = function(level) {
-      if (!level.profile.isEpic()) {
+      if (!this.isEpic()) {
         if (level) {
           return window.history.pushState({
             level: level.number
           }, "Level " + level.number, "" + level.number);
         }
       }
+    };
+    Controller.prototype.isEpic = function() {
+      return this.profile.isEpic();
     };
     return Controller;
   })();
@@ -1118,8 +1135,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
           this.shouldStop = true;
           return this.emitter.emit("game.epic.end", this);
         } else {
-          this.prepareEpicMode();
-          return this.emitter.emit('game.epic.start', this);
+          this.emitter.emit('game.epic.start', this);
+          return this.prepareEpicMode();
         }
       }
     };
@@ -1572,25 +1589,25 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Profile.prototype.addAbilities = function() {
       var ability, newAbilities, _i, _len;
       newAbilities = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      console.log("newAbilities", newAbilities);
       for (_i = 0, _len = newAbilities.length; _i < _len; _i++) {
         ability = newAbilities[_i];
         if (ability) {
           this.abilities.push(ability);
         }
       }
-      return _.uniq(this.abilities);
+      return this.abilities = _.uniq(this.abilities);
     };
     Profile.prototype.calculateAverageGrade = function() {
-      var grade, score, sum, _len, _ref;
-      if (this.currentEpicGrades.length > 0) {
-        sum = 0;
-        _ref = this.currentEpicGrades;
-        for (score = 0, _len = _ref.length; score < _len; score++) {
-          grade = _ref[score];
+      var noOfGrades, score, sum, _i, _len, _ref;
+      noOfGrades = _.values(this.currentEpicGrades).length;
+      if (noOfGrades > 0) {
+        sum = 0.0;
+        _ref = _.values(this.currentEpicGrades);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          score = _ref[_i];
           sum += score;
         }
-        return sum / this.currentEpicGrades.length;
+        return sum / noOfGrades;
       } else {
         return 0.0;
       }
@@ -2266,7 +2283,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.puts("Welcome to Coffee Warrior");
     }
     HtmlView.prototype.puts = function(text) {
-      return this.$("#message").prepend("<p>" + text + "</p>");
+      this.$("#message").append("<p>" + text + "</p>");
+      return this.$("#message")[0].scrollTop = this.$("#message")[0].scrollHeight;
     };
     HtmlView.prototype.levelLoaded = function(level) {
       this.levelChanged(level);
@@ -2275,7 +2293,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
-      return this.$("#message").prepend("<p>" + level.description + "</p>");
+      return this.$("#message").append("<p>" + level.description + "</p>");
     };
     HtmlView.prototype.levelChanged = function(level) {
       var epic, score, tower;
@@ -2289,7 +2307,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         score = level.profile.score;
         epic = "";
       }
-      this.$("#tower").append("<p>" + tower + "  Lvl " + level.number + " " + epic + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
+      this.$("#tower").append("<p>Tower " + tower + " " + epic + "<br/>    Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
       return this.$("#tower").append("<p--------------------------------------------</p>");
@@ -2312,7 +2330,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     HtmlView.prototype.levelStarted = function(level) {
       return this.puts("Starting Level " + level.number);
     };
-    HtmlView.prototype.epicModeStarted = function(game) {};
+    HtmlView.prototype.epicModeStarted = function(game) {
+      return this.puts("Click Run again to play epic mode.");
+    };
     HtmlView.prototype.epicModeCompleted = function(game) {
       return this.puts(game.finalReport());
     };

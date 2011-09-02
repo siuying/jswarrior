@@ -7,7 +7,8 @@ class HtmlView extends View
     @puts "Welcome to Coffee Warrior"
 
   puts: (text) -> 
-    @$("#message").prepend("<p>#{text}</p>")
+    @$("#message").append("<p>#{text}</p>")
+    @$("#message")[0].scrollTop = @$("#message")[0].scrollHeight
 
   levelLoaded: (level) ->
     # Redraw Level
@@ -17,7 +18,7 @@ class HtmlView extends View
     @$("#hint_message").html("<p>#{level.tip}</p>")
     @setWarriorAbilities(level.warrior.abilities)    
     @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
-    @$("#message").prepend("<p>#{level.description}</p>")
+    @$("#message").append("<p>#{level.description}</p>")
 
   levelChanged: (level) ->
     @$("#tower").html("")
@@ -31,7 +32,8 @@ class HtmlView extends View
       score = level.profile.score
       epic = ""
 
-    @$("#tower").append("<p>#{tower}  Lvl #{level.number} #{epic}<br/>
+    @$("#tower").append("<p>Tower #{tower} #{epic}<br/>
+    Lvl&nbsp;&nbsp;&nbsp;&nbsp;#{level.number}<br/>
     HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{level.warrior.health}/#{level.warrior.maxHealth()}<br/>
     Score&nbsp;&nbsp;#{score}</p>")
     @$("#tower").append("<p--------------------------------------------</p>")
@@ -52,12 +54,14 @@ class HtmlView extends View
     @puts "Starting Level #{level.number}"
 
   epicModeStarted: (game) ->
-    
+    @puts "Click Run again to play epic mode."
+
   epicModeCompleted: (game) ->
     @puts game.finalReport()
 
   clear: ->
     @$("#message").html("")
+    
 
 root = exports ? window
 root.HtmlView = HtmlView

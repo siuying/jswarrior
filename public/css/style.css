@@ -1,26 +1,38 @@
 body {
   background: #000;
   color: #fff;
+  overflow-x: hidden; 
 }
 
 #message p, #message pre, #tower p, #tower pre {
   font-family: 'VT323', cursive;
-  font-size: 22px;
+  font-size: 18px;
   width: 400px;
 }
 
+#message {
+  top: 160px;
+  width: 420px;
+  height: 600px;
+  overflow-y: auto;
+}
+
 #display {
-  float: left;
+  padding-left: 4px;
+  top: 0px;
+  bottom: 0px;
+  left: 4px;
+  position: absolute;
 }
 
 #control {
   float: right;
-  width: 600px;
+  width: 500px;
 }
 
 #editor {
-  width: 600px;
-  height: 400px;
+  width: 500px;
+  height: 420px;
   top: 12px;
   bottom: 0px;
   position: absolute;
@@ -32,6 +44,7 @@ body {
   bottom: 0px;
   right: 0;
   position: absolute;
+  padding: 2px;
 }
 
 #buttons button {
@@ -41,12 +54,13 @@ body {
 /* Hints */
 
 #hint_message {
-  margin-top: 450px;
+  position: absolute;
+  top: 450px;
 }
 
 #hint_message, #more_hint_message {
   font-family: 'VT323', cursive;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .ability {
