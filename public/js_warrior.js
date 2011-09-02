@@ -972,6 +972,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Profile = require('./profile').Profile;
   Game = (function() {
+    var EPIC_TIME, NORMAL_TIME;
+    NORMAL_TIME = 600;
+    EPIC_TIME = 300;
     function Game(emitter, profile) {
       var _ref;
       this.emitter = emitter;
@@ -1015,7 +1018,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       if (this.shouldStop) {
         this.running = false;
-        this.emitter.emit("game.stop", this);
         return;
       }
       this.running = true;
@@ -1027,7 +1029,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         haveFurtherStep = false;
       }
       if (this.currentLevel.isPassed()) {
-        haveFurtherStep = false;
+        haveFurtherStep = this.profile.isEpic();
         this.currentLevel.completed();
         this.requestNextLevel();
       } else if (this.currentLevel.isFailed()) {
@@ -1036,19 +1038,47 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       }
       this.running = haveFurtherStep;
       if (haveFurtherStep) {
-        return setTimeout((__bind(function() {
-          return this.playGame();
-        }, this)), 600);
+        if (this.profile.isEpic()) {
+          return setTimeout((__bind(function() {
+            return this.playGame();
+          }, this)), EPIC_TIME);
+        } else {
+          return setTimeout((__bind(function() {
+            return this.playGame();
+          }, this)), NORMAL_TIME);
+        }
       }
     };
+    Game.prototype.prepareEpicMode = function() {
+      this.profile.score = 0;
+      this.profile.epic = 1;
+      this.profile.levelNumber = 1;
+      this.currentLevel = this.profile.currentLevel();
+      this.nextLevel = this.profile.nextLevel();
+      return this.getCurrentLevel().loadLevel();
+    };
     Game.prototype.requestNextLevel = function() {
+      var player;
       if (this.getNextLevel().isExists()) {
+        if (this.profile.isEpic()) {
+          player = this.getCurrentLevel().player;
+        }
         this.currentLevel = this.getNextLevel();
         this.profile.levelNumber += 1;
         this.nextLevel = this.profile.nextLevel();
+        if (this.profile.isEpic()) {
+          this.getCurrentLevel().player = player;
+        }
         return this.getCurrentLevel().loadLevel();
       } else {
-        return this.emitter.emit("game.end");
+        this.emitter.emit("game.end");
+        if (this.profile.isEpic()) {
+          this.shouldStop = true;
+          return this.emitter.emit("game.epic.end");
+        } else {
+          this.prepareEpicMode();
+          return this.emitter.emit('game.epic.start');
+        }
       }
     };
     Game.prototype.getCurrentLevel = function() {

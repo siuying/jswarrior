@@ -1,6 +1,9 @@
 {Profile} = require './profile'
 
 class Game
+  NORMAL_TIME = 600
+  EPIC_TIME = 300
+  
   constructor: (@emitter, @profile = null)->
     @profile ?= new Profile(@emitter)
     @currentLevel = null
@@ -22,6 +25,7 @@ class Game
   playNormalMode: ->
     @playCurrentLevel()
 
+      
   playCurrentLevel: ->
     @emitter.emit 'game.level.start', @currentLevel
     @playGame()
@@ -29,7 +33,6 @@ class Game
   playGame: (step=1) ->
     if @shouldStop
       @running = false
-      @emitter.emit "game.stop", this
       return
 
     @running = true
@@ -42,7 +45,7 @@ class Game
       haveFurtherStep = false
     
     if @currentLevel.isPassed()
-      haveFurtherStep = false
+      haveFurtherStep = @profile.isEpic()
       @currentLevel.completed()
       @requestNextLevel()
 
@@ -52,16 +55,38 @@ class Game
 
     @running = haveFurtherStep
     if haveFurtherStep
-      setTimeout (=> @playGame()), 600
+      if @profile.isEpic()
+        setTimeout (=> @playGame()), EPIC_TIME
+      else
+        setTimeout (=> @playGame()), NORMAL_TIME
+
+  prepareEpicMode: ->
+    @profile.score = 0
+    @profile.epic = 1
+    @profile.levelNumber = 1
+    @currentLevel = @profile.currentLevel()
+    @nextLevel = @profile.nextLevel()
+    @getCurrentLevel().loadLevel()
 
   requestNextLevel: ->
     if @getNextLevel().isExists()
+      player = @getCurrentLevel().player if @profile.isEpic()
       @currentLevel = @getNextLevel()
       @profile.levelNumber += 1
       @nextLevel = @profile.nextLevel()
+      @getCurrentLevel().player = player if @profile.isEpic()
       @getCurrentLevel().loadLevel()
+
     else
       @emitter.emit "game.end"
+      if @profile.isEpic()
+        @emitter?.emit 'game.level.changed', @getCurrentLevel()
+        @shouldStop = true
+        @emitter.emit "game.epic.end"
+      else
+        # Enter Epic Mode!
+        @prepareEpicMode()
+        @emitter.emit 'game.epic.start'
 
   getCurrentLevel: ->
     @currentLevel ||= @profile.currentLevel()
