@@ -18,7 +18,7 @@ class HtmlView extends View
     @$("#hint_message").html("<p>#{level.tip}</p>")
     @setWarriorAbilities(level.warrior.abilities)    
     @$("#more_hint_message").html("<p>#{level.clue}</p>") if level.clue
-    @puts "- Level #{level.number} -"
+    @puts "===== Level #{level.number} ====="
     @puts level.description
 
   levelChanged: (level) ->
