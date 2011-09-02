@@ -2304,7 +2304,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         score = level.profile.score;
         epic = "";
       }
-      this.$("#tower").append("<p>Tower " + tower + " " + epic + "<br/>    Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
+      this.$("#tower").append("<p>Tower&nbsp;&nbsp;" + tower + " " + epic + "<br/>    Lvl&nbsp;&nbsp;&nbsp;&nbsp;" + level.number + "<br/>    HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + level.warrior.health + "/" + (level.warrior.maxHealth()) + "<br/>    Score&nbsp;&nbsp;" + score + "</p>");
       this.$("#tower").append("<p--------------------------------------------</p>");
       this.$("#tower").append("<pre>" + (level.floor.character()) + " </pre>");
       return this.$("#tower").append("<p--------------------------------------------</p>");

@@ -5,8 +5,8 @@ body {
 }
 
 #message p, #message pre, #tower p, #tower pre {
-  font-family: 'VT323', cursive;
-  font-size: 18px;
+  font-family: 'Courier', 'Andale Mono', cursive;
+  font-size: 16px;
   width: 400px;
 }
 
@@ -59,8 +59,8 @@ body {
 }
 
 #hint_message, #more_hint_message {
-  font-family: 'VT323', cursive;
-  font-size: 18px;
+  font-family: 'Courier', 'Andale Mono', cursive;
+  font-size: 16px;
 }
 
 .ability {
@@ -69,9 +69,12 @@ body {
 
 .ability-label {
   margin-bottom: 0;
+  font-style: italic;
 }
 
 .ability-details {
-  margin-top: 0;
+  margin-top: 2px;
   margin-left: 10px;
+  font-size: 14px;
+  color: #ddd;
 }

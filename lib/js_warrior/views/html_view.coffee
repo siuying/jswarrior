@@ -32,7 +32,7 @@ class HtmlView extends View
       score = level.profile.score
       epic = ""
 
-    @$("#tower").append("<p>Tower #{tower} #{epic}<br/>
+    @$("#tower").append("<p>Tower&nbsp;&nbsp;#{tower} #{epic}<br/>
     Lvl&nbsp;&nbsp;&nbsp;&nbsp;#{level.number}<br/>
     HP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{level.warrior.health}/#{level.warrior.maxHealth()}<br/>
     Score&nbsp;&nbsp;#{score}</p>")
