@@ -47,7 +47,7 @@ vows.describe('LevelLoader').addBatch(
       )
 
     'should be able to set time bonus': ({loader, level})->
-      loader.timeBonus(100)
+      loader.time_bonus(100)
       assert.equal(level.timeBonus, 100)
 
   'Load a Level from a file':
