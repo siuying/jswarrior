@@ -18,11 +18,8 @@ body {
 }
 
 #display {
-  padding-left: 4px;
-  top: 0px;
-  bottom: 0px;
+  width: 400px;
   left: 4px;
-  position: absolute;
 }
 
 #display .unit {
@@ -30,35 +27,27 @@ body {
 }
 
 #control {
-  float: right;
   width: 500px;
+  margin-left: 430px;
+  margin-top: -200px;
 }
 
 #editor {
   width: 500px;
   height: 420px;
   top: 12px;
-  bottom: 0px;
-  position: absolute;
-  clear: both;
 }
 
 #buttons {
-  top: 0px;
-  bottom: 0px;
-  right: 0;
-  position: absolute;
-  padding: 2px;
+  margin-left: 400px;
 }
 
 #buttons button {
-  float: right;
 }
 
 /* Hints */
 
 #hint_message {
-  margin-top: 450px;
 }
 
 #hint_message, #more_hint_message {
