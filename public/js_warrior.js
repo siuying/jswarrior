@@ -1621,7 +1621,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Sludge: require('./units/sludge').Sludge,
     ThickSludge: require('./units/thick_sludge').ThickSludge,
     Captive: require('./units/captive').Captive,
-    Archer: require('./units/archer').Archer
+    Archer: require('./units/archer').Archer,
+    Wizard: require('./units/wizard').Wizard
   };
 }).call(this);
 }, "js_warrior/units/archer": function(exports, require, module) {(function() {
@@ -1644,25 +1645,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.addAbilities('shoot', 'look');
     }
     Archer.prototype.playTurn = function(turn) {
-      var direction, s, spaces, _i, _len, _ref, _results;
+      var direction, space, _i, _j, _len, _len2, _ref, _ref2, _results;
       _ref = ['forward', 'left', 'right'];
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         direction = _ref[_i];
-        spaces = turn.look(direction);
-        _results.push((function() {
-          var _j, _len2, _results2;
-          _results2 = [];
-          for (_j = 0, _len2 = spaces.length; _j < _len2; _j++) {
-            s = spaces[_j];
-            if (s.isPlayer()) {
-              turn.shoot(direction);
-            } else if (!s.isEmpty()) {
-              break;
-            }
+        _ref2 = turn.look(direction);
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          space = _ref2[_j];
+          if (space.isPlayer()) {
+            turn.shoot(direction);
+            return;
+          } else if (!space.isEmpty()) {
+            break;
           }
-          return _results2;
-        })());
+        }
       }
       return _results;
     };
@@ -1963,7 +1960,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Warrior.prototype.attackPower = function() {
       return 5;
     };
-    Warrior.prototype.shoot_power = function() {
+    Warrior.prototype.shootPower = function() {
       return 3;
     };
     Warrior.prototype.maxHealth = function() {
@@ -2009,6 +2006,36 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Warrior = Warrior;
+}).call(this);
+}, "js_warrior/units/wizard": function(exports, require, module) {(function() {
+  var Archer, Wizard, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Archer = require('./archer').Archer;
+  Wizard = (function() {
+    __extends(Wizard, Archer);
+    function Wizard() {
+      Wizard.__super__.constructor.apply(this, arguments);
+    }
+    Wizard.prototype.shootPower = function() {
+      return 11;
+    };
+    Wizard.prototype.maxHealth = function() {
+      return 3;
+    };
+    Wizard.prototype.character = function() {
+      return "w";
+    };
+    return Wizard;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Wizard = Wizard;
 }).call(this);
 }, "js_warrior/utils": function(exports, require, module) {(function() {
   var Utils, root;
@@ -2274,7 +2301,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(8, 1);
     this.stairs(7, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.add_abilities('walk', 'feel', 'attack');
+      this.add_abilities('walk');
+      return this.add_abilities('feel', 'attack');
     });
     return this.unit('sludge', 4, 0, 'west');
   };
@@ -2289,7 +2317,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(9, 1);
     this.stairs(8, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest');
+      this.add_abilities('walk', 'feel', 'attack');
+      return this.add_abilities('health', 'rest');
     });
     this.unit('sludge', 2, 0, 'west');
     this.unit('sludge', 4, 0, 'west');
@@ -2324,7 +2353,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(7, 1);
     this.stairs(6, 0);
     this.warrior(0, 0, 'east', function() {
-      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
+      this.add_abilities('walk', 'feel', 'attack', 'health', 'rest');
+      return this.add_abilities('rescue');
     });
     this.unit('captive', 2, 0, 'west');
     this.unit('archer', 3, 0, 'west');
@@ -2360,10 +2390,48 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(6, 1);
     this.stairs(0, 0);
     this.warrior(5, 0, 'east', function() {
-      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot');
+      this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue');
+      return this.add_abilities('pivot');
     });
     this.unit('archer', 1, 0, 'east');
     return this.unit('thick_sludge', 3, 0, 'east');
+  };
+}).call(this);
+}, "beginner/level_008": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You hear the mumbling of wizards. Beware of their deadly wands! Good thing you found a bow.");
+    this.tip("Use warrior.look() to determine your surroundings, and warrior.shoot() to fire an arrow.");
+    this.clue("Wizards are deadly but low in health. Kill them before they have time to attack.");
+    this.time_bonus(20);
+    this.ace_score(46);
+    this.size(6, 1);
+    this.stairs(5, 0);
+    this.warrior(0, 0, 'east', function() {
+      this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot');
+      return this.add_abilities('look', 'shoot');
+    });
+    this.unit('captive', 2, 0, 'west');
+    this.unit('wizard', 3, 0, 'west');
+    return this.unit('wizard', 4, 0, 'west');
+  };
+}).call(this);
+}, "beginner/level_009": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Time to hone your skills and apply all of the abilities that you have learned.");
+    this.tip("Watch your back.");
+    this.clue("Don't just keep shooting the bow while you are being attacked from behind.");
+    this.time_bonus(40);
+    this.ace_score(100);
+    this.size(11, 1);
+    this.stairs(0, 0);
+    this.warrior(5, 0, 'east', function() {
+      return this.add_abilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot');
+    });
+    this.unit('captive', 1, 0, 'east');
+    this.unit('archer', 2, 0, 'east');
+    this.unit('thick_sludge', 7, 0, 'west');
+    this.unit('wizard', 9, 0, 'west');
+    return this.unit('captive', 10, 0, 'west');
   };
 }).call(this);
 }});

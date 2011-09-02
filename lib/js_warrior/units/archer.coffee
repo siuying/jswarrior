@@ -7,13 +7,11 @@ class Archer extends BaseUnit
 
   playTurn: (turn) ->
     for direction in ['forward', 'left', 'right']
-      spaces = turn.look(direction)
-      for s in spaces
-        if s.isPlayer()
+      for space in turn.look(direction)
+        if space.isPlayer()
           turn.shoot(direction)
-        else if !s.isEmpty()
-          # there are somthing else between player and archer
-          # do not shoot
+          return
+        else if !space.isEmpty()
           break
 
   shootPower: ->

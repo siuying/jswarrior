@@ -17,7 +17,7 @@ class Warrior extends BaseUnit
   attackPower: ->
     5
 
-  shoot_power: ->
+  shootPower: ->
     3
   
   maxHealth: ->
