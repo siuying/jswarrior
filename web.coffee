@@ -25,7 +25,5 @@ app.get '/epic', (req, res) ->
 app.get '/js/epic', (req, res) ->
     res.render 'index-js.ejs', epic: true, levelNumber: 1
 
-
-
 app.listen port, =>
   console.log "Listen on #{port}"
