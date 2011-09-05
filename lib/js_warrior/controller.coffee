@@ -19,7 +19,10 @@ class Controller
 
     @emitter.on "game.play.error", =>
       @onLevelFailed()
-      
+
+    @emitter.on "game.epic.end", =>
+      @onGameCompleted()
+
     if @modernizr.history
       @emitter.on "game.level.loaded", (lvl) =>
         @onLevelLoaded(lvl)
@@ -50,6 +53,8 @@ class Controller
 
       if @isEpic()
         @profile.levelNumber = 1
+        @profile.currentEpicScore = 0
+        @profile.currentEpicGrades = {}
         @view.clear()
         @game = new Game(@emitter, @profile)
         @game.load()
@@ -69,11 +74,6 @@ class Controller
     @$("#hint").click =>
       @$("#more_hint_message").toggle()
 
-    @$("#restart").click =>
-      @game.stop()
-      @setGameLevel(1, true)
-      @game.start()
-
     # show editor when finished
     @$("#editor").show()
     @$("#hint").show()
@@ -83,6 +83,8 @@ class Controller
     if epic
       @profile.epic = true
       @profile.levelNumber = 1
+      @profile.currentEpicScore = 0
+      @profile.currentEpicGrades = {}
       @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
     else
       @profile.levelNumber = level
@@ -99,6 +101,12 @@ class Controller
       @$("#stop").hide()
       @$("#hint").show()
       @started = false
+      
+  onGameCompleted: ->
+    @$("#run").show()
+    @$("#stop").hide()
+    @$("#hint").show()
+    @started = false
 
   onLevelLoaded: (level) ->
     if not @isEpic()

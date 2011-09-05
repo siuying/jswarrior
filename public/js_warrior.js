@@ -791,6 +791,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.emitter.on("game.play.error", __bind(function() {
         return this.onLevelFailed();
       }, this));
+      this.emitter.on("game.epic.end", __bind(function() {
+        return this.onGameCompleted();
+      }, this));
       if (this.modernizr.history) {
         this.emitter.on("game.level.loaded", __bind(function(lvl) {
           return this.onLevelLoaded(lvl);
@@ -820,6 +823,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         }
         if (this.isEpic()) {
           this.profile.levelNumber = 1;
+          this.profile.currentEpicScore = 0;
+          this.profile.currentEpicGrades = {};
           this.view.clear();
           this.game = new Game(this.emitter, this.profile);
           this.game.load();
@@ -839,11 +844,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#hint").click(__bind(function() {
         return this.$("#more_hint_message").toggle();
       }, this));
-      this.$("#restart").click(__bind(function() {
-        this.game.stop();
-        this.setGameLevel(1, true);
-        return this.game.start();
-      }, this));
       this.$("#editor").show();
       this.$("#hint").show();
       return this.$("#run").show();
@@ -858,6 +858,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (epic) {
         this.profile.epic = true;
         this.profile.levelNumber = 1;
+        this.profile.currentEpicScore = 0;
+        this.profile.currentEpicGrades = {};
         this.profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot');
       } else {
         this.profile.levelNumber = level;
@@ -876,6 +878,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.$("#hint").show();
         return this.started = false;
       }
+    };
+    Controller.prototype.onGameCompleted = function() {
+      this.$("#run").show();
+      this.$("#stop").hide();
+      this.$("#hint").show();
+      return this.started = false;
     };
     Controller.prototype.onLevelLoaded = function(level) {
       if (!this.isEpic()) {
@@ -1705,7 +1713,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }).call(this);
 }, "js_warrior/turn": function(exports, require, module) {(function() {
   var Abilities, Turn, Utils, root, _;
-  var __slice = Array.prototype.slice;
   Abilities = require('./abilities').Abilities;
   Utils = require('./utils').Utils;
   _ = require('underscore')._;
@@ -1730,11 +1737,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     }
     Turn.prototype.addAction = function(action) {
       return eval("this." + action + " = function() { var __slice = Array.prototype.slice; var param; param = 1 <= arguments.length ? __slice.call(arguments, 0) : []; if (this.action) {throw 'You can only run one action per turn!'; } return this.action = ['" + action + "', param]; };");
-    };
-    Turn.prototype.action = function() {
-      var params;
-      params = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return console.log.apply(console, params);
     };
     Turn.prototype.addSense = function(name, params) {
       eval("this." + name + " = function(args) { return this.senses['" + name + "'].perform(args); };");
@@ -2291,7 +2293,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (level.clue) {
         this.$("#more_hint_message").html("<p>" + level.clue + "</p>");
       }
-      this.puts("- Level " + level.number + " -");
+      this.puts("===== Level " + level.number + " =====");
       return this.puts(level.description);
     };
     HtmlView.prototype.levelChanged = function(level) {
