@@ -262,7 +262,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Look: require('./abilities/look').Look,
     Rescue: require('./abilities/rescue').Rescue,
     Pivot: require('./abilities/pivot').Pivot,
-    DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs
+    DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs,
+    Bind: require('./abilities/bind').Bind
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -403,6 +404,44 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.BaseAbilities = BaseAbilities;
+}).call(this);
+}, "js_warrior/abilities/bind": function(exports, require, module) {(function() {
+  var Action, Bind, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Bind = (function() {
+    __extends(Bind, Action);
+    function Bind() {
+      Bind.__super__.constructor.apply(this, arguments);
+    }
+    Bind.prototype.description = function() {
+      return "Binds a unit in given direction to keep him from moving (forward by default).";
+    };
+    Bind.prototype.perform = function(direction) {
+      var receiver;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      receiver = this.getUnit(direction);
+      if (receiver) {
+        this.unit.say("binds " + direction + " and restricts " + receiver);
+        return receiver.bind();
+      } else {
+        return this.unit.say("binds " + direction + " and restricts nothing");
+      }
+    };
+    return Bind;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Bind = Bind;
 }).call(this);
 }, "js_warrior/abilities/direction_of_stairs": function(exports, require, module) {(function() {
   var DirectionOfStairs, Sense, root, _;
@@ -2655,7 +2694,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }, "intermediate/level_001": function(exports, require, module) {(function() {
   exports.level = function() {
     this.description("Silence. The room feels large, but empty. Luckily you have a map of this tower to help find the stairs.");
-    this.tip("Use warrior.direction_of_stairs() to determine which direction stairs are located. Pass this to warrior.walk() to walk in that direction.");
+    this.tip("Use warrior.directionOfStairs() to determine which direction stairs are located. Pass this to warrior.walk() to walk in that direction.");
     this.time_bonus(20);
     this.ace_score(19);
     this.size(6, 4);
@@ -2663,6 +2702,44 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return this.warrior(0, 1, 'east', function() {
       return this.add_abilities('walk', 'feel', 'direction_of_stairs');
     });
+  };
+}).call(this);
+}, "intermediate/level_002": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Another large room, but with several enemies blocking your way to the stairs.");
+    this.tip("Just like walking, you can attack() and feel() in multiple directions ('forward', 'left', 'right', 'backward').");
+    this.clue("Call warrior.feel(direction).isEnemy() in each direction to make sure there isn't an enemy beside you (attack if there is). Call warrior.rest() if you're low and health when there's no enemies around.");
+    this.time_bonus(40);
+    this.ace_score(84);
+    this.size(4, 2);
+    this.stairs(3, 1);
+    this.warrior(0, 0, 'east', function() {
+      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      return this.add_abilities('attack', 'health', 'rest');
+    });
+    this.unit('sludge', 1, 0, 'west');
+    this.unit('thick_sludge', 2, 1, 'west');
+    return this.unit('sludge', 1, 1, 'north');
+  };
+}).call(this);
+}, "intermediate/level_003": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You feel slime on all sides, you're surrounded!");
+    this.tip("Call warrior.bind(direction) to bind an enemy to keep him from attacking. Bound enemies look like capitves.");
+    this.clue("Count the number of enemies around you, if there's two or more, bind one.");
+    this.time_bonus(50);
+    this.ace_score(101);
+    this.size(3, 3);
+    this.stairs(0, 0);
+    this.warrior(1, 1, 'east', function() {
+      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      this.add_abilities('attack', 'health', 'rest');
+      return this.add_abilities('rescue', 'bind');
+    });
+    this.unit('sludge', 1, 0, 'west');
+    this.unit('captive', 1, 2, 'west');
+    this.unit('sludge', 0, 1, 'west');
+    return this.unit('sludge', 2, 1, 'west');
   };
 }).call(this);
 }});

@@ -13,3 +13,4 @@ exports.Abilities =
   Rescue: require('./abilities/rescue').Rescue
   Pivot: require('./abilities/pivot').Pivot
   DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs
+  Bind: require('./abilities/bind').Bind
