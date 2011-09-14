@@ -3,18 +3,18 @@ class Position
   @RELATIVE_DIRECTIONS = ['forward', 'right', 'backward', 'left']
 
   constructor: (@floor, @x, @y, direction = null) ->
-    @direction_index = Position.DIRECTIONS.indexOf(direction || 'north')
+    @directionIndex = Position.DIRECTIONS.indexOf(direction || 'north')
   
   at: (x, y) ->
     @x == x && @y == y
   
   direction: ->
-    Position.DIRECTIONS[@direction_index]
+    Position.DIRECTIONS[@directionIndex]
   
   rotate: (amount) ->
-    @direction_index += amount
-    @direction_index -= 4 if @direction_index > 3
-    @direction_index += 4 if @direction_index < 0
+    @directionIndex += amount
+    @directionIndex -= 4 if @directionIndex > 3
+    @directionIndex += 4 if @directionIndex < 0
 
   relativeSpace: (forward, right=0) ->
     [x, y] = @translateOffset(forward, right)
@@ -40,16 +40,24 @@ class Position
     @relativeDirection(@directionOf(space))
   
   directionOf: (space) ->
-    [space_x, space_y] = space.location
+    [space_x, space_y] = space.location()
+    console.log("space #{space_x}, #{space_y}")
     if Math.abs(@x - space_x) > Math.abs(@y - space_y)
-      space_x > @x ? 'east' : 'west'
+      if space_x > @x
+         'east'
+      else
+         'west'
     else
-      space_y > @y ? 'south' : 'north'
+      if space_y > @y
+        'south'
+      else
+        'north'
   
   relativeDirection: (direction) ->
-    offset = Position.DIRECTIONS.indexOf(direction) - @direction_index
+    offset = Position.DIRECTIONS.indexOf(direction) - @directionIndex
     offset -= 4 if offset > 3
-    offset += 4 if offset < 0    
+    offset += 4 if offset < 0
+    console.log("relative dir: ", direction, Position.RELATIVE_DIRECTIONS[offset])
     Position.RELATIVE_DIRECTIONS[offset]    
   
   translateOffset: (forward, right) ->

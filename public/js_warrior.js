@@ -261,7 +261,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Shoot: require('./abilities/shoot').Shoot,
     Look: require('./abilities/look').Look,
     Rescue: require('./abilities/rescue').Rescue,
-    Pivot: require('./abilities/pivot').Pivot
+    Pivot: require('./abilities/pivot').Pivot,
+    DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -402,6 +403,34 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.BaseAbilities = BaseAbilities;
+}).call(this);
+}, "js_warrior/abilities/direction_of_stairs": function(exports, require, module) {(function() {
+  var DirectionOfStairs, Sense, root, _;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Sense = require('./sense').Sense;
+  _ = require('underscore')._;
+  DirectionOfStairs = (function() {
+    __extends(DirectionOfStairs, Sense);
+    function DirectionOfStairs() {
+      DirectionOfStairs.__super__.constructor.apply(this, arguments);
+    }
+    DirectionOfStairs.prototype.description = function() {
+      return "Returns the direction ('left', 'right', 'forward', 'backward') the stairs are from your location.";
+    };
+    DirectionOfStairs.prototype.perform = function() {
+      return this.unit.position.relativeDirectionOfStairs();
+    };
+    return DirectionOfStairs;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.DirectionOfStairs = DirectionOfStairs;
 }).call(this);
 }, "js_warrior/abilities/explode": function(exports, require, module) {(function() {
   var Action, Explode, root;
@@ -848,7 +877,10 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#hint").show();
       return this.$("#run").show();
     };
-    Controller.prototype.setGameLevel = function(level, epic) {
+    Controller.prototype.setGameLevel = function(towerPath, level, epic) {
+      if (towerPath == null) {
+        towerPath = 'beginner';
+      }
       if (level == null) {
         level = 1;
       }
@@ -864,6 +896,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       } else {
         this.profile.levelNumber = level;
       }
+      this.profile.towerPath = towerPath;
       return this.game.load();
     };
     Controller.prototype.onLevelFailed = function() {
@@ -1467,21 +1500,21 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       if (direction == null) {
         direction = null;
       }
-      this.direction_index = Position.DIRECTIONS.indexOf(direction || 'north');
+      this.directionIndex = Position.DIRECTIONS.indexOf(direction || 'north');
     }
     Position.prototype.at = function(x, y) {
       return this.x === x && this.y === y;
     };
     Position.prototype.direction = function() {
-      return Position.DIRECTIONS[this.direction_index];
+      return Position.DIRECTIONS[this.directionIndex];
     };
     Position.prototype.rotate = function(amount) {
-      this.direction_index += amount;
-      if (this.direction_index > 3) {
-        this.direction_index -= 4;
+      this.directionIndex += amount;
+      if (this.directionIndex > 3) {
+        this.directionIndex -= 4;
       }
-      if (this.direction_index < 0) {
-        return this.direction_index += 4;
+      if (this.directionIndex < 0) {
+        return this.directionIndex += 4;
       }
     };
     Position.prototype.relativeSpace = function(forward, right) {
@@ -1517,27 +1550,33 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return this.relativeDirection(this.directionOf(space));
     };
     Position.prototype.directionOf = function(space) {
-      var space_x, space_y, _ref, _ref2, _ref3;
-      _ref = space.location, space_x = _ref[0], space_y = _ref[1];
+      var space_x, space_y, _ref;
+      _ref = space.location(), space_x = _ref[0], space_y = _ref[1];
+      console.log("space " + space_x + ", " + space_y);
       if (Math.abs(this.x - space_x) > Math.abs(this.y - space_y)) {
-        return (_ref2 = space_x > this.x) != null ? _ref2 : {
-          'east': 'west'
-        };
+        if (space_x > this.x) {
+          return 'east';
+        } else {
+          return 'west';
+        }
       } else {
-        return (_ref3 = space_y > this.y) != null ? _ref3 : {
-          'south': 'north'
-        };
+        if (space_y > this.y) {
+          return 'south';
+        } else {
+          return 'north';
+        }
       }
     };
     Position.prototype.relativeDirection = function(direction) {
       var offset;
-      offset = Position.DIRECTIONS.indexOf(direction) - this.direction_index;
+      offset = Position.DIRECTIONS.indexOf(direction) - this.directionIndex;
       if (offset > 3) {
         offset -= 4;
       }
       if (offset < 0) {
         offset += 4;
       }
+      console.log("relative dir: ", direction, Position.RELATIVE_DIRECTIONS[offset]);
       return Position.RELATIVE_DIRECTIONS[offset];
     };
     Position.prototype.translateOffset = function(forward, right) {
@@ -2611,6 +2650,19 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.unit('thick_sludge', 7, 0, 'west');
     this.unit('wizard', 9, 0, 'west');
     return this.unit('captive', 10, 0, 'west');
+  };
+}).call(this);
+}, "intermediate/level_001": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Silence. The room feels large, but empty. Luckily you have a map of this tower to help find the stairs.");
+    this.tip("Use warrior.direction_of_stairs() to determine which direction stairs are located. Pass this to warrior.walk() to walk in that direction.");
+    this.time_bonus(20);
+    this.ace_score(19);
+    this.size(6, 4);
+    this.stairs(2, 3);
+    return this.warrior(0, 1, 'east', function() {
+      return this.add_abilities('walk', 'feel', 'direction_of_stairs');
+    });
   };
 }).call(this);
 }});

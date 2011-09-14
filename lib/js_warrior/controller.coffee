@@ -79,7 +79,7 @@ class Controller
     @$("#hint").show()
     @$("#run").show()
   
-  setGameLevel: (level = 1, epic = false) ->
+  setGameLevel: (towerPath = 'beginner', level = 1, epic = false) ->
     if epic
       @profile.epic = true
       @profile.levelNumber = 1
@@ -88,6 +88,7 @@ class Controller
       @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
     else
       @profile.levelNumber = level
+    @profile.towerPath = towerPath
     @game.load()
 
   onLevelFailed: ->

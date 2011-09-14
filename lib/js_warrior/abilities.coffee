@@ -12,3 +12,4 @@ exports.Abilities =
   Look: require('./abilities/look').Look
   Rescue: require('./abilities/rescue').Rescue
   Pivot: require('./abilities/pivot').Pivot
+  DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs
