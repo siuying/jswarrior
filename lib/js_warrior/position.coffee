@@ -41,7 +41,6 @@ class Position
   
   directionOf: (space) ->
     [space_x, space_y] = space.location()
-    console.log("space #{space_x}, #{space_y}")
     if Math.abs(@x - space_x) > Math.abs(@y - space_y)
       if space_x > @x
          'east'
@@ -57,7 +56,6 @@ class Position
     offset = Position.DIRECTIONS.indexOf(direction) - @directionIndex
     offset -= 4 if offset > 3
     offset += 4 if offset < 0
-    console.log("relative dir: ", direction, Position.RELATIVE_DIRECTIONS[offset])
     Position.RELATIVE_DIRECTIONS[offset]    
   
   translateOffset: (forward, right) ->
