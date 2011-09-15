@@ -502,7 +502,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.DirectionOfStairs = DirectionOfStairs;
 }).call(this);
 }, "js_warrior/abilities/explode": function(exports, require, module) {(function() {
-  var Action, Explode, root;
+  var Action, Explode, root, _;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -512,6 +512,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return child;
   };
   Action = require('./action').Action;
+  _ = require('underscore')._;
   Explode = (function() {
     __extends(Explode, Action);
     Explode.prototype.description = function() {
@@ -524,7 +525,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Explode.prototype.perform = function() {
       if (this.unit.position) {
         this.unit.say("explodes, collapsing the ceiling and damanging every unit.");
-        return _.map(this.unit.position.floor.units, function(unit) {
+        return _.map(this.unit.position.floor.units(), function(unit) {
           return unit.takeDamage(100);
         });
       }
@@ -2834,6 +2835,50 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.unit('sludge', 2, 0, 'south');
     this.unit('thick_sludge', 3, 1, 'west');
     return this.unit('sludge', 2, 2, 'north');
+  };
+}).call(this);
+}, "intermediate/level_005": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You can feel the stairs right next to you, but are you sure you want to go up them right away?");
+    this.tip("You'll get more points for clearing the level first. Use warrior.feel.isStairs() and warrior.feel.isEmpty() to determine where to go.");
+    this.clue("If going towards a unit is the same direction as the stairs, try moving another empty direction until you can safely move toward the enemies.");
+    this.time_bonus(45);
+    this.ace_score(107);
+    this.size(5, 2);
+    this.stairs(1, 1);
+    this.warrior(0, 1, 'east', function() {
+      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      this.add_abilities('attack', 'health', 'rest');
+      this.add_abilities('rescue', 'bind');
+      return this.add_abilities('listen', 'direction_of');
+    });
+    this.unit('thick_sludge', 4, 0, 'west');
+    this.unit('thick_sludge', 3, 1, 'north');
+    return this.unit('captive', 4, 1, 'west');
+  };
+}).call(this);
+}, "intermediate/level_006": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("What's that ticking? Some captives have a timed bomb at their feet!");
+    this.tip("Hurry and rescue captives first that have space.isTicking(), they'll soon go!");
+    this.clue("Avoid fighting enemies at first. Use warrior.listen() and space.isTicking() and quickly rescue those captives.");
+    this.time_bonus(50);
+    this.ace_score(108);
+    this.size(6, 2);
+    this.stairs(5, 0);
+    this.warrior(0, 1, 'east', function() {
+      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      this.add_abilities('attack', 'health', 'rest');
+      this.add_abilities('rescue', 'bind');
+      return this.add_abilities('listen', 'direction_of');
+    });
+    this.unit('sludge', 1, 0, 'west');
+    this.unit('sludge', 3, 1, 'west');
+    this.unit('captive', 0, 0, 'west');
+    return this.unit('captive', 4, 1, 'west', function() {
+      this.add_abilities('explode');
+      return this.abilities['explode'].time = 7;
+    });
   };
 }).call(this);
 }});
