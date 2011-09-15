@@ -13,8 +13,8 @@ class Position
   
   rotate: (amount) ->
     @directionIndex += amount
-    @directionIndex -= 4 if @directionIndex > 3
-    @directionIndex += 4 if @directionIndex < 0
+    @directionIndex -= 4 while @directionIndex > 3
+    @directionIndex += 4 while @directionIndex < 0
 
   relativeSpace: (forward, right=0) ->
     [x, y] = @translateOffset(forward, right)
@@ -54,8 +54,8 @@ class Position
   
   relativeDirection: (direction) ->
     offset = Position.DIRECTIONS.indexOf(direction) - @directionIndex
-    offset -= 4 if offset > 3
-    offset += 4 if offset < 0
+    offset -= 4 while offset > 3
+    offset += 4 while offset < 0
     Position.RELATIVE_DIRECTIONS[offset]    
   
   translateOffset: (forward, right) ->

@@ -15,3 +15,4 @@ exports.Abilities =
   DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs
   Bind: require('./abilities/bind').Bind
   Listen: require('./abilities/listen').Listen
+  DirectionOf: require('./abilities/direction_of').DirectionOf

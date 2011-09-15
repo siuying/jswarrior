@@ -263,7 +263,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Rescue: require('./abilities/rescue').Rescue,
     Pivot: require('./abilities/pivot').Pivot,
     DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs,
-    Bind: require('./abilities/bind').Bind
+    Bind: require('./abilities/bind').Bind,
+    Listen: require('./abilities/listen').Listen,
+    DirectionOf: require('./abilities/direction_of').DirectionOf
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -443,6 +445,34 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Bind = Bind;
 }).call(this);
+}, "js_warrior/abilities/direction_of": function(exports, require, module) {(function() {
+  var DirectionOf, Sense, root, _;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Sense = require('./sense').Sense;
+  _ = require('underscore')._;
+  DirectionOf = (function() {
+    __extends(DirectionOf, Sense);
+    function DirectionOf() {
+      DirectionOf.__super__.constructor.apply(this, arguments);
+    }
+    DirectionOf.prototype.description = function() {
+      return "Pass a Space as an argument, and the direction ('left', 'right', 'forward', 'backward') to that space will be returned.";
+    };
+    DirectionOf.prototype.perform = function(space) {
+      return this.unit.position.relativeDirectionOf(space);
+    };
+    return DirectionOf;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.DirectionOf = DirectionOf;
+}).call(this);
 }, "js_warrior/abilities/direction_of_stairs": function(exports, require, module) {(function() {
   var DirectionOfStairs, Sense, root, _;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
@@ -573,6 +603,47 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Health = Health;
+}).call(this);
+}, "js_warrior/abilities/listen": function(exports, require, module) {(function() {
+  var Listen, Sense, root, _;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Sense = require('./sense').Sense;
+  _ = require('underscore')._;
+  Listen = (function() {
+    __extends(Listen, Sense);
+    function Listen() {
+      Listen.__super__.constructor.apply(this, arguments);
+    }
+    Listen.prototype.description = function() {
+      return "Returns an array of all spaces which have units in them.";
+    };
+    Listen.prototype.perform = function() {
+      var unit, units;
+      units = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.unit.position.floor.units();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          unit = _ref[_i];
+          if (unit !== this.unit) {
+            _results.push(unit);
+          }
+        }
+        return _results;
+      }).call(this);
+      return _.compact(units);
+    };
+    return Listen;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Listen = Listen;
 }).call(this);
 }, "js_warrior/abilities/look": function(exports, require, module) {(function() {
   var Look, Sense, root, _;
@@ -1548,13 +1619,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       return Position.DIRECTIONS[this.directionIndex];
     };
     Position.prototype.rotate = function(amount) {
+      var _results;
       this.directionIndex += amount;
-      if (this.directionIndex > 3) {
+      while (this.directionIndex > 3) {
         this.directionIndex -= 4;
       }
-      if (this.directionIndex < 0) {
-        return this.directionIndex += 4;
+      _results = [];
+      while (this.directionIndex < 0) {
+        _results.push(this.directionIndex += 4);
       }
+      return _results;
     };
     Position.prototype.relativeSpace = function(forward, right) {
       var x, y, _ref;
@@ -1591,7 +1665,6 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Position.prototype.directionOf = function(space) {
       var space_x, space_y, _ref;
       _ref = space.location(), space_x = _ref[0], space_y = _ref[1];
-      console.log("space " + space_x + ", " + space_y);
       if (Math.abs(this.x - space_x) > Math.abs(this.y - space_y)) {
         if (space_x > this.x) {
           return 'east';
@@ -1609,13 +1682,12 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Position.prototype.relativeDirection = function(direction) {
       var offset;
       offset = Position.DIRECTIONS.indexOf(direction) - this.directionIndex;
-      if (offset > 3) {
+      while (offset > 3) {
         offset -= 4;
       }
-      if (offset < 0) {
+      while (offset < 0) {
         offset += 4;
       }
-      console.log("relative dir: ", direction, Position.RELATIVE_DIRECTIONS[offset]);
       return Position.RELATIVE_DIRECTIONS[offset];
     };
     Position.prototype.translateOffset = function(forward, right) {
@@ -2740,6 +2812,28 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.unit('captive', 1, 2, 'west');
     this.unit('sludge', 0, 1, 'west');
     return this.unit('sludge', 2, 1, 'west');
+  };
+}).call(this);
+}, "intermediate/level_004": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Your ears become more in tune with the surroundings. Listen to find enemies and captives!");
+    this.tip("Use warrior.listen() to find spaces with other units, and warrior.directionOf() to determine what direction they're in.");
+    this.clue("Walk towards an enemy or captive with warrior.walk(warrior.directionOf(warrior.listen()[0])), once warrior.listen().length == 0 then head for the stairs.");
+    this.time_bonus(55);
+    this.ace_score(144);
+    this.size(4, 3);
+    this.stairs(3, 2);
+    this.warrior(1, 1, 'east', function() {
+      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      this.add_abilities('attack', 'health', 'rest');
+      this.add_abilities('rescue', 'bind');
+      return this.add_abilities('listen', 'direction_of');
+    });
+    this.unit('captive', 0, 0, 'east');
+    this.unit('captive', 0, 2, 'east');
+    this.unit('sludge', 2, 0, 'south');
+    this.unit('thick_sludge', 3, 1, 'west');
+    return this.unit('sludge', 2, 2, 'north');
   };
 }).call(this);
 }});
