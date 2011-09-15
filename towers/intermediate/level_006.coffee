@@ -4,6 +4,7 @@
 #  ------
 
 exports.level = ->
+
   @description "What's that ticking? Some captives have a timed bomb at their feet!"
   @tip "Hurry and rescue captives first that have space.isTicking(), they'll soon go!"
   @clue "Avoid fighting enemies at first. Use warrior.listen() and space.isTicking() and quickly rescue those captives."

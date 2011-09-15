@@ -1,7 +1,11 @@
 class Utils
   @toCamelCase: (string) ->
-    camelParts = (name.replace(/^[a-z]/, ($1) -> $1.toUpperCase()) for name in string.split("_"))
+    camelParts = (name.replace(/^[a-z]/, ($1) -> $1.toUpperCase()) for idx, name of string.split("_"))
     camelParts.join("")
+    
+  @toMethodCase: (string) ->
+    camelParts = Utils.toCamelCase(string)
+    camelParts.replace(/^[A-Z]/, ($1) -> $1.toLowerCase())
   
   @basename: (path) ->
     path.replace(/^.*[\/\\]/g, '')

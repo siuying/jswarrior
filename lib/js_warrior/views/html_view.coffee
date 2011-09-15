@@ -1,5 +1,6 @@
-{View} = require('./view')
-{_} = require('underscore')
+{View}  = require './view'
+{Utils} = require '../utils'
+{_}     = require 'underscore'
 
 class HtmlView extends View  
   constructor: (@emitter, $)->
@@ -52,7 +53,7 @@ class HtmlView extends View
     @$("#hint_message").append("<p>Warrior Abilities:</p>")
     for abilityName in _.keys(abilities)
       ability = abilities[abilityName]
-      @$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior.#{abilityName}()</p>
+      @$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior.#{Utils.toMethodCase(abilityName)}()</p>
 <p class='ability-details'>#{ability.description()}</p></div>")    
 
   levelCompleted: (level) ->
