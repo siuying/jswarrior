@@ -265,7 +265,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     DirectionOfStairs: require('./abilities/direction_of_stairs').DirectionOfStairs,
     Bind: require('./abilities/bind').Bind,
     Listen: require('./abilities/listen').Listen,
-    DirectionOf: require('./abilities/direction_of').DirectionOf
+    DirectionOf: require('./abilities/direction_of').DirectionOf,
+    Detonate: require('./abilities/detonate').Detonate
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -444,6 +445,63 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.Bind = Bind;
+}).call(this);
+}, "js_warrior/abilities/detonate": function(exports, require, module) {(function() {
+  var Action, Detonate, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Action = require('./action').Action;
+  Detonate = (function() {
+    __extends(Detonate, Action);
+    function Detonate() {
+      Detonate.__super__.constructor.apply(this, arguments);
+    }
+    Detonate.prototype.description = function() {
+      return "Detonate a bomb in a given direction (forward by default) which damages that space and surrounding 4 spaces (including yourself).";
+    };
+    Detonate.prototype.perform = function(direction) {
+      var space, x, y, _i, _len, _ref, _results;
+      if (direction == null) {
+        direction = 'forward';
+      }
+      this.verifyDirection(direction);
+      if (this.unit.position) {
+        this.unit.say("detonates a bom " + direction + " launching a deadly explosion.");
+        this.bomb(direction, 1, 0, 8);
+        _ref = [[1, 1], [1, -1], [2, 0], [0, 0]];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          space = _ref[_i];
+          x = space[0], y = space[1];
+          _results.push(this.bomb(direction, x, y, 4));
+        }
+        return _results;
+      }
+    };
+    Detonate.prototype.bomb = function(direction, x, y, damage_amount) {
+      var receiver;
+      if (this.unit.position) {
+        receiver = this.space(direction, x, y).getUnit();
+        if (receiver) {
+          if (receiver.abilities['explode']) {
+            receiver.say("caught in bomb's flames which detonates ticking explosive");
+            return receiver.abilities['explode'].perform();
+          } else {
+            return this.damage(receiver, damage_amount);
+          }
+        }
+      }
+    };
+    return Detonate;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.Detonate = Detonate;
 }).call(this);
 }, "js_warrior/abilities/direction_of": function(exports, require, module) {(function() {
   var DirectionOf, Sense, root, _;
@@ -2330,13 +2388,13 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   Utils = (function() {
     function Utils() {}
     Utils.toCamelCase = function(string) {
-      var camelParts, name;
+      var camelParts, idx, name;
       camelParts = (function() {
-        var _i, _len, _ref, _results;
+        var _ref, _results;
         _ref = string.split("_");
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
+        for (idx in _ref) {
+          name = _ref[idx];
           _results.push(name.replace(/^[a-z]/, function($1) {
             return $1.toUpperCase();
           }));
@@ -2344,6 +2402,20 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         return _results;
       })();
       return camelParts.join("");
+    };
+    Utils.toUnderscoreCase = function(string) {
+      var under;
+      under = string.replace(/[A-Z]/, function($1) {
+        return "_" + ($1.toLowerCase());
+      });
+      return under.replace(/^_/, "");
+    };
+    Utils.toMethodCase = function(string) {
+      var camelParts;
+      camelParts = Utils.toCamelCase(string);
+      return camelParts.replace(/^[A-Z]/, function($1) {
+        return $1.toLowerCase();
+      });
     };
     Utils.basename = function(path) {
       return path.replace(/^.*[\/\\]/g, '');
@@ -2415,7 +2487,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   root.ConsoleView = ConsoleView;
 }).call(this);
 }, "js_warrior/views/html_view": function(exports, require, module) {(function() {
-  var HtmlView, View, root, _;
+  var HtmlView, Utils, View, root, _;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -2425,6 +2497,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     return child;
   };
   View = require('./view').View;
+  Utils = require('../utils').Utils;
   _ = require('underscore')._;
   HtmlView = (function() {
     __extends(HtmlView, View);
@@ -2488,7 +2561,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         abilityName = _ref[_i];
         ability = abilities[abilityName];
-        _results.push(this.$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior." + abilityName + "()</p><p class='ability-details'>" + (ability.description()) + "</p></div>"));
+        _results.push(this.$("#hint_message").append("<div class='ability'><p class='ability-label'>warrior." + (Utils.toMethodCase(abilityName)) + "()</p><p class='ability-details'>" + (ability.description()) + "</p></div>"));
       }
       return _results;
     };
@@ -2773,7 +2846,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(6, 4);
     this.stairs(2, 3);
     return this.warrior(0, 1, 'east', function() {
-      return this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      return this.add_abilities('walk', 'feel', 'directionOfStairs');
     });
   };
 }).call(this);
@@ -2787,7 +2860,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(4, 2);
     this.stairs(3, 1);
     this.warrior(0, 0, 'east', function() {
-      this.add_abilities('walk', 'feel', 'direction_of_stairs');
+      this.add_abilities('walk', 'feel', 'directionOfStairs');
       return this.add_abilities('attack', 'health', 'rest');
     });
     this.unit('sludge', 1, 0, 'west');
@@ -2805,8 +2878,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(3, 3);
     this.stairs(0, 0);
     this.warrior(1, 1, 'east', function() {
-      this.add_abilities('walk', 'feel', 'direction_of_stairs');
-      this.add_abilities('attack', 'health', 'rest');
+      this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest');
       return this.add_abilities('rescue', 'bind');
     });
     this.unit('sludge', 1, 0, 'west');
@@ -2825,10 +2897,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(4, 3);
     this.stairs(3, 2);
     this.warrior(1, 1, 'east', function() {
-      this.add_abilities('walk', 'feel', 'direction_of_stairs');
-      this.add_abilities('attack', 'health', 'rest');
-      this.add_abilities('rescue', 'bind');
-      return this.add_abilities('listen', 'direction_of');
+      this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind');
+      return this.add_abilities('listen', 'directionOf');
     });
     this.unit('captive', 0, 0, 'east');
     this.unit('captive', 0, 2, 'east');
@@ -2847,10 +2917,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(5, 2);
     this.stairs(1, 1);
     this.warrior(0, 1, 'east', function() {
-      this.add_abilities('walk', 'feel', 'direction_of_stairs');
-      this.add_abilities('attack', 'health', 'rest');
-      this.add_abilities('rescue', 'bind');
-      return this.add_abilities('listen', 'direction_of');
+      return this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf');
     });
     this.unit('thick_sludge', 4, 0, 'west');
     this.unit('thick_sludge', 3, 1, 'north');
@@ -2867,10 +2934,7 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     this.size(6, 2);
     this.stairs(5, 0);
     this.warrior(0, 1, 'east', function() {
-      this.add_abilities('walk', 'feel', 'direction_of_stairs');
-      this.add_abilities('attack', 'health', 'rest');
-      this.add_abilities('rescue', 'bind');
-      return this.add_abilities('listen', 'direction_of');
+      return this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf');
     });
     this.unit('sludge', 1, 0, 'west');
     this.unit('sludge', 3, 1, 'west');
@@ -2879,6 +2943,48 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.add_abilities('explode');
       return this.abilities['explode'].time = 7;
     });
+  };
+}).call(this);
+}, "intermediate/level_007": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Another ticking sound, but some sludge is blocking the way.");
+    this.tip("Quickly kill the sludge and rescue the captive before the bomb goes off. You can't simply go around them.");
+    this.clue("Determine the direction of the ticking captive and kill any enemies blocking that path. You may need to bind surrounding enemies first.");
+    this.time_bonus(70);
+    this.ace_score(134);
+    this.size(5, 3);
+    this.stairs(4, 0);
+    this.warrior(0, 1, 'east', function() {
+      return this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf');
+    });
+    this.unit('sludge', 1, 0, 'south');
+    this.unit('sludge', 1, 2, 'north');
+    this.unit('sludge', 2, 1, 'west');
+    this.unit('captive', 4, 1, 'west', function() {
+      this.add_abilities('explode');
+      return this.abilities['explode'].time = 10;
+    });
+    return this.unit('captive', 2, 0, 'west');
+  };
+}).call(this);
+}, "intermediate/level_008": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("You discover a satchel of bombs which will help when facing a mob of enemies.");
+    this.tip("Detonate a bomb when you see a couple enemies ahead of you (warrior.look). Watch out for your health too.");
+    this.clue("Calling warrior.look will return an array of Spaces. If the first two contain enemies, detonate a bomb with warrior.detonate!.");
+    this.time_bonus(30);
+    this.size(7, 1);
+    this.stairs(6, 0);
+    this.warrior(0, 0, 'east', function() {
+      this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf');
+      return this.add_abilities('look', 'detonate');
+    });
+    this.unit('captive', 5, 0, 'west', function() {
+      this.add_abilities('explode');
+      return this.abilities['explode'].time = 9;
+    });
+    this.unit('thick_sludge', 2, 0, 'west');
+    return this.unit('sludge', 3, 0, 'west');
   };
 }).call(this);
 }});

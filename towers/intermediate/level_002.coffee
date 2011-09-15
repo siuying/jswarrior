@@ -15,7 +15,7 @@ exports.level = ->
   @stairs 3, 1
 
   @warrior 0, 0, 'east', ->
-    @add_abilities 'walk', 'feel', 'direction_of_stairs'
+    @add_abilities 'walk', 'feel', 'directionOfStairs'
     @add_abilities 'attack', 'health', 'rest'
 
   @unit 'sludge', 1, 0, 'west'

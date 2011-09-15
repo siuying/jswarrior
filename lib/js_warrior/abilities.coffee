@@ -16,3 +16,4 @@ exports.Abilities =
   Bind: require('./abilities/bind').Bind
   Listen: require('./abilities/listen').Listen
   DirectionOf: require('./abilities/direction_of').DirectionOf
+  Detonate: require('./abilities/detonate').Detonate
