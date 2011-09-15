@@ -8,7 +8,7 @@
 exports.level = ->
 
   @description "Never before have you seen a room so full of sludge. Start the fireworks!"
-  @tip "Be careful not to let the ticking captive get caught in the flames. Use warrior.distance_of to avoid the captives."
+  @tip "Be careful not to let the ticking captive get caught in the flames. Use warrior.distanceOf() to avoid the captives."
   @clue "Be sure to bind the surrounding enemies before fighting. Check your health before detonating explosives."
 
   @time_bonus 70
