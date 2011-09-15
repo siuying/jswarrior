@@ -6,8 +6,8 @@
 exports.level = ->
 
   @description "You discover a satchel of bombs which will help when facing a mob of enemies."
-  @tip "Detonate a bomb when you see a couple enemies ahead of you (warrior.look). Watch out for your health too."
-  @clue "Calling warrior.look will return an array of Spaces. If the first two contain enemies, detonate a bomb with warrior.detonate!."
+  @tip "Detonate a bomb when you see a couple enemies ahead of you (warrior.look()). Watch out for your health too."
+  @clue "Calling warrior.look will return an array of Spaces. If the first two contain enemies, detonate a bomb with warrior.detonate()."
 
   @time_bonus 30
   @size 7, 1

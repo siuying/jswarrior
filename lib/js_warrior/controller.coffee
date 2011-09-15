@@ -85,7 +85,11 @@ class Controller
       @profile.levelNumber = 1
       @profile.currentEpicScore = 0
       @profile.currentEpicGrades = {}
-      @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
+      
+      if (towerPath == 'beginner')
+        @profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot')
+      else
+        @profile.addAbilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf', 'look', 'detonate', 'distanceOf')
     else
       @profile.levelNumber = level
     @profile.towerPath = towerPath

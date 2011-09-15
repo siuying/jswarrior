@@ -266,7 +266,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     Bind: require('./abilities/bind').Bind,
     Listen: require('./abilities/listen').Listen,
     DirectionOf: require('./abilities/direction_of').DirectionOf,
-    Detonate: require('./abilities/detonate').Detonate
+    Detonate: require('./abilities/detonate').Detonate,
+    DistanceOf: require('./abilities/distance_of').DistanceOf
   };
 }).call(this);
 }, "js_warrior/abilities/action": function(exports, require, module) {(function() {
@@ -558,6 +559,33 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
   })();
   root = typeof exports !== "undefined" && exports !== null ? exports : window;
   root.DirectionOfStairs = DirectionOfStairs;
+}).call(this);
+}, "js_warrior/abilities/distance_of": function(exports, require, module) {(function() {
+  var DistanceOf, Sense, root;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Sense = require('./sense').Sense;
+  DistanceOf = (function() {
+    __extends(DistanceOf, Sense);
+    function DistanceOf() {
+      DistanceOf.__super__.constructor.apply(this, arguments);
+    }
+    DistanceOf.prototype.description = function() {
+      return "Pass a Space as an argument, and it will return an integer representing the distance to that space.";
+    };
+    DistanceOf.prototype.perform = function(space) {
+      return this.unit.position.distanceOf(space);
+    };
+    return DistanceOf;
+  })();
+  root = typeof exports !== "undefined" && exports !== null ? exports : window;
+  root.DistanceOf = DistanceOf;
 }).call(this);
 }, "js_warrior/abilities/explode": function(exports, require, module) {(function() {
   var Action, Explode, root, _;
@@ -1061,7 +1089,11 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.profile.levelNumber = 1;
         this.profile.currentEpicScore = 0;
         this.profile.currentEpicGrades = {};
-        this.profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot');
+        if (towerPath === 'beginner') {
+          this.profile.addAbilities('walk', 'feel', 'attack', 'health', 'rest', 'rescue', 'pivot', 'look', 'shoot');
+        } else {
+          this.profile.addAbilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf', 'look', 'detonate', 'distanceOf');
+        }
       } else {
         this.profile.levelNumber = level;
       }
@@ -2970,8 +3002,8 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
 }, "intermediate/level_008": function(exports, require, module) {(function() {
   exports.level = function() {
     this.description("You discover a satchel of bombs which will help when facing a mob of enemies.");
-    this.tip("Detonate a bomb when you see a couple enemies ahead of you (warrior.look). Watch out for your health too.");
-    this.clue("Calling warrior.look will return an array of Spaces. If the first two contain enemies, detonate a bomb with warrior.detonate!.");
+    this.tip("Detonate a bomb when you see a couple enemies ahead of you (warrior.look()). Watch out for your health too.");
+    this.clue("Calling warrior.look will return an array of Spaces. If the first two contain enemies, detonate a bomb with warrior.detonate().");
     this.time_bonus(30);
     this.size(7, 1);
     this.stairs(6, 0);
@@ -2985,6 +3017,32 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     });
     this.unit('thick_sludge', 2, 0, 'west');
     return this.unit('sludge', 3, 0, 'west');
+  };
+}).call(this);
+}, "intermediate/level_009": function(exports, require, module) {(function() {
+  exports.level = function() {
+    this.description("Never before have you seen a room so full of sludge. Start the fireworks!");
+    this.tip("Be careful not to let the ticking captive get caught in the flames. Use warrior.distance_of to avoid the captives.");
+    this.clue("Be sure to bind the surrounding enemies before fighting. Check your health before detonating explosives.");
+    this.time_bonus(70);
+    this.size(4, 3);
+    this.stairs(3, 0);
+    this.warrior(0, 1, 'east', function() {
+      this.add_abilities('walk', 'feel', 'directionOfStairs', 'attack', 'health', 'rest', 'rescue', 'bind', 'listen', 'directionOf', 'look', 'detonate');
+      return this.add_abilities('distanceOf');
+    });
+    this.unit('captive', 2, 0, 'south', function() {
+      this.add_abilities('explode');
+      return this.abilities['explode'].time = 20;
+    });
+    this.unit('captive', 2, 2, 'north');
+    this.unit('sludge', 0, 0, 'south');
+    this.unit('sludge', 1, 0, 'south');
+    this.unit('sludge', 1, 1, 'east');
+    this.unit('sludge', 2, 1, 'east');
+    this.unit('sludge', 3, 1, 'east');
+    this.unit('sludge', 0, 2, 'north');
+    return this.unit('sludge', 1, 2, 'north');
   };
 }).call(this);
 }});

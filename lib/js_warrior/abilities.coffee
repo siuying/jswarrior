@@ -17,3 +17,4 @@ exports.Abilities =
   Listen: require('./abilities/listen').Listen
   DirectionOf: require('./abilities/direction_of').DirectionOf
   Detonate: require('./abilities/detonate').Detonate
+  DistanceOf: require('./abilities/distance_of').DistanceOf
