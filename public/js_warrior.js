@@ -1326,7 +1326,9 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
     };
     Controller.prototype.setProfile = function(encodedProfile) {
       this.profile.decode(encodedProfile);
-      this.editor.getSession().setValue(this.profile.sourceCode);
+      if (this.profile.sourceCode) {
+        this.editor.getSession().setValue(this.profile.sourceCode);
+      }
       return this.game.load();
     };
     Controller.prototype.onLevelFailed = function() {

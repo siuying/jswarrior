@@ -61,7 +61,7 @@ $(function(){
   editor.getSession().setUseSoftTabs(true);
   
   if (window.location.hash && window.location.hash.length > 1) {
-    encodedProfile = window.location.hash.substring(1, window.location.hash.length - 1) + "="
+    encodedProfile = window.location.hash.substring(1)
   } else {
     encodedProfile = null
   }

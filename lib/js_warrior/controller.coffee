@@ -95,7 +95,7 @@ class Controller
   
   setProfile: (encodedProfile) ->
     @profile.decode(encodedProfile)
-    @editor.getSession().setValue(@profile.sourceCode)
+    @editor.getSession().setValue(@profile.sourceCode) if @profile.sourceCode
     @game.load()
 
   onLevelFailed: ->
