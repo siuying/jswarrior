@@ -8,7 +8,9 @@ app.set 'view options', layout: false
 app.use express.static("#{__dirname}/public")
 
 app.get '/', (req, res) ->
-  res.render 'index.ejs', levelNumber: 1, epic: false
+  tower = 'beginner'
+  level = '1'
+  res.render 'index.ejs', levelNumber: parseInt(level), epic: false, tower: tower
 
 app.get '/js', (req, res) ->
   res.render 'index-js.ejs', levelNumber: 1, epic: false
@@ -26,7 +28,13 @@ app.get '/js/epic', (req, res) ->
   res.render 'index-js.ejs', epic: true, levelNumber: 1
 
 app.get '/tower/:tower/:level', (req, res) ->
-  res.render 'index.ejs', levelNumber: parseInt(req.params.level), epic: false, tower: req.params.tower
+  tower = req.params.tower
+  level = req.params.level
+  
+  if level == "epic"
+    res.render 'index.ejs', levelNumber: 1, epic: true, tower: tower
+  else
+    res.render 'index.ejs', levelNumber: parseInt(level), epic: false, tower: tower
 
 app.listen port, =>
   console.log "Listen on #{port}"

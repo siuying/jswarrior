@@ -60,9 +60,22 @@ $(function(){
   editor.getSession().setTabSize(4);
   editor.getSession().setUseSoftTabs(true);
   
+  if (window.location.hash && window.location.hash.length > 1) {
+    encodedProfile = window.location.hash.substring(1, window.location.hash.length - 1) + "="
+  } else {
+    encodedProfile = null
+  }
+
   var controller = new JsWarrior.Controller($, editor, null, Modernizr)
   controller.setup()
-  controller.setGameLevel(<%= levelNumber %>, <%= epic %>)
+
+  if (encodedProfile) {
+    controller.setProfile(encodedProfile)
+  } else {
+    controller.setGameLevel('<%= tower %>', <%= levelNumber %>, <%= epic %>)
+  }
+  
+  
 });
 </script>
 <script type="text/javascript">

@@ -13,10 +13,6 @@ class Controller
     @emitter.on "game.level.complete", =>
       @onLevelCompleted()
 
-    # in epic mode, display run button and show restart button
-    @emitter.on "game.epic.start", =>
-      window.history.pushState {}, "Epic", "/epic"
-
     @emitter.on "game.play.error", =>
       @onLevelFailed()
 
@@ -46,6 +42,8 @@ class Controller
     # setup click listener for run
     @$("#run").click =>
       source = @editor.getSession().getValue()
+      @profile.sourceCode = source
+
       if @coffee
         compiled = @coffee.compile(source, {bare: on})
       else
@@ -60,7 +58,7 @@ class Controller
         @game.load()
       else if @started
         @game.load()
-        
+
       @game.start(compiled)
       @$("#run").hide()
       @$("#stop").show()
@@ -94,6 +92,11 @@ class Controller
       @profile.levelNumber = level
     @profile.towerPath = towerPath
     @game.load()
+  
+  setProfile: (encodedProfile) ->
+    @profile.decode(encodedProfile)
+    @editor.getSession().setValue(@profile.sourceCode)
+    @game.load()
 
   onLevelFailed: ->
     @$("#run").show()
@@ -114,9 +117,8 @@ class Controller
     @started = false
 
   onLevelLoaded: (level) ->
-    if not @isEpic()
-      window.history.pushState {level: level.number}, "Level #{level.number}", "#{level.number}" if level
-      
+
+
   isEpic: ->
     @profile.isEpic()
 

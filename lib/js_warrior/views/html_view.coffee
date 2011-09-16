@@ -49,6 +49,8 @@ class HtmlView extends View
     
     @puts "- Turn #{level.currentTurn} -" if level.currentTurn > 0
 
+    window.history.pushState {}, "Level #{level.number}", "##{level.profile.encode()}"
+
   setWarriorAbilities: (abilities) ->
     @$("#hint_message").append("<p>Warrior Abilities:</p>")
     for abilityName in _.keys(abilities)
@@ -70,7 +72,13 @@ class HtmlView extends View
 
   clear: ->
     @$("#message").html("")
-    
+  
+  title: ->
+    "  _____     ______          _      __             _         
+     / ___/__  / _/ _/__ ___   | | /| / /__ _________(_)__  ____
+    / /__/ _ \/ _/ _/ -_) -_)  | |/ |/ / _ `/ __/ __/ / _ \/ __/
+    \___/\___/_//_/ \__/\__/   |__/|__/\_,_/_/ /_/ /_/\___/_/   
+    "
 
 root = exports ? window
 root.HtmlView = HtmlView

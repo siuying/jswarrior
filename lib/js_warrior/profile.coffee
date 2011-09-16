@@ -1,6 +1,8 @@
-{Tower} = require('./tower')
-{Level} = require('./level')
-{_} = require('underscore')
+{Tower}     = require './tower'
+{Level}     = require './level'
+{Base64}    = require 'base64'
+{_}         = require 'underscore'
+
 
 class Profile
   constructor: (@emitter = null) ->
@@ -14,6 +16,7 @@ class Profile
     @currentEpicScore = 0
     @currentEpicGrades = {}
     @epicScore = 0
+    @sourceCode = null
     
   toString: ->
     [@warriorName, "level #{@levelNumber}", "score #{@score}"].join('-')
@@ -46,7 +49,22 @@ class Profile
       0.0
 
   encode: ->
-    JSON.stringify(this)
-        
+    Base64.encode(JSON.stringify(this))
+  
+  decode: (text) ->
+    data = JSON.parse(Base64.decode(text))
+    @towerPath = data.towerPath
+    @warriorName = data.warriorName
+    @score = data.score
+    @abilities = data.abilities
+    @levelNumber =  data.levelNumber
+    @epic =  data.epic
+    @lastLevelNumber = data.lastLevelNumber
+    @currentEpicScore = data.currentEpicScore
+    @currentEpicGrades = data.currentEpicGrades
+    @epicScore = data.epicScore
+    @sourceCode = data.sourceCode
+    this
+    
 root = exports ? window
 root.Profile = Profile
