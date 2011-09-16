@@ -1294,9 +1294,16 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
       this.$("#hint").click(__bind(function() {
         return this.$("#more_hint_message").toggle();
       }, this));
-      this.$("#editor").show();
-      this.$("#hint").show();
-      return this.$("#run").show();
+      this.$("#begin").click(__bind(function() {
+        var name, tower;
+        name = this.$("#name").val();
+        tower = this.$("#tower_button").val();
+        console.log("begin " + name + " " + tower);
+        this.profile.warriorName = name;
+        this.setGameLevel(tower, 1, false);
+        return false;
+      }, this));
+      return this.$("#welcome").show();
     };
     Controller.prototype.setGameLevel = function(towerPath, level, epic) {
       if (towerPath == null) {
@@ -1322,14 +1329,30 @@ arguments),this._chain)}});j.prototype.chain=function(){this._chain=!0;return th
         this.profile.levelNumber = level;
       }
       this.profile.towerPath = towerPath;
-      return this.game.load();
+      this.game.load();
+      this.$("#control").show();
+      this.$("#display").show();
+      this.$("#header").show();
+      this.$("#welcome").hide();
+      this.$("#editor").show();
+      this.$("#hint").show();
+      this.$("#run").show();
+      return this.editor.setTheme("ace/theme/cobalt");
     };
     Controller.prototype.setProfile = function(encodedProfile) {
       this.profile.decode(encodedProfile);
       if (this.profile.sourceCode) {
         this.editor.getSession().setValue(this.profile.sourceCode);
       }
-      return this.game.load();
+      this.game.load();
+      this.$("#control").show();
+      this.$("#display").show();
+      this.$("#header").show();
+      this.$("#welcome").hide();
+      this.$("#editor").show();
+      this.$("#hint").show();
+      this.$("#run").show();
+      return this.editor.setTheme("ace/theme/cobalt");
     };
     Controller.prototype.onLevelFailed = function() {
       this.$("#run").show();

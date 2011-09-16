@@ -71,12 +71,18 @@ class Controller
 
     @$("#hint").click =>
       @$("#more_hint_message").toggle()
+    
+    @$("#begin").click =>
+      name = @$("#name").val()
+      tower = @$("#tower_button").val()
+      console.log("begin #{name} #{tower}")
+      @profile.warriorName = name
+      @setGameLevel(tower, 1, false)
+      return false
 
     # show editor when finished
-    @$("#editor").show()
-    @$("#hint").show()
-    @$("#run").show()
-  
+    @$("#welcome").show()
+        
   setGameLevel: (towerPath = 'beginner', level = 1, epic = false) ->
     if epic
       @profile.epic = true
@@ -92,11 +98,31 @@ class Controller
       @profile.levelNumber = level
     @profile.towerPath = towerPath
     @game.load()
+
+    # enable UI
+    @$("#control").show()
+    @$("#display").show()
+    @$("#header").show()
+    @$("#welcome").hide()
+    @$("#editor").show()
+    @$("#hint").show()
+    @$("#run").show()
+    @editor.setTheme("ace/theme/cobalt")
   
   setProfile: (encodedProfile) ->
     @profile.decode(encodedProfile)
     @editor.getSession().setValue(@profile.sourceCode) if @profile.sourceCode
     @game.load()
+    
+    # enable UI
+    @$("#control").show()
+    @$("#display").show()
+    @$("#header").show()
+    @$("#welcome").hide()
+    @$("#editor").show()
+    @$("#hint").show()
+    @$("#run").show()
+    @editor.setTheme("ace/theme/cobalt")
 
   onLevelFailed: ->
     @$("#run").show()
@@ -117,7 +143,6 @@ class Controller
     @started = false
 
   onLevelLoaded: (level) ->
-
 
   isEpic: ->
     @profile.isEpic()

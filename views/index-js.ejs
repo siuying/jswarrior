@@ -8,36 +8,54 @@
 </head>
 <body>
   <div class="container">
-    <div id="display">
+    <div id="header" style="display: none">
+      <h1><a href="/">Coffee Warrior</a></h1>
+    </div>
+
+    <div id="display" style="display: none">
     	<div id="tower">
     	</div>
     	<div id="message">
     	</div>
 
     </div>
-  
-    <div id="control">
-      <pre id="editor">var Player = (function() {
-    function Player() {}
-    Player.prototype.playTurn = function(warrior) {
-        // do something
-    };
-    return Player;
-})();
-exports.Player = Player;
-      </pre>
+
+    <div id="control" style="display: none">      
       <div id="buttons">
         <button id="hint" class="btn primary" type="button" style="display: none">Hint</button>
         <button id="run" class="btn primary" type="button">Run</button>
         <button id="stop" class="btn primary" type="button" style="display: none">Abort</button>
       </div>
 
+      <pre id="editor">class Player
+  playTurn: (warrior) ->
+    # do nothing
+    </pre>
+
       <div id="hint_message">
       </div>
 
       <div id="more_hint_message" style="display: none">
       </div>
-      
+
+    </div>
+
+    <div id="welcome" style="display: none">
+      <pre>
+==============================================================
+
+  _____     ______          _      __             _         
+ / ___/__  / _/ _/__ ___   | | /| / /__ _________(_)__  ____
+/ /__/ _ \/ _/ _/ -_) -_)  | |/ |/ / _ `/ __/ __/ / _ \/ __/
+\___/\___/_//_/ \__/\__/   |__/|__/\_,_/_/ /_/ /_/\___/_/        
+
+==============================================================
+
+Your Name: <input name="name" value="Warrior" id="name"></input>
+Your Tower: <select name="tower" id="tower_button"><option value="beginner">BEGINNER</option><option value="intermediate">INTERMEDIATE</option></select>
+<button id="begin">Begin</button>
+
+      </pre>
     </div>
   </div>
 
@@ -72,8 +90,8 @@ $(function(){
   if (encodedProfile) {
     controller.setProfile(encodedProfile)
   } else {
-    controller.setGameLevel('<%= tower %>', <%= levelNumber %>, <%= epic %>)
-  }
+    $("#name").focus().select()
+  } 
   
   
 });
